@@ -1,5 +1,13 @@
+# Azure Pipelines YAML
 
-# Contributing
+YAML templates and samples for [Azure Pipelines](https://docs.microsoft.com/azure/devops/pipelines/).
+Also a place for the community to share best practices, ideas, and so on.
+While this doesn't replace the docs, our fantastic [support team](https://azure.microsoft.com/support/devops/), or our [UserVoice](https://visualstudio.uservoice.com/forums/330519-visual-studio-team-services), feel free to file suggestions and issues here if they're specific to YAML pipelines.
+
+- [Templates](templates/)
+- ... more to come ...
+
+## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
