@@ -80,7 +80,7 @@ values:
     public: true
 ```
 
-When used within a if-express
+When used within an if-expression:
 
 ```yaml
 # pipeline.yml
