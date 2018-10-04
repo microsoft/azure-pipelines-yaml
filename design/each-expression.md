@@ -89,7 +89,7 @@ jobs:
 
 ### Iterative sequence insertion
 
-Customer scenarios are listed above.
+Scenarios are listed above.
 
 Technical syntax example:
 
@@ -105,7 +105,7 @@ mySequence:
 
 ## Iterative mapping insertion
 
-Actual customer scenarios?
+A real scenario is detailed above. See the shortened example, for the first scenario.
 
 Technical syntax example:
 
@@ -115,12 +115,10 @@ parameters:
   - key: myKey1
     value: my value 1
   - key: myKey2
-    value: my value 3
-  - key: myKey2
-    value: my value 3
+    value: my value 2
 myMapping:
   outer pre: abc
-  ${{ each myItem in parameters.myCollection }}:
+  ${{ each myItem in parameters.myCollection }}:    # Each key-value pair in the mapping
     pre_${{ myItem.key }}: pre ${{ myItem.value }}
     ${{ myItem.key }}: ${{ myItem.Value }}
   outer post: def
