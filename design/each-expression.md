@@ -31,6 +31,25 @@ jobs:
         condition: always()
 ```
 
+We can shorten the example above, by leveraging an `each` expression to iterate over the job mapping itself:
+
+```yaml
+parameters:
+  jobs: []
+
+jobs:
+- ${{ each job in parameters.jobs }}   # Each job
+  - ${{ each pair in job }}:           # Insert all properties other than "steps"
+      ${{ if ne(pair.key, 'steps') }}:
+        ${{ pair.key }}: ${{ pair.value }}
+    ${{ if job.steps }}:               # Wrap the steps
+      steps:
+      - task: SetupMyBuildTools@1      # Pre steps
+      - ${{ pair.value }}              # Users steps
+      - task: PublishMyTelemetry@1     # Post steps
+          condition: always()
+```
+
 ### Scenario: Wrap jobs
 
 For example, consider the following template:
@@ -104,6 +123,5 @@ myMapping:
   ${{ each myItem in parameters.myCollection }}:
     pre_${{ myItem.key }}: pre ${{ myItem.value }}
     ${{ myItem.key }}: ${{ myItem.Value }}
-    post_${{ myItem.key }}: post ${{ myItem.value }}
   outer post: def
 ```
