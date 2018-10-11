@@ -1,0 +1,86 @@
+# Docker image and Azure container registry
+# Build a Docker image and push to a container registry
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+resources:
+- repo: self
+
+variables:
+  Azure.ServiceConnectionId: '<Fill this with AzureRm service connection id>'
+  Azure.ResourceGroupName: '<Fill this with Azure resoure group name>' # if Azure.CreateResources=true then resource group will be automatically created
+  Azure.Location: '<Fill this with preferred Azure location>'
+  Azure.CreateResources: 'true' # set this to false if you want to skip resource group, acr, aks creation  
+  System.Debug: 'false'
+
+phases:
+
+- phase: Phase_1
+  displayName: Create resources
+  condition: and(succeeded(), eq(variables['Azure.CreateResources'], 'true'))
+
+  queue:
+    name: Hosted Ubuntu 1604
+
+  steps:
+  - powershell: |
+      $lowerCaseBuildDefinitionName  = "$(Build.DefinitionName)".ToLower()
+      Write-Host "##vso[task.setvariable variable=ACR.Name;]$lowerCaseBuildDefinitionName"
+    displayName: 'Generate variables'
+
+  - task: AzureCLI@1
+    displayName: 'Create resources if required'
+    inputs:
+      connectedServiceNameARM: '$(Azure.ServiceConnectionId)'
+      scriptLocation: inlineScript
+      inlineScript: |
+        #!/bin/bash
+        RGExists=$(az group exists --name $(Azure.ResourceGroupName))
+        echo "RG exists: $RGExists"
+        if [ $RGExists = false ]
+        then
+          CREATED_RG=$(az group create --name $(Azure.ResourceGroupName) --location $(Azure.Location))
+          echo "$CREATED_RG"
+        fi
+        CREATE_ACR=$(az acr check-name -n $(ACR.Name) --query nameAvailable)
+        echo "Create ACR: $CREATE_ACR"
+        if [ $CREATE_ACR = true ]
+        then
+          CREATED_ACR=$(az acr create -n $(ACR.Name) -g $(Azure.ResourceGroupName) --sku $(ACR.Sku))
+          echo "$CREATED_ACR"
+        fi
+
+- phase: Phase_2
+  displayName: Build
+  dependsOn: Phase_1
+  condition: or(succeeded(), ne(variables['Azure.CreateResources'], 'true'))
+
+  queue:
+    name: Hosted Ubuntu 1604
+
+  steps:
+  - powershell: |
+      $lowerCaseBuildDefinitionName  = "$(Build.DefinitionName)".ToLower()
+      $acrImageName = $lowerCaseBuildDefinitionName + ":$(Build.BuildId)"
+      Write-Host "##vso[task.setvariable variable=ACR.Name;]$lowerCaseBuildDefinitionName"
+      Write-Host "##vso[task.setvariable variable=ACR.FullName;]$lowerCaseBuildDefinitionName.azurecr.io"
+      Write-Host "##vso[task.setvariable variable=ACR.RepositoryName;]$lowerCaseBuildDefinitionName"
+      Write-Host "##vso[task.setvariable variable=ACR.ImageName;]$acrImageName"
+    displayName: 'Generate variables'
+
+  - task: Docker@0
+    displayName: 'Build an image'
+    inputs:
+      azureSubscriptionEndpoint: '$(Azure.ServiceConnectionId)'
+      containerregistrytype: 'Azure Container Registry'
+      azureContainerRegistry: '$(ACR.FullName)'
+      imageName: '$(ACR.ImageName)'
+      action: 'Build an image'
+      dockerFile": '**/Dockerfile'
+
+  - task: Docker@0
+    displayName: 'Push an image'
+    inputs:
+      azureSubscription: '$(Azure.ServiceConnectionId)'
+      azureContainerRegistry: '$(ACR.FullName)'
+      action: 'Push an image'
+      imageName: '$(ACR.ImageName)'
