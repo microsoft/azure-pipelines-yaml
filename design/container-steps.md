@@ -53,3 +53,10 @@ steps:
   workspace: /my/custom/workspace # override the default workspace mapping
   uid: 1001 # overrides the default user ID that we create
 ```
+
+We're adding a super abbreviated syntax, too -- if all you need is a container image name, you can say:
+
+```yaml
+- run: microsoft/dotnet:latest
+- run: facebook/yarn:latest
+```
