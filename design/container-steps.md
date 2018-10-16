@@ -23,6 +23,7 @@ There are too many runtime dependencies that it doesn't support.
 But, `docker run`ning into an arbitrary container doesn't require any of that infrastructure.
 So we'd have a great story for using teeny containers and not feel bad about having some extra requirements on full-job containers.
 - Need to support custom volume mappings, environment variables, and custom UIDs.
+- Need to support mapping in the Docker daemon so that `docker` CLI will work as expected.
 
 ## Challenges
 - This will be tricky to support on-premises.
@@ -54,9 +55,13 @@ steps:
   uid: 1001 # overrides the default user ID that we create
 ```
 
-We're adding a super abbreviated syntax, too -- if all you need is a container image name, you can say:
+If your container image is from DockerHub, you can skip the forward-declaration and use the image name directly.
 
 ```yaml
 - run: microsoft/dotnet:latest
+  env:
+    DOTNET_TELEMETRY_OPT_OUT: true  # add an environment variable
 - run: facebook/yarn:latest
 ```
+
+If you need a custom Docker registry, you have to go with forward-declarations in the `resources` section.
