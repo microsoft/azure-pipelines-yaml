@@ -22,8 +22,13 @@ Instead of writing to our custom task.json system and packaging dependencies int
 There are too many runtime dependencies that it doesn't support.
 But, `docker run`ning into an arbitrary container doesn't require any of that infrastructure.
 So we'd have a great story for using teeny containers and not feel bad about having some extra requirements on full-job containers.
-- Need to support custom volume mappings, environment variables, and custom UIDs.
+- Need to support custom workspace mapping, environment variables, and custom UIDs.
 - Need to support mapping in the Docker daemon so that `docker` CLI will work as expected.
+- Need to support the job running as a container when a container step is used.
+
+## Future
+- Arbitrary workspace mappings
+- De-privilege the container so it can't call out to the host Docker daemon
 
 ## Challenges
 - This will be tricky to support on-premises.
