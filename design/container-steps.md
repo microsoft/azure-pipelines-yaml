@@ -26,9 +26,10 @@ So we'd have a great story for using teeny containers and not feel bad about hav
 - Need to support mapping in the Docker daemon so that `docker` CLI will work as expected.
 - Need to support the job running as a container when a container step is used.
 
-## Future
+## Post-S143 (but soon!)
 - Arbitrary volume mappings
-- De-privilege the container so it can't call out to the host Docker daemon
+- Boolean to de-privilege the container so it can't call out to the host Docker daemon
+- Build and run from a Dockerfile in the repo
 
 ## Challenges
 - This will be tricky to support on-premises.
