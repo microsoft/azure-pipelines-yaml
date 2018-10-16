@@ -27,7 +27,7 @@ So we'd have a great story for using teeny containers and not feel bad about hav
 - Need to support the job running as a container when a container step is used.
 
 ## Future
-- Arbitrary workspace mappings
+- Arbitrary volume mappings
 - De-privilege the container so it can't call out to the host Docker daemon
 
 ## Challenges
