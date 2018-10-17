@@ -52,6 +52,14 @@ jobs:
 
 Downside: sometimes referenced as a string, sometimes a mapping
 
+Note, we could also support an alternative syntax, like:
+
+```yaml
+- build: --config release
+```
+
+However, that get's us into arg parsing (yet another layer of escaping problems). Also it's limited because objects can't be passed. So an alternative parameter-mapping-style would still need to be supported.
+
 ### Other first-class types
 
 Stages and jobs are two other natural fits for first-class reuse.
@@ -113,9 +121,34 @@ The above first-class reuse is great for the main scenarios. But what about ever
 
 Let's optimize for the main scenarios (steps, jobs, stages). And let's make the other things possible.
 
+The follow example solves two generic problems:
+- Arbitrary object templates
+- Reusable expression values
+
 ```yaml
 define:
 
+# Custom expression values
+- ${{ if eq(variables['System.TeamProject'], 'public') }}:
+  - expressionValue: public
+    result: true
+- ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
+  - expressionValue: publicOrPR
+    result: true
+
+# Init steps
+- steps: init
+  result:
+  - ${{ if not(values.public) }}:
+    - script: init-internal-tools.cmd
+
+# Cleanup steps
+- steps: cleanup
+  result:
+  - ${{ if not(values.publicOrPR) }}:
+    - script: publish-telemetry.cmd
+
+# Pool
 - templateValue: windows
   parameters:
     version: 10
@@ -123,20 +156,15 @@ define:
     name: myWindowsPool
     demands: windows${{ parameters.version }}
 
-- ${{ if eq(variables['System.TeamProject'], 'public') }}:
-  - expressionValue: isPublic
-    result: true
-- ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
-  - expressionValue: publicOrPR
-    result: true
-
 jobs:
 - job: win10
   pool:
     ${{ apply }}:
       name: windows
   steps:
+  - init
   - script: build
+  - cleanup
 
 - job: win8
   pool:
@@ -144,178 +172,7 @@ jobs:
       name: windows
       version: 8
   steps:
+  - init
   - script: build
+  - cleanup
 ```
-
-
-
-<!-- ## Appendix
-
-### Inline step templates (ordinal parameters)
-
-The problem with this approach, is that a totally different syntax is required when you need to pass complex objects.
-
-Multiple ways of doing the same thing is not worth this optimization.
-
-```yaml
-templates:
-
-- steps: build
-  parameters:
-  - solution: '*.sln'
-  - config: debug
-  result:
-  - script: restore ${{ parameters.solution }}
-  - script: compile ${{ parameters.solution }} config=${{ parameters.config }}
-
-- steps: test
-  parameters:
-  - solution: '*.sln'
-  result:
-  - script: test ${{ parameters.solution }}
-
-jobs:
-- job: linux
-  pool: my-linux-pool
-  steps:
-  - build: my-solution.sln
-  - test: my-solution.sln
-
-- job: windows_debug
-  pool: my-windows-pool
-  steps:
-  - build: my-solution.sln
-  - test: my-solution.sln
-
-- job: windows_release
-  pool: my-windows-pool
-  steps:
-  - build: my-solution.sln release
-  - test: my-solution.sln
-  - publish: 
-```
-
-
-### Thought playground:
-
-```yaml
-# namespace?
-
-
-import:
-- template: foo
-  file: my-other-template.yml
-
-
-
-
-templates:
-- steps: build
-  export: false
-  parameters:
-    name: john doe
-  result:
-  - script: echo hello ${{ parameters.name }}
-  - ${{ if eq(parameters.name, 'jane doe' }}:
-    - script: echo good luck!
-- jobs:
-- variables:
-- stages:
-
-- pool: windows
-  parameters:
-  - version: 10
-  - someComplex:
-      foo: abc
-      bar: def
-  result:
-    name: helix
-    os: windows
-    version: ${{ parameters.version }}
-
-
-
-
-
-
-
-
-
-jobs:
-- job: a
-  pool:
-    ${{ apply }}:
-      template: windows
-      parameters:
-        version: 8
-        someComplex:
-          #foo: def
-          bar: abc
-  steps:
-  - script: echo hi
-
-
-
-
-jobs:
-- job: a
-  pool: windows
-  steps:
-  - script: echo hi
-
-
-
-jobs:
-- job: a
-  pool: ${{ templates.windows(8) }}
-  steps:
-  - script: echo hi
-
-
-
-
-
-
-
-jobs:
-- job: a
-  steps:
-  - build: 'john doe'
-
-
-
-jobs:
-- job: myJob
-  pool:
-    ${{ if eq(item, 'foo') }}:
-      template: myPool
-      parameters:
-        foo:
-        - my item 1
-        - my item 2
-
-
-jobs:
-- job: myJob
-  pool: ${{ templates.myPool('foo') }}
-
-
-${{ templates.myPool(parameters.foo) }}
-
-
-
-${{ import }}: my-templates.yml
-${{ define }}:
-
-
-
-# jobs:
-# - job: a
-#   variables: &myVars
-#     foo: asdf
-#     bar: 1234
-# - job: b
-#   variables:
-#     <<: *myVars
-#     baz: 5678
-``` -->
