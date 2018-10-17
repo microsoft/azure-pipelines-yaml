@@ -6,10 +6,26 @@ resources:
 - repo: self
 
 variables:
-  Azure.ServiceConnectionId: '<Fill this with AzureRm service connection id>'
-  Azure.ResourceGroupName: '<Fill this with Azure resoure group name>' # if Azure.CreateResources=true then resource group will be automatically created
-  Azure.Location: '<Fill this with preferred Azure location>'
-  Azure.CreateResources: 'true' # set this to false if you want to skip resource group, acr, aks creation  
+  # Update Azure.CreateResources to false if you have already created resources.
+  Azure.CreateResources: 'true'
+
+  # Update Azure.ServiceConnectionId value if you want to use a different AzureRm service endpoint
+  Azure.ServiceConnectionId: '$(Definition.Azure.ServiceConnectionId)'
+
+  # Update Azure.ResourceGroupName value if you want to use a different resource group name. if Azure.CreateResources=true then resource group will be created automatically.
+  Azure.ResourceGroupName: '$(Definition.Azure.ResourceGroupName)'
+
+  # Update Azure.Location value if you want to use a different Azure location.
+  Azure.Location: '$(Definition.Azure.Location)'
+
+  # Update ACR values if you want to use a different names. Please note ACR names should be all lower-case and alphanumeric only.
+  # if Azure.CreateResources=true then ACR will be created automatically.
+  ACR.Name: '$(Definition.ACR.Name)'
+  ACR.RepositoryName: '$(Definition.ACR.Name)'
+  ACR.ImageName: '$(ACR.Name):$(Build.BuildId)'
+  ACR.FullName: '$(ACR.Name).azurecr.io'
+  ACR.Sku: '$(Definition.ACR.Sku)'
+
   System.Debug: 'false'
 
 phases:
@@ -22,11 +38,6 @@ phases:
     name: Hosted Ubuntu 1604
 
   steps:
-  - powershell: |
-      $lowerCaseBuildDefinitionName  = "$(Build.DefinitionName)".ToLower()
-      Write-Host "##vso[task.setvariable variable=ACR.Name;]$lowerCaseBuildDefinitionName"
-    displayName: 'Generate variables'
-
   - task: AzureCLI@1
     displayName: 'Create resources if required'
     inputs:
@@ -58,15 +69,6 @@ phases:
     name: Hosted Ubuntu 1604
 
   steps:
-  - powershell: |
-      $lowerCaseBuildDefinitionName  = "$(Build.DefinitionName)".ToLower()
-      $acrImageName = $lowerCaseBuildDefinitionName + ":$(Build.BuildId)"
-      Write-Host "##vso[task.setvariable variable=ACR.Name;]$lowerCaseBuildDefinitionName"
-      Write-Host "##vso[task.setvariable variable=ACR.FullName;]$lowerCaseBuildDefinitionName.azurecr.io"
-      Write-Host "##vso[task.setvariable variable=ACR.RepositoryName;]$lowerCaseBuildDefinitionName"
-      Write-Host "##vso[task.setvariable variable=ACR.ImageName;]$acrImageName"
-    displayName: 'Generate variables'
-
   - task: Docker@0
     displayName: 'Build an image'
     inputs:
