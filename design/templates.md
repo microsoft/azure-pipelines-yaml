@@ -4,7 +4,7 @@
 
 ### Problems solved
 
-- What does \"build\" mean to me?
+- What \"build\" means to me
 - Inline re-use (external file not required)
 
 ### Inline template syntax
@@ -50,7 +50,7 @@ jobs:
   - test
 ```
 
-Downside: sometimes referenced as a string, sometimes a mapping
+Downside: sometimes referenced as a string, sometimes a mapping.
 
 Note, we could also support an alternative syntax, like:
 
@@ -58,13 +58,7 @@ Note, we could also support an alternative syntax, like:
 - build: --config release
 ```
 
-However, that get's us into arg parsing (yet another layer of escaping problems). Also it's limited because objects can't be passed. So an alternative parameter-mapping-style would still need to be supported.
-
-### Other first-class types
-
-Stages and jobs are two other natural fits for first-class reuse.
-
-What about pools? variables? The same syntax does not apply nicely to pools and variables. Which is probably OK, since steps and jobs are the main reuse scenario (optimized for).
+However, that get's us into arg parsing - and yet another layer of escaping problems. Also it's limited because objects can't be passed. So an alternative parameter-mapping-style would still need to be supported - i.e. multiple ways of doing the same thing :(
 
 ### Reuse across files?
 
@@ -115,11 +109,15 @@ Additional things to figure out:
 - Support multiple levels of import? That is, import a template, which in-turn imports a template?
   - If so, what gets exported? Everything? Only local things? Is there an export keyword? The approach powershell takes is, everything is exported by default unless you explicitly specify an export.
 
+### Other first-class types
+
+`stages` and `jobs` are two other natural fits for first-class reuse. We should support those as well.
+
 ## Generic reuse
 
-The above first-class reuse is great for the main scenarios. But what about everything else? For example, pools.
+The above first-class syntax does not fit well for pools, variables, or any random element in the DOM.
 
-Let's optimize for the main scenarios (steps, jobs, stages). And let's make the other things possible.
+We want to optimize for the main scenarios (`steps`, `jobs`, `stages`), but make other scenarios possible.
 
 The follow example solves two generic problems:
 - Arbitrary object templates
