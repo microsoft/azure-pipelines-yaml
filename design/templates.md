@@ -111,7 +111,7 @@ Additional things to figure out:
 
 ### Other first-class types
 
-`stages` and `jobs` are two other natural fits for first-class reuse. We should support those as well.
+`stages` and `jobs` are two other natural fits for first-class reuse. We will support those as well.
 
 ## Generic reuse
 
