@@ -1,0 +1,22 @@
+# R
+
+pool:
+  vmImage: 'ubuntu-16.04'
+
+steps:
+- script: sudo apt-get update
+  displayName: 'Update packages'
+
+- script: sudo apt-get install r-base
+  displayName: 'Install R'
+
+- script: |
+    cd /usr/local/lib/R
+    sudo chmod o+w site-library
+  displayName: 'Change permissions for package installs'
+
+- script: Rscript -e 'install.packages("devtools", repos = "http://cran.us.r-project.org")'
+  displayName: 'Install devtools'
+
+- script: Rscript -e 'print("hi")'
+  displayName: 'Run R expression'
