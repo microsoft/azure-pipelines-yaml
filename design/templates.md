@@ -2,22 +2,17 @@
 
 ## First class reuse
 
-### Problems
+### Problems solved
 
-- What does 'build' mean to me?
+- What does \"build\" mean to me?
 - Inline re-use (external file not required)
 
 ### Inline template syntax
 
-Downsides to this approach
-- Sometimes a string, sometimes a mapping
-- Does not leave anywhere to solve grouping problems
-  - Dependencies grouping
-  - A grouping of steps that run in a container?
-
 ```yaml
-templates:
+define:
 
+# Define "build"
 - steps: build
   parameters:
     config: debug
@@ -25,9 +20,8 @@ templates:
   - script: restore my-solution.sln
   - script: compile my-solution.sln config=${{ parameters.config }}
 
+# Define "test"
 - steps: test
-  parameters:
-    solution: '*.sln'
   result:
   - script: test my-solution.sln
 
@@ -56,13 +50,106 @@ jobs:
   - test
 ```
 
+Downside: sometimes referenced as a string, sometimes a mapping
 
+### Other first-class types
+
+Stages and jobs are two other natural fits for first-class reuse.
+
+What about pools? variables? The same syntax does not apply nicely to pools and variables. Which is probably OK, since steps and jobs are the main reuse scenario (optimized for).
+
+### Reuse across files?
+
+Something like this:
+
+```yaml
+#
+# azure-pipelines.yml
+#
+
+# Import templates
+import:
+- my-templates.yml
+
+# Build and test
+steps:
+- build:
+    parameters: my-solution.sln
+- test:
+    parameters: my-solution.sln
+
+
+
+#
+# my-templates.yml
+#
+
+define:
+
+# Define "build"
+- steps: build
+  parameters:
+    solution: "*.sln"
+    config: debug
+  result:
+  - script: restore ${{ parameters.solution }}
+  - script: compile ${{ parameters.solution }} config=${{ parameters.config }}
+
+# Define "test"
+- steps: test
+  parameters:
+    solution: '*.sln'
+  result:
+  - script: test ${{ parameters.solution }}
+```
+
+Additional things to figure out:
+- Support multiple levels of import? That is, import a template, which in-turn imports a template?
+  - If so, what gets exported? Everything? Only local things? Is there an export keyword? The approach powershell takes is, everything is exported by default unless you explicitly specify an export.
 
 ## Generic reuse
 
+The above first-class reuse is great for the main scenarios. But what about everything else? For example, pools.
+
+Let's optimize for the main scenarios (steps, jobs, stages). And let's make the other things possible.
+
+```yaml
+define:
+
+- templateValue: windows
+  parameters:
+    version: 10
+  result:
+    name: myWindowsPool
+    demands: windows${{ parameters.version }}
+
+- ${{ if eq(variables['System.TeamProject'], 'public') }}:
+  - expressionValue: isPublic
+    result: true
+- ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
+  - expressionValue: publicOrPR
+    result: true
+
+jobs:
+- job: win10
+  pool:
+    ${{ apply }}:
+      name: windows
+  steps:
+  - script: build
+
+- job: win8
+  pool:
+    ${{ apply }}:
+      name: windows
+      version: 8
+  steps:
+  - script: build
+```
 
 
-## Appendix
+
+<!-- ## Appendix
 
 ### Inline step templates (ordinal parameters)
 
@@ -231,4 +318,4 @@ ${{ define }}:
 #   variables:
 #     <<: *myVars
 #     baz: 5678
-```
+``` -->
