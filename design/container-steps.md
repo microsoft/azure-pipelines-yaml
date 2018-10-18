@@ -29,7 +29,10 @@ So we'd have a great story for using teeny containers and not feel bad about hav
 ## Post-S143 (but soon!)
 - Arbitrary volume mappings
 - Boolean to de-privilege the container so it can't call out to the host Docker daemon
-- Build and run from a Dockerfile in the repo
+- Build and run from a Dockerfile in the repo.
+Consider these scenarios:
+  - I have have a tool that I want to define as part of a container but don't want to push it to a registry.
+  - My deployment tooling is packaged as a container and whenever I run that tooling I want the version of that tooling from the branch.
 
 ## Challenges
 - This will be tricky to support on-premises.
