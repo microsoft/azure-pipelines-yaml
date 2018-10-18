@@ -26,7 +26,7 @@ schedules:
 These definitions say:
 - For `master` and all `releases/*` branches except those under `releases/ancient/*`, run a pipeline at midnight every day.
 - For all `releases/*` branches, run a pipeline at noon on Sundays.
-  - Only run against branches which have changed (the `always` keyword).
+  - Run a build even if the branch hasn't changed (the `always` keyword).
   - Only run one instance of the pipeline per branch (the `batch` keyword). If a branch already has an active run, queue the pipeline instead of running it immediately.
 
 ## Supported cron syntax
