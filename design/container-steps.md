@@ -17,7 +17,13 @@ An example straight from a customer:
 Containers steps can be seen as an alternative to tasks.
 Instead of writing to our custom task.json system and packaging dependencies into a VSIX, you write to Docker's system and package dependencies in an image.
 
-## Considerations
+## Solving the file permissions problem
+When containers write files to volumes, they're written with the UID of the container user.
+This means you either have to be root or running as that UID on the host to access the files.
+This will break things like uploading artifacts unless we run that in a container as root.
+We'll need agent work to move those operations out to a plugin, which we can then run in a container as root.
+
+## Other considerations
 - We don't (and can't easily) support Alpine Linux containers at the job level.
 There are too many runtime dependencies that it doesn't support.
 But, `docker run`ning into an arbitrary container doesn't require any of that infrastructure.
@@ -39,9 +45,6 @@ Consider these scenarios:
 - This will be tricky to support on-premises.
 Containers in general rely on access to a Docker registry, and those tend to be cloud-hosted.
 Many Azure DevOps Server instances won't have internet connectivity.
-- When containers write files to volumes, they're written with the UID of the container user.
-This means you either have to be root or running as that UID on the host to access the files.
-This will break things like uploading artifacts unless we run that in a container as root.
 
 ## YAML syntax
 
