@@ -30,6 +30,7 @@ So we'd have a great story for using teeny containers and not feel bad about hav
 - Arbitrary volume mappings
 - Boolean to de-privilege the container so it can't call out to the host Docker daemon
 - Build and run from a Dockerfile in the repo.
+The .NET CLI team would use this; talk to @livarcocc as needed.
 Consider these scenarios:
   - I have have a tool that I want to define as part of a container but don't want to push it to a registry.
   - My deployment tooling is packaged as a container and whenever I run that tooling I want the version of that tooling from the branch.
