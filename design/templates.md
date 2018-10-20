@@ -58,11 +58,13 @@ Note, we could also support an alternative syntax, like:
 - build: --config release
 ```
 
-However, that get's us into arg parsing - and yet another layer of escaping problems. Also it's limited because objects can't be passed. So an alternative parameter-mapping-style would still need to be supported - i.e. multiple ways of doing the same thing :(
+However, there are two problems with that approach:
+- It get's us into arg parsing - yet another layer of escaping problems
+- It's limited because objects can't be passed. So an alternative parameter-mapping-style would still need to be supported - i.e. multiple ways of doing the same thing
 
-### Reuse across files?
+### Reuse across files
 
-Something like this:
+Explicit import:
 
 ```yaml
 #
@@ -113,41 +115,87 @@ Additional things to figure out:
 
 `stages` and `jobs` are two other natural fits for first-class reuse. We will support those as well.
 
-## Generic reuse
+## Generic re-use
 
 The above first-class syntax does not fit well for pools, variables, or any random element in the DOM.
 
-We want to optimize for the main scenarios (`steps`, `jobs`, `stages`), but make other scenarios possible.
+Although we want to optimize for the main scenarios (`steps`, `jobs`, `stages`), we should make other scenarios possible.
+
+### Re-usable values
 
 The follow example solves two generic problems:
-- Arbitrary object templates
+- Arbitrary object re-use
 - Reusable expression values
 
 ```yaml
 define:
 
-# Custom expression values
+# Custom values
 - ${{ if eq(variables['System.TeamProject'], 'public') }}:
-  - expressionValue: public
+  - value: public
     result: true
 - ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
-  - expressionValue: publicOrPR
+  - value: publicOrPR
     result: true
+- value: win10
+  result:
+    name: myWindowsPool
+    demands: windows10
+- value: win8
+  result:
+    name: myWindowsPool
+    demands: windows8
 
 # Init steps
 - steps: init
   result:
-  - ${{ if not(values.public) }}:
+  - ${{ if not(values.public) }}:     # References a custom value from above, within an if-expression
     - script: init-internal-tools.cmd
 
 # Cleanup steps
 - steps: cleanup
   result:
-  - ${{ if not(values.publicOrPR) }}:
+  - ${{ if not(values.publicOrPR) }}: # References a custom value from above, within an if-expression
     - script: publish-telemetry.cmd
 
+jobs:
+- job: a
+  pool: ${{ values.win10 }}           # Inserts the custom object
+  steps:
+  - init
+  - script: build
+  - cleanup
+
+- job: b
+  pool: ${{ values.win8 }}            # Inserts the custom object
+  steps:
+  - init
+  - script: build
+  - cleanup
+```
+
+### Partial templates
+
+Partial templates allow arbitrary object templates, that accept parameters.
+
+We may not need to do this. Steps, jobs, stages are the more common scenarios for parameters.
+
+```yaml
+define:
+
+# Custom expression values
+# Init steps
+- steps: init
+  result:
+  - script: init-internal-tools.cmd
+
+# Cleanup steps
+- steps: cleanup
+  result:
+  - script: publish-telemetry.cmd
+
 # Pool
-- templateValue: windows
+- partial: windows
   parameters:
     version: 10
   result:
@@ -156,9 +204,7 @@ define:
 
 jobs:
 - job: win10
-  pool:
-    ${{ apply }}:
-      name: windows
+  pool: ${{ apply-partial 'windows' }}
   steps:
   - init
   - script: build
@@ -166,8 +212,7 @@ jobs:
 
 - job: win8
   pool:
-    ${{ apply }}:
-      name: windows
+    ${{ apply-partial 'windows' }}:
       version: 8
   steps:
   - init
