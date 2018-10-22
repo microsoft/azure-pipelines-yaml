@@ -35,6 +35,7 @@ variables:
   ACR.Sku: 'Standard'
   AKS.KubeDeploymentYaml: '$(System.DefaultWorkingDirectory)/KubeDeployment.yml' # Update AKS.KubeDeploymentYaml if you want to use deployment file from repo instead of generated file.
   AKS.DepoymentPort: '5000'
+  Docker.File: '**/Dockerfile'
   Azure.CreateResources: 'true' # Update Azure.CreateResources to false if you have already created resources like resource group, azure container registry and azure kubernetes cluster.
   System.Debug: 'false'
 
@@ -86,7 +87,7 @@ phases:
       azureContainerRegistry: '$(ACR.FullName)'
       imageName: '$(ACR.ImageName)'
       command: build
-      dockerFile": '**/Dockerfile'
+      dockerFile: '$(Docker.File)'
 
   - task: Docker@1
     displayName: 'Push an image'
