@@ -5,8 +5,8 @@
 - Container steps should be an abstraction of what the actual technology is used
   - We're going to start with Docker containers
   - But, leave the design generic to allow implementing other technologies in the future (Kubernetes, Kata containers, etc.)
-  - One command, and one container per step
-- Don't re-use containers between step
+- One command, and one container per step
+- Don't re-use containers between steps
   - Container creation is fast, so use that fact in our favor
   - Simpler mental model; user avoids needing to worry about cleaning up resources between steps
 - Sane defaults, but let the user override those defaults to enable more advanced scenarios
@@ -73,4 +73,4 @@ Tentative suggestion: We can start out by not supporting \#\#[vso… variables, 
 
 ## Resources
 
-Docker run: https://docs.docker.com/engine/reference/commandline/run
+`Docker run`: https://docs.docker.com/engine/reference/commandline/run
