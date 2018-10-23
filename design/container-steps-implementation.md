@@ -11,6 +11,16 @@
   - Simpler mental model; user avoids needing to worry about cleaning up resources between steps
 - Sane defaults, but let the user override those defaults to enable more advanced scenarios
 
+## Inputs
+
+|Name|Type|Required|Description|
+|---|---|---|---|
+|image|string|true|The name of the image to run the command (e.g. ubuntu or microsoft/dotnet-samples:latest)|
+|command|string|true|The command to run inside the container (e.g. build or echo Hello World)|
+|environmentVariables|multiline|false|A list of key-value pairs in this format: key=value. Each env var goes in its own line.|
+|uid|int|false|The UID used to run the command as (unset: default UID)|
+|workspace|string|false|The agent workspace path to map (unset: map to the same location as the host)|
+
 ## Agent plugin, or TS task?
 
 - We can implement the container steps feature in two ways:
@@ -18,6 +28,16 @@
   - As a task, in TypeScript
 
 Both have their advantages and disadvantages. The current prototype is currently being written as an agent plugin, but can later be written as a task if we think it would be better over the long term.
+
+## Agent plugin architecture
+
+- Module: Agent.Plugins
+- Namespace: Agent.Plugins.RunInContainer
+
+|Class Name|Description|
+|---|---|
+|`RunInContainerPlugin`|Agent plugin which calls the appropriate CLI manager to run a command in a container (for now, Docker)|
+|`DockerCliManager`|Helper class, which encapsulates the logic to build the command line to run `docker run` with the right image, environment variables, etc.|
 
 ## Environment variables
 
