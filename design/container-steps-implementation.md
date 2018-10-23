@@ -3,12 +3,13 @@
 ## Overview and Requirements
 
 - Container steps should be an abstraction of what the actual technology is used
-  - We're going to start with Docker containers
-  - But, leave the design generic to allow implementing other technologies in the future (Kubernetes, Kata containers, etc.)
+  - We're going to start with Docker containers running on the host
+  - When we enable a Kubernetes pool provider, this would have to work
 - One command, and one container per step
 - Don't re-use containers between steps
   - Container creation is fast, so use that fact in our favor
   - Simpler mental model; user avoids needing to worry about cleaning up resources between steps
+- Begin support on Linux. As we continue our internal testing, we'll investigate and test support for Windows Containers
 - Sane defaults, but let the user override those defaults to enable more advanced scenarios
 
 ## Inputs
@@ -16,10 +17,11 @@
 |Name|Type|Required|Description|
 |---|---|---|---|
 |image|string|true|The name of the image to run the command (e.g. ubuntu or microsoft/dotnet-samples:latest)|
-|command|string|true|The command to run inside the container (e.g. build or echo Hello World)|
-|environmentVariables|multiline|false|A list of key-value pairs in this format: key=value. Each env var goes in its own line.|
+|cmd|string[]|false|The command that is passed to the entry point (e.g. build or echo Hello World)|
+|entrypoint|string|false|The entry point|
+|env|string[]|false|A list of key-value pairs in this format: key=value. Each env var goes in its own line.|
 |uid|int|false|The UID used to run the command as (unset: default UID)|
-|workspace|string|false|The agent workspace path to map (unset: map to the same location as the host)|
+|workspace|string|false|The agent workspace path to map (unset: map to a known, consistent location)|
 
 ## Agent plugin, or TS task?
 
