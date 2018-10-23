@@ -30,6 +30,7 @@ variables:
   ACR.ImageName: '$(ACR.Name):$(Build.BuildId)'
   ACR.FullName: '$(ACR.Name).azurecr.io'
   ACR.Sku: 'Standard'
+  Docker.File: '**/Dockerfile'
   Azure.CreateResources: 'true' # Update Azure.CreateResources to false if you have already created resources like resource group and azure container registry.
   System.Debug: 'false'
 
@@ -81,7 +82,7 @@ phases:
       azureContainerRegistry: '$(ACR.FullName)'
       imageName: '$(ACR.ImageName)'
       command: build
-      dockerFile": '**/Dockerfile'
+      dockerFile: '$(Docker.File)'
 
   - task: Docker@1
     displayName: 'Push an image'
