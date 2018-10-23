@@ -42,8 +42,8 @@ Both have their advantages and disadvantages. The current prototype is currently
 ## Environment variables
 
 `Docker run` supports passing in environment variables in two ways:
-- Using a set of -e flags (e.g. -e foo=bar -e foo2=bar2)
-- Saving a list of env vars in a file, and reference it with the --env-file flag (--env-file env.list)
+- Using a set of -e flags (e.g. `-e foo=bar -e foo2=bar2`)
+- Saving a list of env vars in a file, and reference it with the --env-file flag (e.g. `--env-file env.list`)
 
 Using the --env-file would be the preferred option as it avoids two problems:
 - Having the risk of exposing secrets in log files
