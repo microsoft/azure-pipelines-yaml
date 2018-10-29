@@ -10,17 +10,17 @@ variables:
   #                          Mandatory variables 
   # ========================================================================
 
-  # Update Azure.ResourceGroupName value with Azure resource group name.
-  Azure.ResourceGroupName: '__TOKEN_AZURE_RESOURCEGROUP_NAME__'
+ # Update Azure.ResourceGroupName value with Azure resource group name.
+  Azure.ResourceGroupName: '{{#toAlphaNumericString repositoryName 50}}{{/toAlphaNumericString}}'
 
   # Update Azure.ServiceConnectionId value with AzureRm service endpoint.
-  Azure.ServiceConnectionId: '__TOKEN_AZURE_SERVICECONNECTION_ID__'
+  Azure.ServiceConnectionId: '{{ serviceEndpointId }}'
 
   # Update Azure.Location value with Azure Location.
-  Azure.Location: '__TOKEN_AZURE_LOCATION__'
+  Azure.Location: 'eastus'
 
   # Update ACR.Name value with ACR name. Please note ACR names should be all lower-case and alphanumeric only.
-  ACR.Name: '__TOKEN_AZURE_CONTAINER_REGISTRY_NAME__'
+  ACR.Name: '{{#toAlphaNumericString repositoryName 46}}{{/toAlphaNumericString}}{{#shortGuid}}{{/shortGuid}}'
 
   # ========================================================================
   #                           Optional variables 
@@ -30,17 +30,16 @@ variables:
   ACR.ImageName: '$(ACR.Name):$(Build.BuildId)'
   ACR.FullName: '$(ACR.Name).azurecr.io'
   ACR.Sku: 'Standard'
-  Docker.File: '**/Dockerfile'
   Azure.CreateResources: 'true' # Update Azure.CreateResources to false if you have already created resources like resource group and azure container registry.
   System.Debug: 'false'
 
-phases:
+jobs:
 
-- phase: CreateResources
+- job: CreateResources
   displayName: Create resources
   condition: and(succeeded(), eq(variables['Azure.CreateResources'], 'true'))
 
-  queue:
+  pool:
     name: Hosted Ubuntu 1604
 
   steps:
@@ -66,12 +65,12 @@ phases:
           echo "$CREATED_ACR"
         fi
 
-- phase: BuildImage
+- job: BuildImage
   displayName: Build
   dependsOn: CreateResources
   condition: or(succeeded(), ne(variables['Azure.CreateResources'], 'true'))
 
-  queue:
+  pool:
     name: Hosted Ubuntu 1604
 
   steps:
@@ -82,7 +81,7 @@ phases:
       azureContainerRegistry: '$(ACR.FullName)'
       imageName: '$(ACR.ImageName)'
       command: build
-      dockerFile: '$(Docker.File)'
+      dockerFile: '**/Dockerfile'
 
   - task: Docker@1
     displayName: 'Push an image'
