@@ -1,4 +1,4 @@
 {
   "iconName": "docker",
-  "requires": [ "azuresubscription", "azurecontainerregistry", "azurekubernetescluster" ]
+  "requires": [ "azuresubscription"]
 }
