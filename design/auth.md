@@ -41,6 +41,14 @@ resources:
 
 ```
 
+## Scoping auth
+
+TODO Need to think more here - how would I go about scoping the auth to a single command, rather than the whole pipeline? Can I `unuse` something?
+
+## Tokens in files vs. tokens in env. variables
+
+TODO Need to think more here.
+
 ## Examples of `use` and `feeds`
 
 For example, to make packages from an Azure Artifacts feed available to `dotnet` and `npm`:
