@@ -66,3 +66,10 @@ Newly created pipelines will default to having compat mode off.
 
 For YAML, it's a `version: 2` keyword at the root level of the file.
 YAML v2 may also introduce other breaking changes; those need to be documented elsewhere.
+
+## Variable scope
+
+We'll ensure everything under System.\* is available at orchestration time, including for pipeline run numbers.
+Variables under Pipelines.\* will also be available at orchestration time including run numbers.
+*TODO: Ensure this is possible.*
+Agent.\* variables are never available at orchestration time.
