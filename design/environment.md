@@ -12,7 +12,7 @@ Environment represents the resources targeted by pipelines, for example, Kuberne
 
 Environment is composed of **groups of resources**. For example, a **production** environment composed with a farm of **web** servers, **database** clusters, and other services. 
 
-![environment](./images/environment.png)
+![environment](images/environment.png)
 
 Figure: **a**
 
