@@ -10,11 +10,7 @@ Environment represents the resources targeted by pipelines, for example, Kuberne
 
 ## Defining environments
 
-Environment is composed of **groups of resources**. For example, a **production** environment composed with a farm of **web** servers, **database** clusters, and other services. 
-
-By defining the environment in Azure DevOps, you describe where the code gets deployed. Deployments are created when the pipeline job deploys a new version of the code to the environment. 
-
-Environment at its simplest form is just a string. The pipeline can discover and register the environment. Each time a job is run with above data, the deployment will be recorded against the environment.
+Environment at its simplest form is just a string. The pipeline can discover and register the environment. By defining the environment in Azure DevOps, you describe where the code gets deployed. Deployments are created when the pipeline job deploys a new version of the code to the environment.
 
 For example,
 
@@ -27,25 +23,27 @@ environment:
 With the above, deployment history from multiple pipelines are enabled. 
 
 
-## Environment with multiple resources
+## Group multiple resources into a namespace
+
+Environment is composed of **groups of resources** aka **namespaces**. For example, a **production** environment composed with a farm of **web** servers, **database** clusters will form two namespaces. 
+
+**namespace**: groups the resources that are homogeneous. You can apply deployment strategy on the resource within a namespace. 
 
 ![environment](images/environment.png)
 
 Figure: **a**
 
-In the above illustration, we have 3 **namespaces** in the environment that map to -
+In the above illustration, we have 3 **namespaces** in the environment that maps to -
 - A resource group with one or more App Services, 
 - A resource group with one or more Databases, and 
 - A Kubernetes *namespace* in a cluster with one or more containerized apps (workloads) 
 
 **Note**: 
-- **namespace**: represents **group of resources** that are homogeneous. You can apply deployment strategy on the resource within a namespace. 
 - **terminology**: Other options for **namespace** were **resources**, **serviceGroup** among others, open to feedback. 
-- **resource discovery**: Current YAML scope is limited to creating an environment and tracking the deployments. Future, we can annotate system tasks to publish the resources (provisioned/targeted) to the environment.
 
 ### Deployment job & Environment
 
-We will be introducing a new a `job` type called `deployment`, that can create and record deployments against the `environment`. In other words, a `deployment` job is a collection of steps to be run against the `environment`.
+We will be introducing a new a `job` type called `deployment`, that can understand environments, apply deployment strategies and record deployments against the `environment`. In other words, a `deployment` job is a collection of steps to be run against the `environment`. 
 
 ```yaml
 - deployment: deployWeb
@@ -58,11 +56,13 @@ We will be introducing a new a `job` type called `deployment`, that can create a
   - script: echo deploy web pkg
 ```
 
-**Note**: Existing `job` supports `matrix` and `parallel` strategies, adding `environment` support to it would add additional exclusive strategies viz. `canary`, `blueGreen`, and `rolling` to the mix. 
+**Note**:
+- Existing `job` supports `matrix` and `parallel` strategies, adding `environment` support to it would add additional **mutually exclusive strategies** viz. `canary`, `blueGreen`, and `rolling` to the mix. Including it in existing `job` type would complicate the user experience. 
+- Deployment job targeting the environment can run on agent or on server.
 
 ### Resources in an environment
 
-Target and record deployments against each group of resource in an environment. For example, an environment having web, database, and backend services. 
+Target and record deployments against each group of resource aka namespace in an environment. For example, an environment having web, database, and backend-service namespaces. 
 
 For example 
 
@@ -113,7 +113,7 @@ jobs:
 
 ### Environment with a single resource
 
-In the context of a `deployment` job, when the associated `environment` has a single WebApp, Providing just the task and app name should suffice. Information about the namespace, service connection are optional. 
+In the context of a `deployment` job, when the associated `environment` has a single namespace, Providing just the task and app name should suffice. Information about the namespace, service connection are optional. 
 
 For example as below
 
@@ -149,11 +149,11 @@ jobs:
 ```
 
 ## Future (discussion only)
-`canary`, `blue-green`, and `rolling` strategies supported by `deployment` job. 
+`canary`, `blue-green`, and `rolling` strategies to be supported by `deployment` job. 
 
 **Blue-Green**: Reduce deployment downtime by having identical standby environment. At any time one of them, let's say `blue` for the example, is live. As you prepare a new release of your software you do your final stage of testing in the green environment. Once the software is working in the green environment, you switch the traffic so that all incoming requests go to the green environment - the blue one is now idle.
 
-For example, 
+Blue-Green example, 
 
 ```yaml
 jobs:
@@ -208,4 +208,27 @@ jobs:
 
 ```
 
-**Note**: (**WIP**)Another option is to have typed blueGreen step. For example, typed K8S-blue-green deploy step that works with manifest yaml file. 
+**Strategy (alternate option: wip)**: 
+
+Have a typed blueGreen step. For example, typed K8S-blue-green deploy step that works with the manifest yaml file. 
+
+```yaml
+- deployment: deployWebPkg
+  pool:
+    image: 'Ubuntu 16.04'
+  environment:
+    name:  musicCarnivalQA
+    resource: smarthotel-web
+  steps:
+   - task: K8SManifestDeploy                       
+      serviceName: 'hotels'
+      imageName: $(build.repository.name):$(build.buildid)
+      manifest: /manifest/*.yaml 
+  strategy:                                                           # blue green/rolling/canary
+    blueGreenDeploy:
+    - healthTimeOut: 60m
+
+```
+
+**Note**
+- **resource discovery**: Current YAML scope is limited to creating an environment and tracking the deployments. Future, we can annotate system tasks to publish the resources (provisioned/targeted) to the environment.
