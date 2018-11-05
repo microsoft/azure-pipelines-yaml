@@ -8,19 +8,40 @@ Environment represents the resources targeted by pipelines, for example, Kuberne
 - Improved visibility of resource health/availability
 - Support zero downtime deployments using deployment strategies – upgrade confidently!
 
-## Defining environments;
+## Defining environments
 
 Environment is composed of **groups of resources**. For example, a **production** environment composed with a farm of **web** servers, **database** clusters, and other services. 
+
+By defining the environment in Azure DevOps, you describe where the code gets deployed. Deployments are created when the pipeline job deploys a new version of the code to the environment. 
+
+Environment at its simplest form is just a string. The pipeline can discover and register the environment. Each time a job is run with above data, the deployment will be recorded against the environment.
+
+For example,
+
+```yaml
+pool:
+  vmImage: 'Ubuntu 16.04'
+environment: 
+  name: smarthotel-prod               # creates an environment 'smarhotel-prod' and records deployments against it.
+```
+With the above, deployment history from multiple pipelines are enabled. 
+
+
+## Environment with multiple resources
 
 ![environment](images/environment.png)
 
 Figure: **a**
 
-By defining the environment in Azure DevOps, you describe where the code gets deployed. Deployments are created when the pipeline job deploys a new version of the code to the environment. 
+In the above illustration, we have 3 **namespaces** in the environment that map to -
+- A resource group with one or more App Services, 
+- A resource group with one or more Databases, and 
+- A Kubernetes *namespace* in a cluster with one or more containerized apps (workloads) 
 
-Environment at its simplest form is just a string. The pipeline can discover and register the environment. Each time a job is run with above data, the deployment will be recorded against the environment. 
-
-**Note**: Current YAML scope is limited to creating environment and tracking the deployments. Future, we can annotate system tasks to publish the resources (provisioned/targeted) to the environment
+**Note**: 
+- **namespace**: represents **group of resources** that are homogeneous. You can apply deployment strategy on the resource within a namespace. 
+- **terminology**: Other options for **namespace** were **resources**, **serviceGroup** among others, open to feedback. 
+- **resource discovery**: Current YAML scope is limited to creating an environment and tracking the deployments. Future, we can annotate system tasks to publish the resources (provisioned/targeted) to the environment.
 
 ### Deployment job & Environment
 
@@ -49,8 +70,8 @@ For example
 jobs:
 - deployment:
   environment: 
-    name: SmartHotel-Prod
-    resources:  publicwebsite          #alias for the group, another option is to name this as 'serviceGroup'
+    name: smarthotel-prod
+    namespace:  smarthotel-web          #alias for the group, another option is to name this as 'serviceGroup'
   pool:
     name: sh-prod-pool
   steps:
@@ -58,15 +79,15 @@ jobs:
       appName: 'smarthotel'
 ```
 
-### Full example with multiple resource types
+### Full example with multiple namespaces
 
 
 ```yaml
 jobs:
 - deployment: deployWeb
   environment: 
-    name: SmartHotel-Prod
-    resources:  publicwebsite          #alias for the group, another option is to name this as 'serviceGroup'
+    name: SmartHotel-prod
+    namespace:  smarthotel-web        #alias for the group, another option is to name this as 'serviceGroup'
   pool:
     name: sh-prod-pool
   steps:
@@ -74,16 +95,16 @@ jobs:
       appName: 'smarthotel'
 - deployment: deployBackend
   environment: 
-    name: SmartHotel-Prod
-    resources:  bookingsapi          
+    name: smarthotel-prod
+    namespace:  prodservice          
   pool:
     name: sh-prod-pool
   steps:
   - script: docker run...
 - deployment: deployDB
   environment: 
-    name: SmartHotel-Prod
-    resources:  bookingsdb          
+    name: smarthotel-prod
+    namespace:  smarthotel-database          
   pool:
     name: sh-prod-pool
   steps:
@@ -92,7 +113,7 @@ jobs:
 
 ### Environment with a single resource
 
-In the context of a `deployment` job, when the associated `environment` has a single WebApp, Providing just the task and app name should suffice. Information about the group, service connection should flow through, and package should be defaulted. 
+In the context of a `deployment` job, when the associated `environment` has a single WebApp, Providing just the task and app name should suffice. Information about the namespace, service connection are optional. 
 
 For example as below
 
@@ -115,15 +136,16 @@ jobs:
 - deployment:
   environment: 
     name: smarthotel-prod
+    namespace: smarthotel-web
   pool:
     name: sh-prod-pool
   steps:
   - task: AzureWebApp  
     displayName: 'Azure WebApp: smarthotel'
     inputs:
-      azureSubscription: $(environment.resources.connection)  
-      appName: '$(environment.resources)\smarthotel'
-      #package: '$(build.artifactstagingdirectory)/**/*.zip'  #can work with *.war, *.jar or a folder
+      azureSubscription: $(environment.namespace.connection)  
+      appName: 'smarthotel'                                      
+      #package: '$(build.artifactstagingdirectory)/**/*.zip'       # can work with *.war, *.jar or a folder
 ```
 
 ## Future (discussion only)
@@ -149,6 +171,7 @@ jobs:
     image: 'Ubuntu 16.04'
   environment:
     name:  musicCarnivalQA
+    resource: smarthotel-web
   steps:
    - task: AzureWebApp                       
       appName: 'smarthotel'
@@ -185,4 +208,4 @@ jobs:
 
 ```
 
-**Note**: Another option is to have typed blueGreen step. For example, typed K8S-blue-green deploy step that works with manifest yaml file. 
+**Note**: (**WIP**)Another option is to have typed blueGreen step. For example, typed K8S-blue-green deploy step that works with manifest yaml file. 
