@@ -48,22 +48,25 @@ This syntax will be powered by tasks, giving a familiar extensibility point for 
 
 YAML will get a new syntax for `use`-ing a tool or ecosystem.
 ```yaml
-- use: {toolName} {versionSpec}
+- use: {toolName}
 ```
+
+`{toolName}` may contain characters in [A-Za-z0-9], plus `-` and `_`.
 
 This can be implemented as sugar over the existing syntax, much like the `powershell` and `bash` keywords today.
 
-`{versionSpec}` is optional, and not needed in some cases (see below).
-It can also be passed as an explicit parameter, like this:
+To select a particular version, pass a `{versionSpec}` to `version`.
 ```yaml
 - use: {toolName}
   version: {versionSpec}
 ```
 
+`{versionSpec}` is a SemVer or SemVer-like string; see below.
+
 By default, `use` will set up the target ecosystem to use the agent's proxy.
 If this behavior isn't desired, it can be overridden with:
 ```yaml
-- use: someTool someVersion
+- use: someTool
   proxy: false
 ```
 
@@ -76,22 +79,30 @@ resources:
 
 steps:
 - use: someTool someVersion
-  auth: myFeed
+  authTo: myFeed
 ```
 
-`feed` is not yet a resource type, but it's coming.
+(`feed` is not yet a resource type, but it's coming.)
 
-No additional keywords are reserved.
-Any additional keywords are passed through as `inputs` to the underlying task.
+Tasks which implement this contract can expect a service connection at runtime.
+It's up to the resource provider to convert other forms of auth (such as a raw username + password) into a service connection.
+
+Some ecosystems will require optional, additional inputs.
+Just like on `task`, you can pass a map of `inputs`.
+```yaml
+- use: python
+  inputs:
+    architecture: x64
+```
 
 ## Schema
 
 ```yaml
-- use: string       # required tool name and optional version
-  version: string   # optional version (specifying version twice is an error)
-  proxy: boolean    # whether to install proxy information; defaults to true
-  auth: string      # optional name of a resource to derive auth information from
-  {string: any}     # additional arguments to pass as task inputs
+- use: string            # required tool name
+  version: string        # optional version
+  proxy: boolean         # whether to install proxy information; defaults to true
+  authTo: string         # optional name of a resource to derive auth information from
+  inputs: {string: any}  # optional additional arguments to pass as task inputs
 ```
 
 ## Example
@@ -113,8 +124,10 @@ strategy:
       node_version: '10'
 
 steps:
-- use: python $(py_version)
-- use: node $(node_version)
+- use: python
+  version: $(py_version)
+- use: node
+  version: $(node_version)
 - script: npm install ...
 - script: python ...
 ```
