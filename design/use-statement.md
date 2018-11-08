@@ -54,6 +54,7 @@ YAML will get a new syntax for `use`-ing a tool or ecosystem.
 `{toolName}` may contain characters in [A-Za-z0-9], plus `-` and `_`.
 
 This can be implemented as sugar over the existing syntax, much like the `powershell` and `bash` keywords today.
+You'll be bound to the latest major version of the task.
 
 To select a particular version, pass a `{versionSpec}` to `version`.
 ```yaml
@@ -94,6 +95,11 @@ Just like on `task`, you can pass a map of `inputs`.
   inputs:
     architecture: x64
 ```
+
+We need to allow tasks the ability to remove fields in major versions.
+Therefore, if a task doesn't accept one of the inputs, we won't fail the build but we will inject a warning about the mismatch.
+Depending on the scenario, the build could still fail at runtime.
+This makes the issue debuggable even if not ideal.
 
 ## Schema
 
