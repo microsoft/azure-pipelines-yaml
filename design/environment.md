@@ -17,29 +17,10 @@ For example,
 ```yaml
 pool:
   vmImage: 'Ubuntu 16.04'
-environment: 
-  name: smarthotel-prod               # creates an environment 'smarhotel-prod' and records deployments against it.
+environment: smarthotel-prod    # creates an environment 'smarhotel-prod' and records deployments against it.
 ```
-With the above, deployment history from multiple pipelines are enabled. 
+With the above, deployment history from multiple pipelines are enabled on the environment 
 
-
-## Group multiple resources into a namespace
-
-Environment is composed of **groups of resources** aka **namespaces**. For example, a **production** environment composed with a farm of **web** servers, **database** clusters will form two namespaces. 
-
-**namespace**: groups the resources that are homogeneous. You can apply deployment strategy on the resource within a namespace. 
-
-![environment](images/environment.png)
-
-Figure: **a**
-
-In the above illustration, we have 3 **namespaces** in the environment that maps to -
-- A resource group with one or more App Services, 
-- A resource group with one or more Databases, and 
-- A Kubernetes *namespace* in a cluster with one or more containerized apps (workloads) 
-
-**Note**: 
-- **terminology**: Other options for **namespace** were **resources**, **serviceGroup** among others, open to feedback. 
 
 ### Deployment job & Environment
 
@@ -50,8 +31,7 @@ We will be introducing a new a `job` type called `deployment`, that can understa
   displayName: Deploy web pkg
   pool:
     vmImage: 'Ubuntu 16.04'
-  environment:
-    name: production    # create environment and/or record deployments
+  environment: production    # create environment and/or record deployments
   steps:
   - script: echo deploy web pkg
 ```
@@ -60,92 +40,48 @@ We will be introducing a new a `job` type called `deployment`, that can understa
 - Existing `job` supports `matrix` and `parallel` strategies, adding `environment` support to it would add additional **mutually exclusive strategies** viz. `canary`, `blueGreen`, and `rolling` to the mix. Including it in existing `job` type would complicate the user experience. 
 - Deployment job targeting the environment can run on agent or on server.
 
-### Resources in an environment
 
-Target and record deployments against each group of resource aka namespace in an environment. For example, an environment having web, database, and backend-service namespaces. 
+## Add resources to an environment
 
-For example 
+Typically the environment is composed of **resources**. For example, a **production** environment composed with a farm of **web** servers, and **database**. 
+
+For the **smarthotel-prod** environment example below, we have an environment that maps to a **Kubernetes namespace** in a cluster with one or more containerized apps (workloads) 
+
+![environment](images/environment.png)
+
+
+Example YAML
 
 ```yaml
 jobs:
 - deployment:
-  environment: 
-    name: smarthotel-prod
-    namespace:  smarthotel-web          #alias for the group, another option is to name this as 'serviceGroup'
+  environment: smarthotel-prod
   pool:
     name: sh-prod-pool
   steps:
-  - task: AzureWebApp                 # inherits resource connection from environment
-      appName: 'smarthotel'
+  - script: kubectl apply ...                        
 ```
 
-### Full example with multiple namespaces
+### Environment with multiple resources
 
+You can target and record deployments against each **group of resource** in an environment using path notation. 
+
+For the **smarthotel-prod** example, when we add a PaaS Database in addition to the existing Kubernetes front-end the YAML would be,
 
 ```yaml
 jobs:
-- deployment: deployWeb
-  environment: 
-    name: SmartHotel-prod
-    namespace:  smarthotel-web        #alias for the group, another option is to name this as 'serviceGroup'
+- deployment:
+  environment: smarthotel-prod/smarthotel-web
   pool:
     name: sh-prod-pool
   steps:
-  - task: AzureWebApp                 # inherits resource connection from environment
-      appName: 'smarthotel'
-- deployment: deployBackend
-  environment: 
-    name: smarthotel-prod
-    namespace:  prodservice          
-  pool:
-    name: sh-prod-pool
-  steps:
-  - script: docker run...
+  - script: kubectl apply ... 
 - deployment: deployDB
-  environment: 
-    name: smarthotel-prod
-    namespace:  smarthotel-database          
+  environment: smarthotel-prod/database          
   pool:
     name: sh-prod-pool
   steps:
-  - script: deploy sql script...
-```
-
-### Environment with a single resource
-
-In the context of a `deployment` job, when the associated `environment` has a single namespace, Providing just the task and app name should suffice. Information about the namespace, service connection are optional. 
-
-For example as below
-
-```yaml
-jobs:
-- deployment:
-  environment: 
-    name: smarthotel-prod
-  pool:
-    name: sh-prod-pool
-  steps:
-  - task: AzureWebApp                         # or inherits resource connection from environment
-      appName: 'smarthotel'
-```
-
-Or  use the environment variables, for example,
-
-```yaml
-jobs:
-- deployment:
-  environment: 
-    name: smarthotel-prod
-    namespace: smarthotel-web
-  pool:
-    name: sh-prod-pool
-  steps:
-  - task: AzureWebApp  
-    displayName: 'Azure WebApp: smarthotel'
-    inputs:
-      azureSubscription: $(environment.namespace.connection)  
-      appName: 'smarthotel'                                      
-      #package: '$(build.artifactstagingdirectory)/**/*.zip'       # can work with *.war, *.jar or a folder
+  - script: deploy Azure sql script...
 ```
 
 ## Future (discussion only)
@@ -170,8 +106,7 @@ jobs:
   pool:
     image: 'Ubuntu 16.04'
   environment:
-    name:  musicCarnivalQA
-    resource: smarthotel-web
+    name:  musicCarnivalQA/smarthotel-web
   steps:
    - task: AzureWebApp                       
       appName: 'smarthotel'
@@ -217,8 +152,7 @@ Have a typed blueGreen step. For example, typed K8S-blue-green deploy step that 
   pool:
     image: 'Ubuntu 16.04'
   environment:
-    name:  musicCarnivalQA
-    resource: smarthotel-web
+    name:  musicCarnivalQA/smarthotel-web
   steps:
    - task: K8SManifestDeploy                       
       serviceName: 'hotels'
