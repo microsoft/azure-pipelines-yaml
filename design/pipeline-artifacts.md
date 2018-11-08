@@ -22,7 +22,7 @@ In this document, `artifact` and `downloadArtifact` refer specifically to Pipeli
 ### Example
 
 ```yaml
-- publishArtifact:
+- artifact:
   - **/bin/*
   - **/obj/*
   name: webapp
@@ -38,18 +38,16 @@ In this document, `artifact` and `downloadArtifact` refer specifically to Pipeli
 ### Schema
 
 ```yaml
-- downloadArtifacts:
-  - name: string # identifier for the artifact to download, optional; defaults to 'default'
-    patterns: string | [ string ] # a minimatch path or list of [minimatch paths](tasks/file-matching-patterns.md) to download; if blank, the entire artifact is downloaded
-    root: string # the directory in which to download files, defaults to $PIPELINES_RESOURCESDIR
-    resource: # the resource from which to download the artifact, defaults to self (indicating the current pipeline)
+- downloadArtifact: # identifier for the artifact to download, optional; defaults to 'default'
+  patterns: string | [ string ] # a minimatch path or list of [minimatch paths](tasks/file-matching-patterns.md) to download; if blank, the entire artifact is downloaded
+  root: string # the directory in which to download files, defaults to $PIPELINES_RESOURCESDIR
+  resource: # the resource from which to download the artifact, defaults to self (indicating the current pipeline)
 ```
 
 ### Example
 
 ```yaml
-- downloadArtifacts:
-  - name: webapp
+- downloadArtifact: webapp
 ```
 
 ---
@@ -92,9 +90,8 @@ You can control the location where artifacts are downloaded using the `downloadR
   - artifact: bin/*
 - job: Deploy
   steps:
-  - downloadArtifacts:
-    - name:
-      downloadRoot: $(Pipelines.SourcesDir)/from-build/
+  - downloadArtifact:
+    downloadRoot: $(Pipelines.SourcesDir)/from-build/
   - script: |
       TODO-some-cool-deploy-script-here $(Pipelines.SourcesDir)/from-build/bin/
 ```
@@ -137,9 +134,8 @@ You can give an artifact a name, and you can publish multiple named artifacts. A
     name: MobileApp
 - job: Deploy
   steps:
-  - downloadArtifacts:
-    - name: WebApp
-    - name: MobileApp
+  - downloadArtifact: WebApp
+  - downloadArtifact: MobileApp
   - script: TODO-some-cool-deploy-script-here $(Pipelines.ResourcesDir)/WebApp/bin/
   - script: TODO-xamarin-magic $(Pipelines.ResourcesDir)/MobileApp/
 ```
