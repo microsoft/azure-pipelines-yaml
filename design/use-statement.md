@@ -36,7 +36,7 @@ The agent knows about its proxy; the tasks don't always pass that along to clien
 - Auth setup.
 If I'm going to publish to a private npm registry, I should be able to give the creds here.
 - Problem matchers.
-If the Python compiler emits errors in a known format, we should be able to read that via regex and surfaec it in our UI.
+If the Python compiler emits errors in a known format, we should be able to read that via regex and surface it in our UI.
 VS Code has a defined format for problem matchers.
 
 ## Solution
