@@ -1,5 +1,10 @@
 # Container Steps Implementation
 
+**Important note**
+This design doc exists for historical interest and possible future implementation.
+Azure Pipelines currently has no plans to build this feature.
+For a workload like this, we currently recommend customers use `- script: docker run <container>` steps.
+
 ## Overview and Requirements
 
 - Container steps should be an abstraction of what the actual technology is used
