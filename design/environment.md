@@ -43,7 +43,7 @@ We will be introducing a new a `job` type called `deployment`, that can understa
 
 ## Add resources to an environment
 
-Typically the environment is composed of **resources**. For example, a **production** environment composed with a farm of **web** servers, and **database**. 
+Typically the environment is composed of **resources**. For example, a **production** environment composed with a farm of **web** servers, and **database**. For v1, you can add the resources from UI, and refer the environment with the resources in YAML. 
 
 For the **smarthotel-prod** environment example below, we have an environment that maps to a **Kubernetes namespace** in a cluster with one or more containerized apps (workloads) 
 
@@ -62,22 +62,24 @@ jobs:
   - script: kubectl apply ...                        
 ```
 
+Now that the smarthotel-prod has the **kubernetes namespace** linked, you can trace the deployments upto the namespace. 
+
 ### Environment with multiple resources
 
 You can target and record deployments against each **group of resource** in an environment using path notation. 
 
-For the **smarthotel-prod** example, when we add a PaaS Database in addition to the existing Kubernetes front-end the YAML would be,
+For the **smarthotel-prod** example, when we add a PaaS Database in addition to the existing Kubernetes front-end, the YAML would be,
 
 ```yaml
 jobs:
 - deployment:
-  environment: smarthotel-prod/smarthotel-web
+  environment: smarthotel-prod/smarthotel-web      # smarthotel-web is the kubernetes namespace that is linked
   pool:
     name: sh-prod-pool
   steps:
   - script: kubectl apply ... 
 - deployment: deployDB
-  environment: smarthotel-prod/database          
+  environment: smarthotel-prod/smarthotel-db       # smarthotel-db is the Azure SQL DB that is linked
   pool:
     name: sh-prod-pool
   steps:
@@ -106,16 +108,16 @@ jobs:
   pool:
     image: 'Ubuntu 16.04'
   environment:
-    name:  musicCarnivalQA/smarthotel-web
+    name:  smarthotel-prod/smarthotel-web
   steps:
    - task: AzureWebApp                       
       appName: 'smarthotel'
       slot: staging
-  strategy:                                # blue green/rolling/canary
+  strategy:                          # blue green/rolling/canary, with lifecycle hooks viz, pre/post healthcheck, swap etc
     blueGreen:
  
-      healthCheck:
-        checks:           #  gates job
+      preHealthCheck:                
+        checks:                     
         - task: appInsightsAlerts
         timeout: 60m   
  
@@ -126,7 +128,7 @@ jobs:
               appName: smarthotel
               slot: production
 
-      healthCheck:
+      postHealthCheck:
         checks:
         - task: appInsightsAlerts
         timeout: 60m
