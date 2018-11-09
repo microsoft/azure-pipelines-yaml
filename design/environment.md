@@ -66,20 +66,20 @@ Now that the smarthotel-prod has the **kubernetes namespace** linked, you can tr
 
 ### Environment with multiple resources
 
-You can target and record deployments against each **group of resource** in an environment using path notation. 
+You can target and record deployments against each **group of resource** in an environment using JSON path notation. 
 
 For the **smarthotel-prod** example, when we add a PaaS Database in addition to the existing Kubernetes front-end, the YAML would be,
 
 ```yaml
 jobs:
 - deployment:
-  environment: smarthotel-prod/smarthotel-web      # smarthotel-web is the kubernetes namespace that is linked
+  environment: smarthotel-prod.smarthotel-web      # smarthotel-web is the kubernetes namespace that is linked
   pool:
     name: sh-prod-pool
   steps:
   - script: kubectl apply ... 
 - deployment: deployDB
-  environment: smarthotel-prod/smarthotel-db       # smarthotel-db is the Azure SQL DB that is linked
+  environment: smarthotel-prod.smarthotel-db       # smarthotel-db is the Azure SQL DB that is linked
   pool:
     name: sh-prod-pool
   steps:
@@ -108,7 +108,7 @@ jobs:
   pool:
     image: 'Ubuntu 16.04'
   environment:
-    name:  smarthotel-prod/smarthotel-web
+    name:  smarthotel-prod.smarthotel-web
   steps:
    - task: AzureWebApp                       
       appName: 'smarthotel'
@@ -154,7 +154,7 @@ Have a typed blueGreen step. For example, typed K8S-blue-green deploy step that 
   pool:
     image: 'Ubuntu 16.04'
   environment:
-    name:  musicCarnivalQA/smarthotel-web
+    name:  smarthotel-prod.smarthotel-web
   steps:
    - task: K8SManifestDeploy                       
       serviceName: 'hotels'
