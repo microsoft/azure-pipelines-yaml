@@ -69,6 +69,22 @@ jobs:
           CREATED_ACR=$(az acr create -n $(ACR.Name) -g $(Azure.ResourceGroupName) --sku $(ACR.Sku))
           echo "$CREATED_ACR"
         fi
+        CREATE_AKS=$(az aks show -g $(Azure.ResourceGroupName) -n $(AKS.ClusterName))
+        if [ -n $CREATE_AKS ]
+        then
+          echo "Creating AKS cluster"
+          CREATED_AKS=$(az aks create -g $(Azure.ResourceGroupName) -n $(AKS.ClusterName) --service-principal)
+          echo $CREATED_AKS
+          if [ -n $CREATED_AKS ]; then
+            CLIENT_ID=$(az aks show --resource-group $(Azure.ResourceGroupName) --name $(AKS.ClusterName) --query "servicePrincipalProfile.clientId" --output tsv)
+            ACR_ID=$(az acr show --name $(ACR.Name) --resource-group $(Azure.ResourceGroupName) --query "id" --output tsv)
+            az role assignment create --assignee $CLIENT_ID --role Reader --scope $ACR_ID
+          fi
+        else
+          CLIENT_ID=$(az aks show --resource-group $(Azure.ResourceGroupName) --name $(AKS.ClusterName) --query "servicePrincipalProfile.clientId" --output tsv)
+          ACR_ID=$(az acr show --name $(ACR.Name) --resource-group $(Azure.ResourceGroupName) --query "id" --output tsv)
+          az role assignment create --assignee $CLIENT_ID --role Reader --scope $ACR_ID
+        fi
 
 - job: BuildImage
   displayName: Build
