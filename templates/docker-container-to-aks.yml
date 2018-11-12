@@ -81,9 +81,11 @@ jobs:
             az role assignment create --assignee $CLIENT_ID --role Reader --scope $ACR_ID
           fi
         else
-          CLIENT_ID=$(az aks show --resource-group $(Azure.ResourceGroupName) --name $(AKS.ClusterName) --query "servicePrincipalProfile.clientId" --output tsv)
-          ACR_ID=$(az acr show --name $(ACR.Name) --resource-group $(Azure.ResourceGroupName) --query "id" --output tsv)
-          az role assignment create --assignee $CLIENT_ID --role Reader --scope $ACR_ID
+          if [ -n $CREATED_ACR ]; then
+            CLIENT_ID=$(az aks show --resource-group $(Azure.ResourceGroupName) --name $(AKS.ClusterName) --query "servicePrincipalProfile.clientId" --output tsv)
+            ACR_ID=$(az acr show --name $(ACR.Name) --resource-group $(Azure.ResourceGroupName) --query "id" --output tsv)
+            az role assignment create --assignee $CLIENT_ID --role Reader --scope $ACR_ID
+          fi
         fi
 
 - job: BuildImage
