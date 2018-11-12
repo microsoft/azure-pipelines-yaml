@@ -83,10 +83,20 @@ steps:
   authTo: myFeed
 ```
 
+or, for multiple resources:
+```yaml
+steps:
+- use: someTool someVersion
+  authTo:
+  - myFeed1
+  - myFeed2
+```
+
 (`feed` is not yet a resource type, but it's coming.)
 
 Tasks which implement this contract can expect a service connection at runtime.
 It's up to the resource provider to convert other forms of auth (such as a raw username + password) into a service connection.
+Tasks must accept an array of inputs, though often the array will only contain 1 entry.
 
 Some ecosystems will require optional, additional inputs.
 Just like on `task`, you can pass a map of `inputs`.
@@ -104,11 +114,11 @@ This makes the issue debuggable even if not ideal.
 ## Schema
 
 ```yaml
-- use: string            # required tool name
-  version: string        # optional version
-  proxy: boolean         # whether to install proxy information; defaults to true
-  authTo: string         # optional name of a resource to derive auth information from
-  inputs: {string: any}  # optional additional arguments to pass as task inputs
+- use: string               # required tool name
+  version: string           # optional version
+  proxy: boolean            # whether to install proxy information; defaults to true
+  authTo: string | [string] # optional names of resources to derive auth information from
+  inputs: {string: any}     # optional additional arguments to pass as task inputs
 ```
 
 ## Example
