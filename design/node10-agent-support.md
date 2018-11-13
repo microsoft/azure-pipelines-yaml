@@ -12,6 +12,8 @@ Node v10 is the latest version under LTS status.
 
 The agent will support a new handler: Node10. Node10 will syntactically look the same as the existing Node handler, with the only exception that Node10 will end up invoking the Node runtime, version 10.
 
+We'll add a minimum agent version demand should the task.json require the Node10 handler.
+
 **task.json sample**
 
 ``` json
@@ -53,7 +55,7 @@ Rolling out Node v10 support will be executed in three phases:
 "Node"   -> NodeHandler.cs ---  Node v6 runtime
 ```
 
-3. Once we've turned everything on, we'll remove the Node v6 runtime from the agent, in addition to the feature flag.
+3. Once we've turned the feature flag everywhere on hosted, we'll still keep the v6 and v10 runtimes, and the feature flag OFF for the next on-prem release. This is because we don't have control over the tasks that are written against those on-prem environments. After the on-prem release, we'll remove the Node v6 runtime from the agent, in addition to the feature flag.
 
 ```
 "Node10" -> Node10Handler.cs  -> Node v10 runtime
@@ -63,10 +65,3 @@ Rolling out Node v10 support will be executed in three phases:
             (No feature flag) /
 "Node"   -> NodeHandler.cs ---
 ```
-
-## Open questions
-
-- Will there be any (non-trivial to solve) impediment that will block us from removing the Node v6 runtime?
-  - Option: leave both v6 and v10 runtimes side by side
-- Should node v10 tasks demand a minimum agent version?
-  - What about the case where a task can support both node + PowerShell environments
