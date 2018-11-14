@@ -4,7 +4,7 @@
 
 Pipeline Artifacts are the new way to move files between jobs and stages in your pipeline. They are hosted in Azure Artifacts and will eventually entirely replace FCS "Build Artifacts". Because moving files between jobs and stages is a crucial part of most CI/CD workflows, and because Pipeline Artifacts are expected to be the default way to do so, this spec proposes a YAML shortcut syntax for publishing and downloading artifacts.
 
-In this document, `artifact` and `downloadArtifact` refer specifically to Pipeline Artifacts. Artifacts are distinct from `resources`, which are various kinds of inputs like `containers`, `repositories`, and `feeds`.
+In this document, `artifact` and `downloadArtifact` refer specifically to Pipeline Artifacts (TODO and possibly artifacts from other pipeline resources). Artifacts are distinct from `resources`, which are various kinds of inputs like `containers`, `repositories`, and `feeds`.
 
 ## Proposal: artifact
 
@@ -33,7 +33,7 @@ In this document, `artifact` and `downloadArtifact` refer specifically to Pipeli
 
 ## Proposal: downloadArtifact
 
-`downloadArtifact` is a shortcut for the [Download Pipeline Artifacts](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/download-pipeline-artifact.md) task. It will download artifacts published from a previous job or stage or from another pipeline. Artifacts are downloaded either to `$PIPELINES_RESOURCESDIR` or to the directory specified in `root`.
+`downloadArtifact` is a shortcut for the [Download Pipeline Artifacts](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/download-pipeline-artifact.md) (TODO and possibly other tasks for e.g. Jenkins) task. It will download artifacts published from a previous job or stage or from another pipeline. Artifacts are downloaded either to `$PIPELINES_RESOURCESDIR` or to the directory specified in `root`.
 
 ### Schema
 
