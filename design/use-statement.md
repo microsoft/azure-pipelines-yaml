@@ -33,7 +33,7 @@ The tasks are all at version 0 right now, so real-world confusion is *probably* 
 ### Other things we want to include
 - Proxy setup.
 The agent knows about its proxy; the tasks don't always pass that along to client tooling.
-- Auth setup.
+- [Auth setup.](auth.md)
 If I'm going to publish to a private npm registry, I should be able to give the creds here.
 - Problem matchers.
 If the Python compiler emits errors in a known format, we should be able to read that via regex and surface it in our UI.
