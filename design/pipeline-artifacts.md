@@ -1,12 +1,14 @@
 # Pipeline Artifacts YAML shortcut
 
-**Status: PM spec**
+**Status: Awaiting final review**
 
 Pipeline Artifacts are the new way to move files between jobs and stages in your pipeline. They are hosted in Azure Artifacts and will eventually entirely replace FCS "Build Artifacts". Because moving files between jobs and stages is a crucial part of most CI/CD workflows, and because Pipeline Artifacts are expected to be the default way to do so, this spec proposes a YAML shortcut syntax for publishing and downloading artifacts.
 
-In this document, `artifact` and `downloadArtifact` refer specifically to Pipeline Artifacts (TODO and possibly artifacts from other pipeline resources). Artifacts are distinct from `resources`, which are various kinds of inputs like `containers`, `repositories`, and `feeds`.
+In this document, `artifact` refers specifically to publishing Pipeline Artifacts from the current pipeline. `downloadArtifact` refers to downloading Pipeline Artifact artifacts from the current pipeline, from other Azure Pipelines, and from other pipeline resources (e.g. Jenkins builds). 
 
-## Proposal: artifact
+Artifacts are distinct from other `resources` types, including `containers`, `repositories`, and `feeds`.
+
+## Publishing artifacts: `artifact`
 
 `artifact` is a shortcut for the [Publish Pipeline Artifacts](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/publish-pipeline-artifact.md) task. It will publish files from the current job to be used in subsequent jobs or in other stages or pipelines.
 
@@ -31,18 +33,23 @@ In this document, `artifact` and `downloadArtifact` refer specifically to Pipeli
 
 ---
 
-## Proposal: downloadArtifact
+## Downloading artifacts: `downloadArtifact`
 
-`downloadArtifact` is a shortcut for the [Download Pipeline Artifacts](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/download-pipeline-artifact.md) (TODO and possibly other tasks for e.g. Jenkins) task. It will download artifacts published from a previous job or stage or from another pipeline. Artifacts are downloaded either to `$PIPELINES_RESOURCESDIR` or to the directory specified in `root`.
+`downloadArtifact` is a shortcut for several tasks:
+
+- The [Download Pipeline Artifacts](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/download-pipeline-artifact) task
+- The [Download Fileshare Artifacts](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/download-fileshare-artifacts) task
+- Download tasks for other pipelines systems e.g. Jenkins
+
+It will download artifacts published from a previous job or stage or from another pipeline. Artifacts are downloaded either to `$PIPELINES_RESOURCESDIR` or to the directory specified in `root`.
 
 ### Schema
 
 ```yaml
-- downloadArtifact: string # identifier for the pipeline from which to download artifacts, optional; defaults to 'self'
-  name: string # identifier for the artifact to download
+- downloadArtifact: string # identifier for the resource from which to download artifacts, optional; defaults to 'self`
+  name: string # identifier for the artifact to download; if left blank, downloads all artifacts associated with the resource provided
   patterns: string | [ string ] # a minimatch path or list of [minimatch paths](tasks/file-matching-patterns.md) to download; if blank, the entire artifact is downloaded
   root: string # the directory in which to download files, defaults to $PIPELINES_RESOURCESDIR
-  version: string # the run ID to get artifacts from. If `self`, defaults to the current run; if another pipeline, defaults to the latest successful run
 ```
 
 ### Examples
@@ -92,7 +99,7 @@ You can control the location where artifacts are downloaded using the `downloadR
 - job: Deploy
   steps:
   - downloadArtifact:
-    downloadRoot: $(Pipelines.SourcesDir)/from-build/
+    root: $(Pipelines.SourcesDir)/from-build/
   - script: |
       TODO-some-cool-deploy-script-here $(Pipelines.SourcesDir)/from-build/bin/
 ```
