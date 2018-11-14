@@ -4,7 +4,7 @@
 
 Pipeline Artifacts are the new way to move files between jobs and stages in your pipeline. They are hosted in Azure Artifacts and will eventually entirely replace FCS "Build Artifacts". Because moving files between jobs and stages is a crucial part of most CI/CD workflows, and because Pipeline Artifacts are expected to be the default way to do so, this spec proposes a YAML shortcut syntax for publishing and downloading artifacts.
 
-In this document, `artifact` and `downloadArtifact` refer specifically to Pipeline Artifacts. Artifacts are distinct from `resources`, which are various kinds of inputs like `pipelines`, `containers`, `repositories`, and `packages`. Ashok is driving the YAML spec for these inputs, and he and I (amullans) are in sync.
+In this document, `artifact` and `downloadArtifact` refer specifically to Pipeline Artifacts. Artifacts are distinct from `resources`, which are various kinds of inputs like `containers`, `repositories`, and `feeds`.
 
 ## Proposal: artifact
 
@@ -35,52 +35,22 @@ In this document, `artifact` and `downloadArtifact` refer specifically to Pipeli
 
 `downloadArtifact` is a shortcut for the [Download Pipeline Artifacts](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/download-pipeline-artifact.md) task. It will download artifacts published from a previous job or stage or from another pipeline. Artifacts are downloaded either to `$PIPELINES_RESOURCESDIR` or to the directory specified in `root`.
 
-### Option 1: fewer lines
-
-#### Schema
-
-```yaml
-- downloadArtifact: string # identifier for the artifact to download, optional; defaults to 'default'
-  patterns: string | [ string ] # a minimatch path or list of [minimatch paths](tasks/file-matching-patterns.md) to download; if blank, the entire artifact is downloaded
-  root: string # the directory in which to download files, defaults to $PIPELINES_RESOURCESDIR
-
-- downloadPipeline: string # identifier for the pipeline to download
-  artifacts: string | [ string ] # identifier(s) for the artifacts to download
-  patterns: string | [ string ] # a minimatch path or list of [minimatch paths](tasks/file-matching-patterns.md) to download; if blank, the entire artifact is downloaded
-  version: string # the run/version of the pipeline to get artifacts from
-```
-
-#### Example
-
-```yaml
-- downloadArtifact: webapp
-- downloadPipeline: P2
-  artifacts: p1
-  version: 2
-```
-
-### Option 2: fewer keywords
-
-#### Schema
+### Schema
 
 ```yaml
 - downloadArtifact: string # identifier for the pipeline from which to download artifacts, optional; defaults to 'self'
   name: string # identifier for the artifact to download
   patterns: string | [ string ] # a minimatch path or list of [minimatch paths](tasks/file-matching-patterns.md) to download; if blank, the entire artifact is downloaded
   root: string # the directory in which to download files, defaults to $PIPELINES_RESOURCESDIR
-  version: string # the run/version of the pipeline to get artifacts from
+  version: string # the run ID to get artifacts from. If `self`, defaults to the current run; if another pipeline, defaults to the latest successful run
 ```
 
-### Option 3: multi-artifact in one step
-
-#### Schema
+### Examples
 
 ```yaml
-- downloadArtifacts: string # identifier for the pipeline from which to download artifacts, optional; defaults to 'self'
-  version: string # the run/version of the pipeline to get artifacts from
-  - artifact: string # identifier for the artifact to download
-    patterns: string | [ string ] # a minimatch path or list of [minimatch paths](tasks/file-matching-patterns.md) to download; if blank, the entire artifact is downloaded
-    root: string # the directory in which to download files, defaults to $PIPELINES_RESOURCESDIR
+- downloadArtifact:
+  name: webapp
+- downloadArtifact: tools-pipeline
 ```
 
 ## More details about Pipeline Artifacts
