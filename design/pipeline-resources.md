@@ -27,15 +27,16 @@ If you have a pipeline that produces artifacts, you can consume the artifacts us
 ### Schema
 
 ```yaml
-resources:          # types: builds | repositories | packages | containers
+resources:          # types: pipelines | repositories | containers | packages
   pipelines:
-  - pipeline: string # identifier for this pipeline resource      
-    type: string # type of the pipeline source like AzurePipelines, Jenkins etc. In future this extend to any external sources
+  - pipeline: string # identifier for the pipeline resource      
+    type: enum # type of the pipeline source like AzurePipelines, Jenkins etc. In future this can extend to other source types.
+    connection: string # service connection to connect to the source
     source: string # source defintion of the pipeline that produces the artifacts
-    project: string # project that contains the source definition, defauts to current project.
-    branch: string # branch to pick the artiafct, defaults to master branch
-    version: string # version to pick the artifact, defaults to Latest
-    tags: string # picks the artifacts on from the pipeline with given tag, defaults to no tags.
+    project: string # project that contains the source definition, optional; defauts to current project.
+    branch: string # branch to pick the artiafct, optional; defaults to master branch
+    version: string # version to pick the artifact, optional; defaults to Latest
+    tags: string # picks the artifacts on from the pipeline with given tag, optional; defaults to no tags.
 ```
 
 ### Examples
@@ -46,4 +47,35 @@ resources:
   - pipeline: SmartHotel      
     type: AzurePipelines
     source: SmartHotel-CI
+```
+
+
+## Resources: `repositories`
+
+If you have multiple repositories from which you need to fetch the code into your pipeline, you can consume using `repositories`. A repository can be another Azure Repo or any external repo like GitHub etc.
+
+### Schema
+
+```yaml
+resources:          # types: pipelines | repositories | containers | packages
+  repositories:
+  - repository: string # identifier for the repository resource      
+    type: enum # type of the repository source like AzureRepos, GitHub etc. In future this can extend to other source types
+    connection: string # service connection to connect to the source, defaults to primary source connection
+    source: string # source repository to fetch
+    branch: string # branch to fetch the repo from, defauts to master.
+    fetchDepth: number # depth from the tip of the branch to fetch commits, optional; defaults to all
+    lfs: boolean # checking our Git-LFS modules, defaults to false
+    sync: boolean 
+```
+
+### Examples
+
+```yaml
+resources:         
+  repositories:
+  - repository: secondaryRepo      
+    type: GitHub
+    connection: myGitHubConnection
+    source: Microsoft/alphaworz
 ```
