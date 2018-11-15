@@ -27,21 +27,23 @@ If you have a pipeline that produces artifacts, you can consume the artifacts us
 ### Schema
 
 ```yaml
-resources:
+resources:          # types: builds | repositories | packages | containers
   pipelines:
-  - pipeline:
-    type:
-    project:
-    source:
-    branch:
-    version:
-    tags:
+  - pipeline: string # identifier for this pipeline resource      
+    type: string # type of the pipeline source like AzurePipelines, Jenkins etc. In future this extend to any external sources
+    source: string # source defintion of the pipeline that produces the artifacts
+    project: string # project that contains the source definition, defauts to current project.
+    branch: string # branch to pick the artiafct, defaults to master branch
+    version: string # version to pick the artifact, defaults to Latest
+    tags: string # picks the artifacts on from the pipeline with given tag, defaults to no tags.
 ```
 
 ### Examples
 
 ```yaml
-- downloadArtifact:
-  name: webapp
-- downloadArtifact: tools-pipeline
+resources:         
+  pipelines:
+  - pipeline: SmartHotel      
+    type: AzurePipelines
+    source: SmartHotel-CI
 ```
