@@ -50,9 +50,33 @@ resources:
 ```
 
 
+### `downloadArtifact` for pipelines
+
+Artifacts produced by `pipeline` resource are automatically downloaded and made available for all the jobs. However, in any of the jobs, you can choose to override and download only specific artifacts using `downloadArtifact` shortcut.
+
+
+```yaml
+- job: deploy_windows_x86_agent
+  steps:
+  - downloadArtifact: SmartHotel   # pipeline resource identifier.
+    name: WebTier1  # artifact to download, optional; defaults to all the artifacts from the resource.
+    patterns: '**/*.zip'  # mini match pattern to download specific files, optional; defaults to all files.
+```
+
+Or to avoid downloading any of the artifacts at all:
+
+```yaml
+- downloadArtifact: none
+```
+
+
+Refer to [download artifacts](https://github.com/Microsoft/azure-pipelines-yaml/blob/master/design/pipeline-artifacts.md#downloading-artifacts-downloadartifact) for more details.
+
+
 ## Resources: `repositories`
 
-If you have multiple repositories from which you need to fetch the code into your pipeline, you can consume using `repositories`. A repository can be another Azure Repo or any external repo like GitHub etc.
+If you have multiple repositories from which you need to sync the code into your pipeline, you can consume using `repositories`. A repository can be another Azure Repo or any external repo like GitHub etc.
+
 
 ### Schema
 
@@ -64,9 +88,6 @@ resources:          # types: pipelines | repositories | containers | packages
     connection: string # service connection to connect to the source, defaults to primary source connection
     source: string # source repository to fetch
     branch: string # branch to fetch the repo from, defauts to master.
-    fetchDepth: number # depth from the tip of the branch to fetch commits, optional; defaults to all
-    lfs: boolean # checking our Git-LFS modules, defaults to false
-    sync: boolean 
 ```
 
 ### Examples
@@ -80,9 +101,38 @@ resources:
     source: Microsoft/alphaworz
 ```
 
+### `checkout` your repository
+
+All the `repository` sources are automatically synced and made available for all the jobs in the pipeline. However, in any of the jobs, you can choose to override and sync only specific repository using `checkout` shortcut.
+
+
+```yaml
+- checkout: string  # identifier for your repository; for primary repository use the keyword self.
+  clean: boolean  # whether to fetch clean each time
+  fetchDepth: number  # the depth of commits to ask Git to fetch
+  lfs: boolean  # whether to download Git-LFS files
+  submodules: true | recursive  # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
+  persistCredentials: boolean  # set to 'true' to leave the OAuth token in the Git config after the initial fetch
+```
+
+### Example
+
+```yaml
+- checkout: secondaryRepo  
+  clean: false
+  fetchDepth: 5
+  lfs: true
+```
+
+Or to avoid syncing any of the sources at all:
+
+```yaml
+- checkout: none
+```
+
 ## Resources: `containers`
 
-If you have need a container image as part of your CI/CD pipeline, you can consume using `containers`. A container can be an Azure Container Registy or any external Docker registry.
+If you need to consume a container image as part of your CI/CD pipeline, you can achieve it using `containers`. A container can be an Azure Container Registy or any external Docker registry.
 
 ### Schema
 
