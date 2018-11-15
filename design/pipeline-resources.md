@@ -79,3 +79,31 @@ resources:
     connection: myGitHubConnection
     source: Microsoft/alphaworz
 ```
+
+## Resources: `containers`
+
+If you have need a container image as part of your CI/CD pipeline, you can consume using `containers`. A container can be an Azure Container Registy or any external Docker registry.
+
+### Schema
+
+```yaml
+resources:          # types: pipelines | repositories | containers | packages
+  containers:
+  - container: string # identifier for the container resource      
+    type: enum # type of the registry like ACR, Docker etc. 
+    connection: string # service connection to connect to the image registry, defaults to ACR??
+    image: string # container image name, Tag/Digest is optional; defaults to latest image
+    options: string # arguments to pass to container at startup
+    env: { string:string } # list of environment variables to add
+```
+
+### Examples
+
+```yaml
+resources:         
+  containers:
+  - container: devLinux      
+    image: GitHub
+    connection: myDockerRegistry
+    source: Microsoft/alphaworz
+```
