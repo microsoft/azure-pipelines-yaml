@@ -1,6 +1,7 @@
 # Resources in YAML
 
 Any source that is consumed as part of your pipeline is a resource. Resources in YAML represent sources of types pipelines, repositories, containers and packages.
+
 An example of a resource can be resources published by another CI/CD pipeline (say Azure pipelines, Jenkins etc.), code repositories (GitHub), container registry (ACR, Docker hub etc.) and package feeds (Azure artifact feed, Artifactor etc.).  
 
 ## Why resources?
