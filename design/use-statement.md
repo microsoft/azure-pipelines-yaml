@@ -128,7 +128,8 @@ feed (e.g. by using the NuGet Package Manager settings dialog in Visual Studio).
 steps:
 - use: someTool someVersion
   authTo: azureArtifactsFeedOrServiceConnection
-  authFile: .nuget/nuget.config
+  inputs:
+    authFile: .nuget/nuget.config
 ```
 
 Tasks which implement this contract can expect a service connection at runtime.
@@ -156,7 +157,6 @@ This makes the issue debuggable even if not ideal.
   version: string           # optional version
   proxy: boolean            # whether to install proxy information; defaults to true
   authTo: string | [string] # optional names of feeds or service connections to authenticate
-  authFile: string # optional name of file containing feeds matching service connections in authTo
   inputs: {string: any}     # optional additional arguments to pass as task inputs
 ```
 
