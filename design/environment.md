@@ -32,13 +32,17 @@ We will be introducing a new a `job` type called `deployment`, that can understa
   pool:
     vmImage: 'Ubuntu 16.04'
   environment: production    # create environment and/or record deployments
-  steps:
-  - script: echo deploy web pkg
+  strategy:                  # runOnce/blue green/rolling/canary, with lifecycle hooks viz, pre/post healthcheck, swap etc
+    runOnce:                 # default strategy
+      steps:       
+      - script: echo deploy web pkg
 ```
 
 **Note**:
-- Existing `job` supports `matrix` and `parallel` strategies, adding `environment` support to it would add additional **mutually exclusive strategies** viz. `canary`, `blueGreen`, and `rolling` to the mix. Including it in existing `job` type would complicate the user experience. 
-- Deployment job targeting the environment can run on agent or on server.
+- Clear separation of deployments from generic build/compute only jobs. 
+- Deployment job expands into multiple jobs viz., agent, server/gate that can perform complex orchestrations with extensible lifecycle hooks.
+- Existing `job` supports `matrix` and `parallel` strategies, adding `environment` support to it would add additional **mutually exclusive strategies** viz. `runOnce`, `canary`, `blueGreen`, and `rolling` to the mix. Including it in existing `job` type would complicate the user experience.
+- Strong typing can help in specialized design/visual treatment
 
 
 ## Add resources to an environment
@@ -58,8 +62,10 @@ jobs:
   environment: smarthotel-prod
   pool:
     name: sh-prod-pool
-  steps:
-  - script: kubectl apply ...                        
+  strategy:                 
+    runOnce:            
+      steps:       
+      - script: kubectl apply ...                        
 ```
 
 Now that the smarthotel-prod has the **kubernetes namespace** linked, you can trace the deployments upto the namespace. 
@@ -76,14 +82,18 @@ jobs:
   environment: smarthotel-prod.smarthotel-web      # smarthotel-web is the kubernetes namespace that is linked
   pool:
     name: sh-prod-pool
-  steps:
-  - script: kubectl apply ... 
+  strategy:                 
+    runOnce:            
+      steps:       
+      - script: kubectl apply ... 
 - deployment: deployDB
   environment: smarthotel-prod.smarthotel-db       # smarthotel-db is the Azure SQL DB that is linked
   pool:
     name: sh-prod-pool
-  steps:
-  - script: deploy Azure sql script...
+  strategy:                 
+    runOnce:            
+      steps:       
+      - script: kubectl apply ... 
 ```
 
 ## Future (discussion only)
@@ -95,6 +105,7 @@ Blue-Green example,
 
 ```yaml
 jobs:
+
 - job: Build
   strategy:
     matrix:
@@ -104,67 +115,42 @@ jobs:
         PYTHON_VERSION: '3.6'
   steps:
   - script: echo build/package app 
+
 - deployment: deployWebPkg
-  pool:
-    image: 'Ubuntu 16.04'
-  environment:
-    name:  smarthotel-prod.smarthotel-web
-  steps:
-   - task: AzureWebApp                       
-      appName: 'smarthotel'
-      slot: staging
-  strategy:                          # blue green/rolling/canary, with lifecycle hooks viz, pre/post healthcheck, swap etc
-    blueGreen:
- 
-      preHealthCheck:                
-        checks:                     
-        - task: appInsightsAlerts
-        timeout: 60m   
- 
-      swap:
-        steps:
-        - task: swapSlots
-            inputs:
-              appName: smarthotel
-              slot: production
+  pool: 
+    name: shProdPool
+  environment: smarthotel-prod.smarthotel-web
+  strategy:                 
+    blueGreen:              
+      steps:
+      - script: echo deploy web app...
+      
+    preHealthChecks:                                    
+      timeout: 60m
+      steps:          
+      - task: appInsightsAlerts  
 
-      postHealthCheck:
-        checks:
-        - task: appInsightsAlerts
-        timeout: 60m
- 
-      onChecksFailure:
-        steps:
-        - task: swapSlots
-            inputs:
-              appName: smarthotel
-        - task: notify
- 
-      onChecksPass:
-      - script: echo 'checks passed...'
+    routeTraffic:
+      delay: 60m
+      steps:
+      - script: echo swap slots...
 
-```
+    postHealthChecks:
+      timeout: 60m
+      samplingInterval: 5m
+      steps:          
+      - task: appInsightsAlerts     
 
-**Strategy (alternate option: wip)**: 
+    onFailure:
+      steps:
+      - script: echo swap slots back...
 
-Have a typed blueGreen step. For example, typed K8S-blue-green deploy step that works with the manifest yaml file. 
-
-```yaml
-- deployment: deployWebPkg
-  pool:
-    image: 'Ubuntu 16.04'
-  environment:
-    name:  smarthotel-prod.smarthotel-web
-  steps:
-   - task: K8SManifestDeploy                       
-      serviceName: 'hotels'
-      imageName: $(build.repository.name):$(build.buildid)
-      manifest: /manifest/*.yaml 
-  strategy:                                                           # blue green/rolling/canary
-    blueGreenDeploy:
-    - healthTimeOut: 60m
+    onPass:
+      steps:
+      - script: echo checks passed...
 
 ```
 
 **Note**
+- **lifecycle hooks**: are all optional. User can just specify steps under the strategy and is considered valid.
 - **resource discovery**: Current YAML scope is limited to creating an environment and tracking the deployments. Future, we can annotate system tasks to publish the resources (provisioned/targeted) to the environment.
