@@ -102,7 +102,7 @@ If a tool needs credentials, those can be added like this:
 
 ```yaml
 steps:
-- use: someTool someVersion
+- use: someTool
   authTo: azureArtifactsFeedOrServiceConnection
 ```
 
@@ -110,7 +110,7 @@ or, for multiple resources:
 
 ```yaml
 steps:
-- use: someTool someVersion
+- use: someTool
   authTo:
   - azureArtifactsFeed
   - artifactoryServiceConnection
@@ -126,7 +126,7 @@ feed (e.g. by using the NuGet Package Manager settings dialog in Visual Studio).
 
 ```yaml
 steps:
-- use: someTool someVersion
+- use: someTool
   authTo: azureArtifactsFeedOrServiceConnection
   inputs:
     authFile: .nuget/nuget.config
@@ -218,8 +218,6 @@ Additional requirements for in-box tasks:
 This won't be required for third-party tasks.
 - Another common parameter is `architecture`.
 - Do a simplification pass on each task to make sure each input is necessary, clear, and orthogonal.
-
-TODO requirements for auth - will auth be built into the ecosystem task or still be a separate task?
 
 ## Appendix: List of existing tool and installer tasks
 
