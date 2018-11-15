@@ -81,6 +81,8 @@ YAML will get a new syntax for `use`-ing a tool or ecosystem.
 This can be implemented as sugar over the existing syntax, much like the `powershell` and `bash` keywords today.
 You'll be bound to the latest major version of the task.
 
+### Version
+
 To select a particular version, pass a `{versionSpec}` to `version`.
 
 ```yaml
@@ -90,6 +92,8 @@ To select a particular version, pass a `{versionSpec}` to `version`.
 
 `{versionSpec}` is a SemVer or SemVer-like string; see below.
 
+### Proxy setup
+
 By default, `use` will set up the target ecosystem to use the agent's proxy.
 If this behavior isn't desired, it can be overridden with:
 
@@ -97,6 +101,8 @@ If this behavior isn't desired, it can be overridden with:
 - use: someTool
   proxy: false
 ```
+
+### Auth
 
 If a tool needs credentials, those can be added like this:
 
@@ -135,6 +141,13 @@ steps:
 Tasks which implement this contract can expect a service connection at runtime.
 It's up to the resource provider to convert other forms of auth (such as a raw username + password) into a service connection.
 Tasks must accept an array of inputs, though often the array will only contain 1 entry.
+
+### Problem matchers
+
+Problem matchers in general require no input.
+See [VS Code's information about problem matchers](https://code.visualstudio.com/docs/editor/tasks#_defining-a-problem-matcher) to learn more.
+
+### Other inputs
 
 Some ecosystems will require optional, additional inputs.
 Just like on `task`, you can pass a map of `inputs`.
