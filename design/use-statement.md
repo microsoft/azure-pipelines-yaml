@@ -2,42 +2,66 @@
 
 There are currently 9 different [tool or installer](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/tool/go-tool?view=vsts) tasks.
 Conceptually they do roughly the same thing (in the user's mind):
-- Get a known version of some tool, maybe from the internet
-- Set up the CI environment so that when I invoke `tool`, I get that version.
 
-## Problems
+- Get a known version of some tool, maybe from the internet
+- Set up the CI environment so that when I invoke `tool`, I get that version
+
+## Problems: tool installers
 
 ### Semantics of the task
+
 Some tools are hard to install on the fly.
 So, these are really "use a version from some limited subset of possible versions".
 Others can be used to fetch arbitrary versions from the internet.
 We introduced a split between "use version" and "install tool", but this has turned out to be more confusing than helpful in practice.
 
 ### Naming
+
 The tasks are not named consistently, and they take inconsistent inputs.
 We have 2 `*Tool` tasks, 3 `*Installer` tasks, 2 `*ToolInstaller` tasks, and 2 `Use*Version` tasks.
 Some take a `version`, others a `versionSpec`, and one a `versionSelector`.
 See the appendix for a list of current tasks.
 
 ### YAML syntax
+
 Some of the tasks take complex, interdependent inputs (Visual Studio Test Platform Installer).
 This is really hard to work with in YAML.
 Also, our `taskName@taskVersion` syntax adds a layer of confusion.
+
 ```yaml
 - task: UsePythonVersion@0
   inputs:
     versionSpec: 3.x
 ```
+
 The tasks are all at version 0 right now, so real-world confusion is *probably* limited.
 
+## Problems: authentication
+
+### Authenticated feeds
+
+Builds commonly require access to authenticated package sources (called 'feeds' in Azure
+Pipelines and [Azure Artifacts](https://docs.microsoft.com/azure/devops/artifacts)) to restore
+and/or publish packages. Each ecosystem has its own tools, each of which handles authentication
+slightly differently.
+
+### Task proliferation
+
+Today, to use authenticated npm feeds, you probably need a Tool task, an Authenticate task, and
+a script task that actually does the work you want to do.
+
+### Support for scripting
+
+Today, we don't provide Authenticate tasks for all package types. The prior strategy was to build
+authentication support directly into full-featured tasks like the `NuGet` and `npm` tasks. However,
+this precludes using authenticated feeds from scripting languages and task runners like `gulp` and
+is not compatible with the YAML build tenet of using scripts wherever possible and only using tasks
+when advanced features/workflows are required.
+
 ### Other things we want to include
-- Proxy setup.
-The agent knows about its proxy; the tasks don't always pass that along to client tooling.
-- [Auth setup.](auth.md)
-If I'm going to publish to a private npm registry, I should be able to give the creds here.
-- Problem matchers.
-If the Python compiler emits errors in a known format, we should be able to read that via regex and surface it in our UI.
-VS Code has a defined format for problem matchers.
+
+- Proxy setup: The agent knows about its proxy; the tasks don't always pass that along to client tooling.
+- Problem matchers: If the Python compiler emits errors in a known format, we should be able to read that via regex and surface it in our UI. VS Code has a defined format for problem matchers.
 
 ## Solution
 
@@ -47,6 +71,7 @@ This syntax will be powered by tasks, giving a familiar extensibility point for 
 ### New syntax
 
 YAML will get a new syntax for `use`-ing a tool or ecosystem.
+
 ```yaml
 - use: {toolName}
 ```
@@ -57,6 +82,7 @@ This can be implemented as sugar over the existing syntax, much like the `powers
 You'll be bound to the latest major version of the task.
 
 To select a particular version, pass a `{versionSpec}` to `version`.
+
 ```yaml
 - use: {toolName}
   version: {versionSpec}
@@ -66,33 +92,44 @@ To select a particular version, pass a `{versionSpec}` to `version`.
 
 By default, `use` will set up the target ecosystem to use the agent's proxy.
 If this behavior isn't desired, it can be overridden with:
+
 ```yaml
 - use: someTool
   proxy: false
 ```
 
 If a tool needs credentials, those can be added like this:
-```yaml
-resources:
-  feeds:
-  - feed: myFeed
-    auth: {auth_information}
 
+```yaml
 steps:
 - use: someTool someVersion
-  authTo: myFeed
+  authTo: azureArtifactsFeedOrServiceConnection
 ```
 
 or, for multiple resources:
+
 ```yaml
 steps:
 - use: someTool someVersion
   authTo:
-  - myFeed1
-  - myFeed2
+  - azureArtifactsFeed
+  - artifactoryServiceConnection
+  - myGetServiceConnection
 ```
 
-(`feed` is not yet a resource type, but it's coming.)
+It is recommended to check in a configuration file showing which feeds are required.
+If this file is checked in but not in the root of the repo, a path can be provided.
+If no path is provided and no file is checked in, a standard configuration file will
+be generated with the feeds/service connections listed. This covers scenarios where
+project admins have instead chosen to have each dev manually connect to their private
+feed (e.g. by using the NuGet Package Manager settings dialog in Visual Studio).
+
+```yaml
+steps:
+- use: someTool someVersion
+  authTo: azureArtifactsFeedOrServiceConnection
+  authFile: .nuget/nuget.config
+```
 
 Tasks which implement this contract can expect a service connection at runtime.
 It's up to the resource provider to convert other forms of auth (such as a raw username + password) into a service connection.
@@ -100,6 +137,7 @@ Tasks must accept an array of inputs, though often the array will only contain 1
 
 Some ecosystems will require optional, additional inputs.
 Just like on `task`, you can pass a map of `inputs`.
+
 ```yaml
 - use: python
   inputs:
@@ -117,7 +155,8 @@ This makes the issue debuggable even if not ideal.
 - use: string               # required tool name
   version: string           # optional version
   proxy: boolean            # whether to install proxy information; defaults to true
-  authTo: string | [string] # optional names of resources to derive auth information from
+  authTo: string | [string] # optional names of feeds or service connections to authenticate
+  authFile: string # optional name of file containing feeds matching service connections in authTo
   inputs: {string: any}     # optional additional arguments to pass as task inputs
 ```
 
@@ -156,6 +195,7 @@ It's purely about the `steps`.
 The in-box tool installers and Use*Tools will evolve.
 
 Task requirements:
+
 - task.json includes a field indicating what ecosystem the task provides.
 Something like `{ 'provides': string }`.
 - Accept `version` as an input.
@@ -179,7 +219,10 @@ This won't be required for third-party tasks.
 - Another common parameter is `architecture`.
 - Do a simplification pass on each task to make sure each input is necessary, clear, and orthogonal.
 
+TODO requirements for auth - will auth be built into the ecosystem task or still be a separate task?
+
 ## Appendix: List of existing tool and installer tasks
+
 - [GoTool](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/tool/go-tool?view=vsts)
 - [NodeTool](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/tool/node-js?view=vsts)
 - [HelmInstaller](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/tool/helm-installer?view=vsts)
@@ -189,3 +232,9 @@ This won't be required for third-party tasks.
 - [NuGetToolInstaller](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/tool/nuget?view=vsts)
 - [UsePythonVersion](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/tool/use-python-version?view=vsts)
 - [UseRubyVersion](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/tool/use-ruby-version?view=vsts)
+
+## Appendix: List of existing authenticate tasks
+
+- [npmAuthenticate](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/package/npm-authenticate?view=vsts)
+- [pipAuthenticate](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/package/pip-authenticate?view=vsts)
+- [TwineAuthenticate](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/package/twine-authenticate?view=vsts)
