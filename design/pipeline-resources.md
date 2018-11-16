@@ -1,12 +1,15 @@
 # Resources in YAML
 
-Any source that is consumed as part of your pipeline is a resource. Resources in YAML represent sources of types pipelines, repositories, containers and packages.
+Any external service that is consumed as part of your pipeline is a resource. 
 
-An example of a resource can be resources published by another CI/CD pipeline (say Azure pipelines, Jenkins etc.), code repositories (GitHub), container registry (ACR, Docker hub etc.) and package feeds (Azure artifact feed, Artifactor etc.).  
+An example of a resource can be another CI/CD pipeline (say Azure pipelines, Jenkins etc.) that produces artifacts, code repositories (GitHub, Azure Repos, Git), container image registries (ACR, Docker hub etc.) and package feeds (Azure artifact feed, Artifactor etc.).  
 
 ## Why resources?
 
-Resources enable you to define the sources at one place and consume anywhere in your pipeline. Resources provide you the full traceablity of the sources consumed in your pipeline including branches, versions, tags, associated commits and work-items. 
+Resources provide you the full traceablity of the services consumed in your pipeline including branches, versions, tags, associated commits and work-items. Resources are defined at one place and can be consumed anywher in your pipeline.
+
+Resources in YAML represent sources of types pipelines, repositories, containers and packages.
+
 
 ### Schema
 
@@ -22,7 +25,8 @@ resources:
 
 ## Resources: `pipelines`
 
-If you have a pipeline that produces artifacts, you can consume the artifacts using `pipelines` resource. A pipeline can be another Azure DevOps pipeline or any external pipelines like Jenkins etc.
+If you have a pipeline that produces artifacts, you can consume the artifacts by defining `pipelines` resource. A pipeline can be another Azure DevOps pipeline or any external pipelines like Jenkins etc.
+
 
 ### Schema
 
@@ -30,29 +34,45 @@ If you have a pipeline that produces artifacts, you can consume the artifacts us
 resources:        # types: pipelines | repositories | containers | packages
   pipelines:
   - pipeline: string  # identifier for the pipeline resource
-    type: enum  # type of the pipeline source like AzurePipelines, Jenkins etc. In future this can extend to other source types.
+    type: enum  # type of the pipeline source like azurePipelines, Jenkins etc. 
     connection: string  # service connection to connect to the source
-    source:
-      name: string  # source defintion of the pipeline including the project i.e. projectName/Definition
+    source:  # the inputs inside the source can change with the pipeline type azurePipelines, jenkins etc.
+      name: string  # source defintion of the pipeline including the project i.e. projectName/definition
       version: string  # version to pick the artifact, optional; defaults to Latest
       branch: string  # branch to pick the artiafct, optional; defaults to master branch
       tags: string # picks the artifacts on from the pipeline with given tag, optional; defaults to no tags.
 ```
 
+The inputs inside `source` can change based on the pipeline type defined. The above schema is for the `type`: azurePipelines.
+
+
 ### Examples
+
+If you need to consume another azurePipelines from the current project and you dont require setting branch version and tags, this can be shortened to:
 
 ```yaml
 resources:         
   pipelines:
   - pipeline: SmartHotel      
-    type: AzurePipelines
-    source: SmartHotel-CI # If your source definition is in current project and doesn't need to update default versions
+    type: azurePipelines
+    source: SmartHotel-CI  # name of the pipeline source definition
 ```
 
+In case you need to consume an azurePipeline from other project, you need to include the project to your source name.
+
+```yaml
+resources:         
+  pipelines:
+  - pipeline: SmartHotel      
+    type: azurePipelines
+    source: 
+      name: DevOpsProject/SmartHotel-CI  # name of the pipeline source from different project
+      branch: releases/M142
+```
 
 ### `downloadArtifact` for pipelines
 
-Artifacts produced by `pipeline` resource are automatically downloaded and made available for all the jobs. However, in any of the jobs, you can choose to override and download only specific artifacts using `downloadArtifact` shortcut.
+Artifacts from the `pipeline` resource defined are automatically downloaded and made available for all the jobs. However, in any of the jobs, you can choose to override and download only specific artifacts using `downloadArtifact` shortcut.
 
 
 ```yaml
@@ -86,8 +106,8 @@ resources:          # types: pipelines | repositories | containers | packages
   - repository: string # identifier for the repository resource      
     type: enum # type of the repository source like AzureRepos, GitHub etc. In future this can extend to other source types
     connection: string # service connection to connect to the source, defaults to primary source connection
-    source: string # source repository to fetch
-    branch: string # branch to fetch the repo from, defauts to master.
+    source: string  # source repository to fetch
+    refs: string  # ref name to use, defaults to 'refs/heads/master'
     clean: boolean  # whether to fetch clean each time
     fetchDepth: number  # the depth of commits to ask Git to fetch
     lfs: boolean  # whether to download Git-LFS files
@@ -108,8 +128,7 @@ resources:
 
 ### `checkout` your repository
 
-All the `repository` sources are automatically synced and made available for all the jobs in the pipeline. However, in any of the jobs, you can choose to override and sync only specific repository using `checkout` shortcut.
-
+Repos from the `repository` resources defined are automatically synced and made available for all the jobs in the pipeline. However, in any of the jobs, you can choose to override and sync only specific repository using `checkout` shortcut. 
 
 ```yaml
 - checkout: string  # identifier for your repository; for primary repository use the keyword self.
@@ -129,7 +148,9 @@ All the `repository` sources are automatically synced and made available for all
   lfs: true
 ```
 
-Or to avoid syncing any of the sources at all:
+When you use `checkout` to sync a specific repository resource, all the other repositories are not synced.  
+
+Or to avoid syncing any of the repository resources use:
 
 ```yaml
 - checkout: none
