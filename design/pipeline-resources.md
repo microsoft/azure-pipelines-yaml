@@ -27,16 +27,16 @@ If you have a pipeline that produces artifacts, you can consume the artifacts us
 ### Schema
 
 ```yaml
-resources:          # types: pipelines | repositories | containers | packages
+resources:        # types: pipelines | repositories | containers | packages
   pipelines:
-  - pipeline: string # identifier for the pipeline resource      
-    type: enum # type of the pipeline source like AzurePipelines, Jenkins etc. In future this can extend to other source types.
-    connection: string # service connection to connect to the source
-    source: string # source defintion of the pipeline that produces the artifacts
-    project: string # project that contains the source definition, optional; defauts to current project.
-    branch: string # branch to pick the artiafct, optional; defaults to master branch
-    version: string # version to pick the artifact, optional; defaults to Latest
-    tags: string # picks the artifacts on from the pipeline with given tag, optional; defaults to no tags.
+  - pipeline: string  # identifier for the pipeline resource
+    type: enum  # type of the pipeline source like AzurePipelines, Jenkins etc. In future this can extend to other source types.
+    connection: string  # service connection to connect to the source
+    source:
+      name: string  # source defintion of the pipeline including the project i.e. projectName/Definition
+      version: string  # version to pick the artifact, optional; defaults to Latest
+      branch: string  # branch to pick the artiafct, optional; defaults to master branch
+      tags: string # picks the artifacts on from the pipeline with given tag, optional; defaults to no tags.
 ```
 
 ### Examples
@@ -46,7 +46,7 @@ resources:
   pipelines:
   - pipeline: SmartHotel      
     type: AzurePipelines
-    source: SmartHotel-CI
+    source: SmartHotel-CI # If your source definition is in current project and doesn't need to update default versions
 ```
 
 
@@ -88,6 +88,11 @@ resources:          # types: pipelines | repositories | containers | packages
     connection: string # service connection to connect to the source, defaults to primary source connection
     source: string # source repository to fetch
     branch: string # branch to fetch the repo from, defauts to master.
+    clean: boolean  # whether to fetch clean each time
+    fetchDepth: number  # the depth of commits to ask Git to fetch
+    lfs: boolean  # whether to download Git-LFS files
+    submodules: true | recursive  # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
+    persistCredentials: boolean  # set to 'true' to leave the OAuth token in the Git config after the initial fetch
 ```
 
 ### Examples
