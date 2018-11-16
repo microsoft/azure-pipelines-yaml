@@ -25,9 +25,9 @@ We'll add a minimum agent version demand should the task.json require the Node10
     },
 ```
 
-Initially, the agent is going to package both v6 and v10 Node runtimes, and leave the current v6 workflow unaltered. A feature flag `UseNodeV10RuntimeForNodeHandler` will be introduced to the Node handler to switch between the v6 and v10 backends.
+Initially, the agent is going to package both v6 and v10 Node runtimes, and leave the current v6 workflow unaltered. A feature flag `AGENT_USE_NODE10` will be introduced to the Node handler to switch between the v6 and v10 backends.
 
-A new agent handler -- Node10Handler -- will be added to the agent.
+The Node v10 switching mechanism will be implemented by the existing `NodeHandler.cs` class.
 
 ## Rolling out feature
 
@@ -36,7 +36,7 @@ Rolling out Node v10 support will be executed in three phases:
 1. New versions of the agents (with node v10) will be deployed to Ring 0. Then, we'll monitor pipeline runs from the build canary, with the feature flag off, and look out for any regressions. This phase is basically equivalent to what we already do for every new build release.
 
 ```
-"Node10" -> Node10Handler.cs -> Node v10 runtime
+"Node10" -> NodeHandler.cs   -> Node v10 runtime
     
     
     
@@ -47,7 +47,7 @@ Rolling out Node v10 support will be executed in three phases:
 2. Once we're sure there are no pipeline run regressions, we turn the feature flag on to switch "Node" to the v10 handler in the build canary, and again, look out for any regressions. Simultaneously, we continue deploying the agent to later scale units. Initially with the feature flag off, then turned on.
 
 ```
-"Node10" -> Node10Handler.cs  -> Node v10 runtime
+"Node10" -> NodeHandler.cs   -> Node v10 runtime
                                  ^
                                 /
                                /
@@ -58,7 +58,7 @@ Rolling out Node v10 support will be executed in three phases:
 3. Once we've turned the feature flag everywhere on hosted, we'll still keep the v6 and v10 runtimes, and the feature flag OFF for the next on-prem release. This is because we don't have control over the tasks that are written against those on-prem environments. After the on-prem release, we'll remove the Node v6 runtime from the agent, in addition to the feature flag.
 
 ```
-"Node10" -> Node10Handler.cs  -> Node v10 runtime
+"Node10" -> NodeHandler.cs   -> Node v10 runtime
                                  ^
                                 /
                                /
