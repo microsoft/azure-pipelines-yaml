@@ -1,6 +1,6 @@
 # Container steps
 
-Status: PM spec
+Status: **ON HOLD, NOT IMPLEMENTING RIGHT NOW**
 
 An emerging pattern is running discrete steps of a job in different containers.
 Each one carries along a persistent, read/write volume as its workspace.
