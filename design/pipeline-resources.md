@@ -2,11 +2,11 @@
 
 Any external service that is consumed as part of your pipeline is a resource. 
 
-An example of a resource can be another CI/CD pipeline that produces artifacts (say Azure pipelines, Jenkins etc.), code repositories (GitHub, Azure Repos, Git), container image registries (ACR, Docker hub etc.) and package feeds (Azure artifact feed, Artifactor etc.).  
+An example of a resource can be another CI/CD pipeline that produces artifacts (say Azure pipelines, Jenkins etc.), code repositories (GitHub, Azure Repos, Git), container image registries (ACR, Docker hub etc.) or package feeds (Azure artifact feed, Artifactor etc.).  
 
 ## Why resources?
 
-Resources are defined at one place and can be consumed anywhere in your pipeline. Resources provide you the full traceablity of the services consumed in your pipeline including branches, versions, tags, associated commits and work-items. You can fully automate your DevOps workflow by subscribing to trigger events on your resources.
+Resources are defined at one place and can be consumed anywhere in your pipeline. Resources provide you the full traceablity of the services consumed in your pipeline including the branch, version, tags, associated commits and work-items. You can fully automate your DevOps workflow by subscribing to trigger events on your resources.
 
 Resources in YAML represent sources of types pipelines, repositories, containers and packages.
 
@@ -48,7 +48,7 @@ The inputs inside `source` can change based on the pipeline type defined. The ab
 
 ### Examples
 
-If you need to consume another azurePipelines from the current project and you dont require setting branch, version and tags, this can be shortened to:
+If you need to consume another azurePipelines from the current project and you dont require setting branch, version and tags info, this can be shortened to:
 
 ```yaml
 resources:         
@@ -58,7 +58,7 @@ resources:
     source: SmartHotel-CI  # name of the pipeline source definition
 ```
 
-In case you need to consume an azurePipeline from other project, you need to include the project name while providing source name.
+In case you need to consume an azurePipeline from other project, then you need to include the project name while providing source name.
 
 ```yaml
 resources:         
@@ -72,7 +72,7 @@ resources:
 
 ### `downloadArtifact` for pipelines
 
-Artifacts from the `pipeline` resource defined are automatically downloaded and made available for all the jobs. However, in any of the jobs, you can choose to override and download only specific artifacts using `downloadArtifact` shortcut.
+Artifacts from the `pipeline` resource are automatically downloaded and made available for all the jobs. However, in any of the jobs, you can choose to override and download only specific artifacts using `downloadArtifact` shortcut.
 
 
 ```yaml
@@ -92,7 +92,7 @@ Or to avoid downloading any of the artifacts at all:
 
 Refer to [download artifacts](https://github.com/Microsoft/azure-pipelines-yaml/blob/master/design/pipeline-artifacts.md#downloading-artifacts-downloadartifact) for more details.
 
-Artifacts from the `pipeline` resource are downloaded to `$PIPELINES_RESOURCESDIR/<pipeline-identifier>/` or to the directory specified in `root`.
+Artifacts from the `pipeline` resource are downloaded to `$PIPELINES_RESOURCESDIR/<pipeline-identifier>/` folder.
 
 ## Resources: `repositories`
 
