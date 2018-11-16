@@ -2,11 +2,11 @@
 
 Any external service that is consumed as part of your pipeline is a resource. 
 
-An example of a resource can be another CI/CD pipeline (say Azure pipelines, Jenkins etc.) that produces artifacts, code repositories (GitHub, Azure Repos, Git), container image registries (ACR, Docker hub etc.) and package feeds (Azure artifact feed, Artifactor etc.).  
+An example of a resource can be another CI/CD pipeline that produces artifacts (say Azure pipelines, Jenkins etc.), code repositories (GitHub, Azure Repos, Git), container image registries (ACR, Docker hub etc.) and package feeds (Azure artifact feed, Artifactor etc.).  
 
 ## Why resources?
 
-Resources provide you the full traceablity of the services consumed in your pipeline including branches, versions, tags, associated commits and work-items. Resources are defined at one place and can be consumed anywher in your pipeline.
+Resources are defined at one place and can be consumed anywhere in your pipeline. Resources provide you the full traceablity of the services consumed in your pipeline including branches, versions, tags, associated commits and work-items. You can fully automate your DevOps workflow by subscribing to trigger events on your resources.
 
 Resources in YAML represent sources of types pipelines, repositories, containers and packages.
 
@@ -25,7 +25,7 @@ resources:
 
 ## Resources: `pipelines`
 
-If you have a pipeline that produces artifacts, you can consume the artifacts by defining `pipelines` resource. A pipeline can be another Azure DevOps pipeline or any external pipelines like Jenkins etc.
+If you have a pipeline that produces artifacts, you can consume the artifacts by defining a `pipelines` resource. A pipeline can be another Azure DevOps pipeline or any external pipelines like Jenkins etc.
 
 
 ### Schema
@@ -36,7 +36,7 @@ resources:        # types: pipelines | repositories | containers | packages
   - pipeline: string  # identifier for the pipeline resource
     type: enum  # type of the pipeline source like azurePipelines, Jenkins etc. 
     connection: string  # service connection to connect to the source
-    source:  # the inputs inside the source can change with the pipeline type azurePipelines, jenkins etc.
+    source:  
       name: string  # source defintion of the pipeline including the project i.e. projectName/definition
       version: string  # version to pick the artifact, optional; defaults to Latest
       branch: string  # branch to pick the artiafct, optional; defaults to master branch
@@ -48,7 +48,7 @@ The inputs inside `source` can change based on the pipeline type defined. The ab
 
 ### Examples
 
-If you need to consume another azurePipelines from the current project and you dont require setting branch version and tags, this can be shortened to:
+If you need to consume another azurePipelines from the current project and you dont require setting branch, version and tags, this can be shortened to:
 
 ```yaml
 resources:         
@@ -58,7 +58,7 @@ resources:
     source: SmartHotel-CI  # name of the pipeline source definition
 ```
 
-In case you need to consume an azurePipeline from other project, you need to include the project to your source name.
+In case you need to consume an azurePipeline from other project, you need to include the project name while providing source name.
 
 ```yaml
 resources:         
@@ -92,10 +92,11 @@ Or to avoid downloading any of the artifacts at all:
 
 Refer to [download artifacts](https://github.com/Microsoft/azure-pipelines-yaml/blob/master/design/pipeline-artifacts.md#downloading-artifacts-downloadartifact) for more details.
 
+Artifacts from the `pipeline` resource are downloaded to `$PIPELINES_RESOURCESDIR/<pipeline-identifier>/` or to the directory specified in `root`.
 
 ## Resources: `repositories`
 
-If you have multiple repositories from which you need to sync the code into your pipeline, you can consume using `repositories`. A repository can be another Azure Repo or any external repo like GitHub etc.
+If you have multiple repositories from which you need to sync the code into your pipeline, you can consume the repos by defining a `repositories` resource. A repository can be another Azure Repo or any external repo like GitHub etc.
 
 
 ### Schema
@@ -156,6 +157,8 @@ Or to avoid syncing any of the repository resources use:
 - checkout: none
 ```
 
+Repositories are checked out to `$PIPELINES_RESOURCESDIR/<repository-identifier>/`.
+
 ## Resources: `containers`
 
 If you need to consume a container image as part of your CI/CD pipeline, you can achieve it using `containers`. A container can be an Azure Container Registy or any external Docker registry.
@@ -183,3 +186,5 @@ resources:
     connection: myDockerRegistry
     source: Microsoft/alphaworz
 ```
+
+Container image and metadata from the resource are made available across all the jobs in the pipeline for cosumption. 
