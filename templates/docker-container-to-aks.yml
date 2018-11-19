@@ -2,6 +2,9 @@
 # Build a Docker image, push to a container registry and deploy to Azure kubernetes service
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
+trigger:
+- master
+
 resources:
 - repo: self
 
