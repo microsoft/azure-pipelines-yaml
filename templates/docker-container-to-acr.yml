@@ -2,6 +2,9 @@
 # Build a Docker image and push to a container registry
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
+trigger:
+- master
+
 resources:
 - repo: self
 

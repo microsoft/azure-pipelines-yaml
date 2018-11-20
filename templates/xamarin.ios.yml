@@ -3,14 +3,18 @@
 # Add steps that install certificates, test, sign, and distribute an app, save build artifacts, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/xamarin
 
+trigger:
+- master
+
 pool:
   vmImage: 'macOS-10.13'
 
 steps:
 # To manually select a Xamarin SDK version on the Microsoft-hosted macOS agent,
-# configure this task with the SDK version you want to target and set the "enabled" property to true.
+# configure this task with the *Mono* version that is associated with the
+# Xamarin SDK version that you need, and set the "enabled" property to true.
 # See https://go.microsoft.com/fwlink/?linkid=871629
-- script: sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh 5_4_1 
+- script: sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh 5_12_0
   displayName: 'Select the Xamarin SDK version'
   enabled: false
 
