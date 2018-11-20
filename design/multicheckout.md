@@ -29,7 +29,7 @@ steps:
 
 In the above example, three repos will end up checked out.
 `self` is the usual repo where the pipeline YAML was found.
-It will be checked out in the default location, `Build.SourcesDirectory`.
+It will be checked out in the default location.
 `tools` is another repo in the same Azure DevOps project.
 It will be checked out into `buildTools/`, a subdirectory of a new "resources" directory.
 Finally, `scripts` is a repo on GitHub.
@@ -47,28 +47,72 @@ It will be checked out into its default location, `scripts/` (driven by the reso
   root: string        # directory to checkout the repo
 ```
 
+## New features needed
+
+- Resources directory: $(Pipelines.ResourcesDirectory)
+- Default source directory: $(Pipelines.DefaultSourcesDirectory)
+- `self` checkout influences $(Pipelines.SourcesDirectory)
+
 ## Scenario examples
 
 ### Code in one repository, tools in another repo
 
 ```yaml
-TODO
+resources:
+  repositories:
+  - repository: tools
+    type: git
+    name: ToolsRepo
+
+steps:
+- checkout: self
+- checkout: tools
+  root: buildTools  # relative paths are assumed to be rooted at $(Pipelines.ResourcesDirectory)
 ```
 
 ### Code in one repository, pipeline YAML in another
 
 ```yaml
-TODO
+resources:
+  repositories:
+  - repository: code
+    type: git
+    name: CodeRepo
+    # TODO: how does a push to CodeRepo trigger this pipeline?
+
+steps:
+- checkout: none  # Pipelines.SourcesDirectory will be unset
+- checkout: code
+  root: $(Pipelines.DefaultSourcesDirectory)
 ```
 
 ### Code split up across multiple repos
 
 ```yaml
-TODO
+resources:
+  repositories:
+  - repository: code2
+    type: git
+    name: moreCode
+  - repository: code3
+    type: git
+    name: evenMoreCode
+
+steps:
+- checkout: self
+  root: $(Pipelines.DefaultSourcesDirectory)/module1
+- checkout: code2
+  root: $(Pipelines.DefaultSourcesDirectory)/module2
+- checkout: code3
+  root: $(Pipelines.DefaultSourcesDirectory)/module3
 ```
 
 ### Control the checkout location of code
 
 ```yaml
-TODO
+steps:
+- checkout: self
+  root: $(Pipelines.DefaultSourcesDirectory)/PutMyCodeHere
+- script: ./build.sh
+  workingDirectory: $(Pipelines.SourcesDirectory)  # correctly set based on the self checkout step
 ```
