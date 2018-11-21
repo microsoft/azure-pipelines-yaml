@@ -72,7 +72,7 @@ resources:
 
 ### `downloadArtifact` for pipelines
 
-Artifacts from the `pipeline` resource are automatically downloaded and made available for all the jobs. However, in any of the jobs, you can choose to override and download only specific artifacts using `downloadArtifact` shortcut.
+Artifacts from the `pipeline` resource are automatically downloaded and made available for all the jobs. However, in any of the jobs, you can choose to override and download only specific artifacts using `downloadArtifact` shortcut. Once you use `downloadArtifact` to override and download a specific artifact, automatic artifact download behavior is removed and you need to specify all the artifacts you intend to download in the job.
 
 
 ```yaml
@@ -89,7 +89,6 @@ Or to avoid downloading any of the artifacts at all:
 - downloadArtifact: none
 ```
 
-Once you use `downloadArtifact` to override and download a specific artifact, automatic artifact download behavior is removed and you need to specify all the artifacts you intend to download in the job.
 
 Refer to [download artifacts](https://github.com/Microsoft/azure-pipelines-yaml/blob/master/design/pipeline-artifacts.md#downloading-artifacts-downloadartifact) for more details.
 
