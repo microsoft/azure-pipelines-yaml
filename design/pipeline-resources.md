@@ -138,7 +138,10 @@ Repos from the `repository` resources defined are automatically synced and made 
   lfs: boolean  # whether to download Git-LFS files
   submodules: true | recursive  # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
   persistCredentials: boolean  # set to 'true' to leave the OAuth token in the Git config after the initial fetch
+  root: string        # directory to checkout the repo
 ```
+
+The repo is checked-out to `$PIPELINES_RESOURCESDIR/<pipeline-identifier>/` folder.
 
 ### Example
 
@@ -149,7 +152,10 @@ Repos from the `repository` resources defined are automatically synced and made 
   lfs: true
 ```
 
-When you use `checkout` to sync a specific repository resource, all the other repositories are not synced.  
+You can sync your primary repository as `self`.
+```yaml
+- checkout: self  
+```
 
 Or to avoid syncing any of the repository resources use:
 
@@ -157,7 +163,10 @@ Or to avoid syncing any of the repository resources use:
 - checkout: none
 ```
 
-Repositories are checked out to `$PIPELINES_RESOURCESDIR/<repository-identifier>/`.
+When you use `checkout` to sync a specific repository resource, all the other repositories are not synced. 
+
+`self` checkout directory: `$PIPELINES_SOURCESDIR`
+other repositories' checkout directory: `$PIPELINES_RESOURCESDIR/<repository-identifier>/`
 
 ## Resources: `containers`
 
