@@ -43,7 +43,7 @@ resources:        # types: pipelines | repositories | containers | packages
       tags: string # picks the artifacts on from the pipeline with given tag, optional; defaults to no tags.
 ```
 
-The inputs inside `source` can change based on the pipeline type defined. The above schema is for the `type`: azurePipelines.
+The inputs inside `source` can change based on the pipeline type defined. The above schema is for the `type`: `azurePipelines`.
 
 
 ### Examples
@@ -57,7 +57,7 @@ resources:
     source: SmartHotel-CI  # name of the pipeline source definition
 ```
 
-By default, the type is taken as azurePipelines unless specified otherwise.
+By default, the `type` is taken as `azurePipelines` unless specified otherwise.
 
 
 In case you need to consume an azurePipeline from other project, then you need to include the project name while providing source name.
@@ -67,7 +67,7 @@ resources:
   pipelines:
   - pipeline: SmartHotel      
     source: 
-      name: DevOpsProject/SmartHotel-CI  # name of the pipeline source from different project
+      name: DevOpsProject/SmartHotel-CI  # name of the pipeline source from different project <projectName>/<sourceName>
       branch: releases/M142
 ```
 
