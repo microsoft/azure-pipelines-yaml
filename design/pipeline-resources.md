@@ -48,7 +48,7 @@ The inputs inside `source` can change based on the pipeline type defined. The ab
 
 ### Examples
 
-If you need to consume another azurePipelines from the current project and you dont require setting branch, version and tags info, this can be shortened to:
+If you need to consume artifacts from another azure pipeline from the current project and if you dont require setting branch, version and tags etc., this can be shortened to:
 
 ```yaml
 resources:         
@@ -60,7 +60,7 @@ resources:
 By default, the `type` is taken as `azurePipelines` unless specified otherwise.
 
 
-In case you need to consume an azurePipeline from other project, then you need to include the project name while providing source name.
+In case you need to consume an azure pipeline from other project, then you need to include the project name while providing source name.
 
 ```yaml
 resources:         
