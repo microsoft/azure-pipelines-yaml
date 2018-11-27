@@ -2,7 +2,7 @@
 
 Any external service that is consumed as part of your pipeline is a resource. 
 
-An example of a resource can be another CI/CD pipeline that produces artifacts (say Azure pipelines, Jenkins etc.), code repositories (GitHub, Azure Repos, Git), container image registries (ACR, Docker hub etc.) or package feeds (Azure artifact feed, Artifactor etc.).  
+An example of a resource can be another CI/CD pipeline that produces artifacts (say Azure pipelines, Jenkins etc.), code repositories (GitHub, Azure Repos, Git), container image registries (ACR, Docker hub etc.) or package feeds (Azure Artifact feed, Artifactory package etc.).  
 
 ## Why resources?
 
@@ -54,9 +54,11 @@ If you need to consume another azurePipelines from the current project and you d
 resources:         
   pipelines:
   - pipeline: SmartHotel      
-    type: azurePipelines
     source: SmartHotel-CI  # name of the pipeline source definition
 ```
+
+By default, the type is taken as azurePipelines unless specified otherwise.
+
 
 In case you need to consume an azurePipeline from other project, then you need to include the project name while providing source name.
 
@@ -64,7 +66,6 @@ In case you need to consume an azurePipeline from other project, then you need t
 resources:         
   pipelines:
   - pipeline: SmartHotel      
-    type: azurePipelines
     source: 
       name: DevOpsProject/SmartHotel-CI  # name of the pipeline source from different project
       branch: releases/M142
@@ -170,7 +171,7 @@ other repositories' checkout directory: `$PIPELINES_RESOURCESDIR/<repository-ide
 
 ## Resources: `containers`
 
-If you need to consume a container image as part of your CI/CD pipeline, you can achieve it using `containers`. A container can be an Azure Container Registy or any external Docker registry.
+If you need to consume a container image as part of your CI/CD pipeline, you can achieve it using `containers`. A container can be an Azure Container Registry or any external Docker registry.
 
 ### Schema
 
