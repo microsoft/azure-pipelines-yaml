@@ -110,11 +110,6 @@ resources:          # types: pipelines | repositories | containers | packages
     connection: string # service connection to connect to the source, defaults to primary source connection
     source: string  # source repository to fetch
     refs: string  # ref name to use, defaults to 'refs/heads/master'
-    clean: boolean  # whether to fetch clean each time
-    fetchDepth: number  # the depth of commits to ask Git to fetch
-    lfs: boolean  # whether to download Git-LFS files
-    submodules: true | recursive  # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
-    persistCredentials: boolean  # set to 'true' to leave the OAuth token in the Git config after the initial fetch
 ```
 
 ### Examples
