@@ -193,3 +193,7 @@ resources:
 ```
 
 Once you define a container as resource, container image metadata passed to the pipeline in the form of variables. Information like image, registry and connection details are made accessible across all the jobs so that your kubernetes deploy tasks can extract the image pull secrets and pass it to the cluster.
+
+# Triggers
+<TODO>
+Proposal for resource level triggers will be taken care in the next iteration.
