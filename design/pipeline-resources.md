@@ -36,14 +36,14 @@ resources:        # types: pipelines | repositories | containers | packages
   - pipeline: string  # identifier for the pipeline resource
     type: enum  # type of the pipeline source like azurePipelines, Jenkins etc. 
     connection: string  # service connection to connect to the source
-    source:  
-      name: string  # source defintion of the pipeline including the project i.e. projectName/definition
-      version: string  # version to pick the artifact, optional; defaults to Latest
-      branch: string  # branch to pick the artiafct, optional; defaults to master branch
-      tags: string # picks the artifacts on from the pipeline with given tag, optional; defaults to no tags.
+    project: string # project for the source; optional for current project. All the inputs starting from here are 'type' specific 
+    source: string  # source defintion of the pipeline
+    version: string  # version to pick the artifact, optional; defaults to Latest
+    branch: string  # branch to pick the artiafct, optional; defaults to master branch
+    tags: string # picks the artifacts on from the pipeline with given tag, optional; defaults to no tags.
 ```
 
-The inputs inside `source` can change based on the pipeline type defined. The above schema is for the `type`: `azurePipelines`.
+The inputs starting from `project` are provider `type` specific properties. The above schema is for the `type`: `azurePipelines`. The inputs may change for other provider types like Jenkins etc.
 
 
 ### Examples
@@ -65,10 +65,10 @@ In case you need to consume an azure pipeline from other project, then you need 
 ```yaml
 resources:         
   pipelines:
-  - pipeline: SmartHotel      
-    source: 
-      name: DevOpsProject/SmartHotel-CI  # name of the pipeline source from different project <projectName>/<sourceName>
-      branch: releases/M142
+  - pipeline: SmartHotel   
+    project: DevOpsProject
+    source: SmartHotel-CI  
+    branch: releases/M142
 ```
 
 ### `downloadArtifact` for pipelines
