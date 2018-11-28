@@ -36,14 +36,14 @@ resources:        # types: pipelines | repositories | containers | packages
   - pipeline: string  # identifier for the pipeline resource
     type: enum  # type of the pipeline source like azurePipelines, Jenkins etc. 
     connection: string  # service connection to connect to the source
-    project: string # project for the source; optional for current project. All the inputs starting from here are 'type' specific 
+    project: string # project for the source; optional for current project  
     source: string  # source defintion of the pipeline
     version: string  # version to pick the artifact, optional; defaults to Latest
     branch: string  # branch to pick the artiafct, optional; defaults to master branch
-    tags: string # picks the artifacts on from the pipeline with given tag, optional; defaults to no tags.
+    tags: string # picks the artifacts on from the pipeline with given tag, optional; defaults to no tags
 ```
 
-The inputs starting from `project` are provider `type` specific properties. The above schema is for the `type`: `azurePipelines`. The inputs may change for other provider types like Jenkins etc.
+The inputs starting from `project` to `tags` are provider `type` specific properties. The above schema is for the `type`: `azurePipelines`. The inputs may change for other provider types like Jenkins etc.
 
 
 ### Examples
