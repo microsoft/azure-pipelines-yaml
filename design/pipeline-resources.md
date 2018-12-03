@@ -1,6 +1,6 @@
 # Resources in YAML
 
-Any external service that is consumed as part of your pipeline is a resource. 
+Any external service that is consumed as part of your pipeline is a resource.
 
 An example of a resource can be another CI/CD pipeline that produces artifacts (say Azure pipelines, Jenkins etc.), code repositories (GitHub, Azure Repos, Git), container image registries (ACR, Docker hub etc.) or package feeds (Azure Artifact feed, Artifactory package etc.).  
 
@@ -27,59 +27,50 @@ resources:
 
 If you have a pipeline that produces artifacts, you can consume the artifacts by defining a `pipelines` resource. A pipeline can be another Azure DevOps pipeline or any external pipelines like Jenkins etc.
 
-
 ### Schema
 
 ```yaml
 resources:        # types: pipelines | repositories | containers | packages
   pipelines:
   - pipeline: string  # identifier for the pipeline resource
-    type: enum  # type of the pipeline source like azurePipelines, Jenkins etc. 
-    connection: string  # service connection to connect to the source
-    project: string # project for the source; optional for current project  
+    connection: string  # service connection for pipelines in other Azure DevOps organizations or Servers
+    project: string # project for the source; optional for current project
     source: string  # source defintion of the pipeline
     version: string  # version to pick the artifact, optional; defaults to Latest
     branch: string  # branch to pick the artiafct, optional; defaults to master branch
     tags: string # picks the artifacts on from the pipeline with given tag, optional; defaults to no tags
 ```
 
-The inputs starting from `project` to `tags` are provider `type` specific properties. The above schema is for the `type`: `azurePipelines`. The inputs may change for other provider types like Jenkins etc.
-
-
 ### Examples
 
 If you need to consume artifacts from another azure pipeline from the current project and if you dont require setting branch, version and tags etc., this can be shortened to:
 
 ```yaml
-resources:         
+resources:
   pipelines:
-  - pipeline: SmartHotel      
-    source: SmartHotel-CI  # name of the pipeline source definition
+  - pipeline: SmartHotel
+    source: SmartHotel-CI # name of the pipeline source definition
 ```
 
-By default, the `type` is taken as `azurePipelines` unless specified otherwise.
-
-
-In case you need to consume an azure pipeline from other project, then you need to include the project name while providing source name.
+In case you need to consume a Pipeline from other project, then you need to include the project name while providing source name.
 
 ```yaml
-resources:         
+resources:
   pipelines:
-  - pipeline: SmartHotel   
+  - pipeline: SmartHotel
     project: DevOpsProject
-    source: SmartHotel-CI  
+    source: SmartHotel-CI
     branch: releases/M142
 ```
 
-### `downloadArtifact` for pipelines
+### `download` for pipelines
 
-Artifacts from the `pipeline` resource are automatically downloaded and made available for all the jobs. However, in any of the jobs, you can choose to override and download only specific artifacts using `downloadArtifact` shortcut. Once you use `downloadArtifact` to override and download a specific artifact, automatic artifact download behavior is removed and you need to specify all the artifacts you intend to download in the job.
-
+All artifacts from the current pipeline and from all `pipeline` resources are automatically downloaded and made available at the beginning of each job. You can override this behavior: see [Pipeline Artifacts](pipeline-artifacts.md#default-and-named-artifacts) for more details.
 
 ```yaml
 - job: deploy_windows_x86_agent
   steps:
-  - downloadArtifact: SmartHotel   # pipeline resource identifier.
+  - download: SmartHotel   # pipeline resource identifier.
     name: WebTier1  # artifact to download, optional; defaults to all the artifacts from the resource.
     patterns: '**/*.zip'  # mini match pattern to download specific files, optional; defaults to all files.
 ```
@@ -87,13 +78,12 @@ Artifacts from the `pipeline` resource are automatically downloaded and made ava
 Or to avoid downloading any of the artifacts at all:
 
 ```yaml
-- downloadArtifact: none
+- download: none
 ```
 
+Refer to [download artifacts](https://github.com/Microsoft/azure-pipelines-yaml/blob/master/design/pipeline-artifacts.md#downloading-artifacts-download) for more details.
 
-Refer to [download artifacts](https://github.com/Microsoft/azure-pipelines-yaml/blob/master/design/pipeline-artifacts.md#downloading-artifacts-downloadartifact) for more details.
-
-Artifacts from the `pipeline` resource are downloaded to `$PIPELINES_RESOURCESDIR/<pipeline-identifier>/` folder.
+Artifacts from the `pipeline` resource are downloaded to `$PIPELINES_RESOURCESDIR/<pipeline-identifier>/<artifact-identifier>` folder.
 
 ## Resources: `repositories`
 
