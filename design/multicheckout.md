@@ -44,7 +44,7 @@ It will be checked out into its default location, `scripts/` (driven by the reso
   lfs: boolean        # whether to download Git-LFS files
   submodules: true | recursive  # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
   persistCredentials: boolean   # set to 'true' to leave the OAuth token in the Git config after the initial fetch
-  root: string        # directory to checkout the repo
+  path: string        # directory to checkout the repo
 ```
 
 ## New features needed
