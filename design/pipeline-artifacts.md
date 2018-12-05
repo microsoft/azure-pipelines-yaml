@@ -89,7 +89,7 @@ This is a simple pipeline that include a build job and a deployment job. The bui
 
 ### Specify a custom location for a build artifact
 
-You can control the location where artifacts are downloaded using the `downloadRoot` key.
+You can control the location where artifacts are downloaded using the `root` key.
 
 ```yaml
 - job: Build
