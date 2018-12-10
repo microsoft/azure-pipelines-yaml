@@ -142,7 +142,6 @@ All artifacts from the defined `build` resources are automatically downloaded an
   - downloadBuild: Spaceworkz   # build resource identifier.
     name: WebTier1  # artifact to download, optional; defaults to all the artifacts from the resource.
     patterns: '**/*.zip'  # mini match pattern to download specific files, optional; defaults to all files.
-    root: $(PIPELINES_RESOURCESDIR)/
 ```
 
 Or to avoid downloading any of the artifacts at all:
