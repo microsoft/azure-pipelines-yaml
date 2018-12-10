@@ -1,0 +1,151 @@
+# Docker image and Azure container registry
+# Build a Docker image and push to a container registry and deploy to Azure Function App
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- master
+
+resources:
+- repo: self
+
+variables:
+  # ========================================================================
+  #                          Mandatory variables 
+  # ========================================================================
+
+ # Update Azure.ResourceGroupName value with Azure resource group name.
+  Azure.ResourceGroupName: '{{#toAlphaNumericString repositoryName 50}}{{/toAlphaNumericString}}'
+
+  # Update Azure.ServiceConnectionId value with AzureRm service endpoint.
+  Azure.ServiceConnectionId: '{{ serviceEndpointId }}'
+
+  # Update Azure.Location value with Azure Location.
+  Azure.Location: 'eastus'
+
+  # Update ACR.Name value with ACR name. Please note ACR names should be all lower-case and alphanumeric only.
+  ACR.Name: '{{#toAlphaNumericString repositoryName 46}}{{/toAlphaNumericString}}{{#shortGuid}}{{/shortGuid}}'
+
+  FunctionApp.Name: '{{#toAlphaNumericString repositoryName 46}}{{/toAlphaNumericString}}{{#shortGuid}}{{/shortGuid}}'
+  
+  StorageAccount.Name: '{{#toAlphaNumericString repositoryName 46}}{{/toAlphaNumericString}}{{#shortGuid}}{{/shortGuid}}'
+
+  ServicePlan.Name: '{{#toAlphaNumericString repositoryName 45}}{{/toAlphaNumericString}}-plan'
+
+  # ========================================================================
+  #                           Optional variables 
+  # ========================================================================
+
+  ACR.RepositoryName: '$(ACR.Name)'
+  ACR.ImageName: '$(ACR.Name):$(Build.BuildId)'
+  ACR.FullName: '$(ACR.Name).azurecr.io'
+  ACR.Sku: 'Standard'
+  Azure.CreateResources: 'true' # Update Azure.CreateResources to false if you have already created resources like resource group and azure container registry.
+  ServicePlan.SKU: S1
+  ServicePlan.NumberOfWorkers: 4
+  StorageAccount.SKU: Standard_LRS
+  StorageAccount.Kind: StorageV2
+  System.Debug: 'false'
+
+jobs:
+
+- job: CreateResources
+  displayName: Create resources
+  condition: and(succeeded(), eq(variables['Azure.CreateResources'], 'true'))
+
+  pool:
+    name: Hosted Ubuntu 1604
+
+  steps:
+  - task: AzureCLI@1
+    displayName: 'Create resources if required'
+    inputs:
+      connectedServiceNameARM: '$(Azure.ServiceConnectionId)'
+      scriptLocation: inlineScript
+      inlineScript: |
+        #!/bin/bash
+        set -e
+        RGExists=$(az group exists --name $(Azure.ResourceGroupName))
+        echo "RG exists: $RGExists"
+        if [ $RGExists = false ]
+        then
+          CREATED_RG=$(az group create --name $(Azure.ResourceGroupName) --location $(Azure.Location))
+          echo "$CREATED_RG"
+        fi
+        CREATE_ACR=$(az acr check-name -n $(ACR.Name) --query nameAvailable)
+        echo "Create ACR: $CREATE_ACR"
+        if [ $CREATE_ACR = true ]
+        then
+          echo "Creating Azure Container registry: $(ACR.Name)"
+          az acr create -n $(ACR.Name) -g $(Azure.ResourceGroupName) --sku $(ACR.Sku) --admin-enabled true
+          echo "Created Azure Container registry: $(ACR.Name)"
+        fi
+        CREATE_FUNCTION_APP=$(az resource list -n "$(FunctionApp.Name)" -g $(Azure.ResourceGroupName) --resource-type "Microsoft.Web/Sites" --query '[0].id')
+        if [ -z "${CREATE_FUNCTION_APP}" ]
+        then
+          echo "Create Function App: true"
+          echo "Creating App service plan: $(ServicePlan.Name)"
+          az appservice plan create -g $(Azure.ResourceGroupName) -n $(ServicePlan.Name) --is-linux --number-of-workers $(ServicePlan.NumberOfWorkers) --sku $(ServicePlan.SKU)
+          echo "Created App service plan: $(ServicePlan.Name)"
+          echo "Creating Storage account: $(StorageAccount.Name)"
+          az storage account create --name $(StorageAccount.Name) --resource-group $(Azure.ResourceGroupName) --location $(Azure.Location) --sku $(StorageAccount.SKU) --kind $(StorageAccount.Kind)
+          echo "Created Storage account: $(StorageAccount.Name)"
+          echo "Creating function app: $(FunctionApp.Name)"
+          az functionapp create -g $(Azure.ResourceGroupName) -n $(FunctionApp.Name) -s $(StorageAccount.Name) --plan $(ServicePlan.Name)
+          echo "Created function app: $(FunctionApp.Name)"
+        else
+          echo "Create Function App: false"
+        fi
+
+- job: BuildImage
+  displayName: Build
+  dependsOn: CreateResources
+  condition: or(succeeded(), ne(variables['Azure.CreateResources'], 'true'))
+
+  pool:
+    name: Hosted Ubuntu 1604
+
+  steps:
+  - task: Docker@1
+    displayName: 'Build an image'
+    inputs:
+      azureSubscriptionEndpoint: '$(Azure.ServiceConnectionId)'
+      azureContainerRegistry: '$(ACR.FullName)'
+      imageName: '$(ACR.ImageName)'
+      command: build
+      dockerFile: '**/Dockerfile'
+
+  - task: Docker@1
+    displayName: 'Push an image'
+    inputs:
+      azureSubscriptionEndpoint: '$(Azure.ServiceConnectionId)'
+      azureContainerRegistry: '$(ACR.FullName)'
+      imageName: '$(ACR.ImageName)'
+      command: push
+
+- job: DeployApp
+  displayName: Deploy
+  dependsOn: BuildImage
+  condition: succeeded()
+
+  pool:
+    name: Hosted Ubuntu 1604
+
+  steps:
+  - task: AzureCLI@1
+    displayName: 'Deploy to function app'
+    inputs:
+      connectedServiceNameARM: '$(Azure.ServiceConnectionId)'
+      scriptLocation: inlineScript
+      inlineScript: |
+        #!/bin/bash
+        set -e
+        WEBSITES_ENABLE_APP_SERVICE_STORAGE=`az webapp config appsettings list -n $(FunctionApp.Name) -g $(Azure.ResourceGroupName) --query "[?(@.name=='WEBSITES_ENABLE_APP_SERVICE_STORAGE')].value" -o tsv`
+        if [[ ! $WEBSITES_ENABLE_APP_SERVICE_STORAGE == "false" ]];
+        then
+          echo "Setting App Setting WEBSITES_ENABLE_APP_SERVICE_STORAGE = false ..."
+          az webapp config appsettings set -g "$(Azure.ResourceGroupName)" -n "$(FunctionApp.Name)" --settings WEBSITES_ENABLE_APP_SERVICE_STORAGE=false > /dev/null
+          echo "Set WEBSITES_ENABLE_APP_SERVICE_STORAGE = false successfully!"
+        fi
+        USERNAME=$(az acr credential show -n $(ACR.Name) --query "username" -o tsv)
+        PASSWORD=$(az acr credential show -n $(ACR.Name) --query "passwords[0].value" -o tsv)
+        az webapp config container set -n "$(FunctionApp.Name)" -g "$(Azure.ResourceGroupName)" --docker-custom-image-name $(ACR.ImageName) --docker-registry-server-user $USERNAME --docker-registry-server-password $PASSWORD
