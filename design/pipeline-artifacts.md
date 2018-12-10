@@ -16,7 +16,7 @@ Artifacts are distinct from other `resources` types, including `containers`, `re
 
 ```yaml
 - upload: string | [ string ]  # a minimatch path or list of [minimatch paths](tasks/file-matching-patterns.md) to upload
-  name: string # identifier for this artifact (no spaces allowed), defaults to 'default'
+  artifact: string # identifier for this artifact (no spaces allowed), defaults to 'default'
   prependPath: string # a directory path that will be prepended to all uploaded files
   seal: boolean # if true, finalizes the artifact so no more files can be added after this step
 ```
@@ -27,7 +27,7 @@ Artifacts are distinct from other `resources` types, including `containers`, `re
 - upload:
   - **/bin/*
   - **/obj/*
-  name: webapp
+  artifact: webapp
   seal: true
 ```
 
@@ -50,7 +50,7 @@ Artifacts are downloaded either to `$PIPELINE_RESOURCESDIRECTORY` or to the dire
 
 ```yaml
 - download: string # identifier for the pipeline resource from which to download artifacts, optional; leave blank to download artifacts from the current pipeline
-  name: string # identifier for the artifact to download; if left blank, downloads all artifacts associated with the resource provided
+  artifact: string # identifier for the artifact to download; if left blank, downloads all artifacts associated with the resource provided
   patterns: string | [ string ] # a minimatch path or list of [minimatch paths](tasks/file-matching-patterns.md) to download; if blank, the entire artifact is downloaded
   root: string # the directory in which to download files, defaults to $PIPELINE_RESOURCESDIRECTORY; if a relative path is provided, it will be rooted from $SYSTEM_DEFAULTWORKINGDIRECTORY
 ```
@@ -59,7 +59,7 @@ Artifacts are downloaded either to `$PIPELINE_RESOURCESDIRECTORY` or to the dire
 
 ```yaml
 - download:
-  name: webapp
+  artifact: webapp
 - download: tools-pipeline
 ```
 
@@ -146,9 +146,9 @@ You can give an artifact a name, and you can upload multiple named artifacts. Al
   steps:
   - script: dotnet publish --configuration $(buildConfiguration)
   - upload: bin/WebApp/*
-    name: WebApp
+    artifact: WebApp
   - upload: bin/MobileApp/*
-    name: MobileApp
+    artifact: MobileApp
 - job: Deploy
   steps:
   - download: WebApp
