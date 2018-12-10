@@ -94,8 +94,8 @@ jobs:
           fi
         fi
         AKS_ID=$(az aks show --resource-group $(Azure.ResourceGroupName) --name $(AKS.ClusterName) --query "id" -o tsv)
-        echo "AKS cluster: [$(AKS.ClusterName)](https://portal.azure.com/#resource${AKS_ID}overview)" > $(System.DefaultWorkingDirectory)/azureCluster.md
-        echo "##vso[task.uploadsummary]$(System.DefaultWorkingDirectory)/azureCluster.md"
+        echo "AKS cluster: [$(AKS.ClusterName)](https://portal.azure.com/#resource${AKS_ID}/overview)" > $(System.DefaultWorkingDirectory)/azureCluster.md
+        echo "##vso[task.addattachment type=Distributedtask.Core.Summary;name=AzureResources;]$(System.DefaultWorkingDirectory)/azureCluster.md"
 
 - job: BuildImage
   displayName: Build
