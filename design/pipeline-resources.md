@@ -8,7 +8,7 @@ An example of a resource can be another CI/CD pipeline that produces artifacts (
 
 Resources are defined at one place and can be consumed anywhere in your pipeline. Resources provide you the full traceablity of the services consumed in your pipeline including the branch, version, tags, associated commits and work-items. You can fully automate your DevOps workflow by subscribing to trigger events on your resources.
 
-Resources in YAML represent sources of types pipelines, repositories, containers and packages.
+Resources in YAML represent sources of types pipelines, builds, repositories, containers and packages. 
 
 
 ### Schema
@@ -16,6 +16,7 @@ Resources in YAML represent sources of types pipelines, repositories, containers
 ```yaml
 resources:
   pipelines: [ pipeline ]  
+  builds: [ build ]
   repositories: [ repository ]
   containers: [ container ]
   packages: [ package ]
@@ -24,19 +25,20 @@ resources:
 ---
 
 ## Resources: `pipelines`
+ 
 
-If you have a pipeline that produces artifacts, you can consume the artifacts by defining a `pipelines` resource. A pipeline can be another Azure DevOps pipeline or any external pipelines like Jenkins etc.
+If you have an Azure Pipeline that produces artifacts, you can consume the artifacts by defining a `pipelines` resource. `pipelines` is a dedicated resource only for Azure Pipelines.
 
 ### Schema
 
 ```yaml
-resources:        # types: pipelines | repositories | containers | packages
+resources:        # types: pipelines | builds | repositories | containers | packages
   pipelines:
   - pipeline: string  # identifier for the pipeline resource
-    connection: string  # service connection for pipelines in other Azure DevOps organizations or Servers
+    connection: string  # service connection for pipelines from other Azure DevOps organizations
     project: string # project for the source; optional for current project
     source: string  # source defintion of the pipeline
-    version: string  # version to pick the artifact, optional; defaults to Latest
+    version: string  # the pipeline run number to pick the artifact, defaults to Latest pipeline successful across all stages
     branch: string  # branch to pick the artiafct, optional; defaults to master branch
     tags: string # picks the artifacts on from the pipeline with given tag, optional; defaults to no tags
 ```
@@ -85,6 +87,72 @@ Refer to [download artifacts](https://github.com/Microsoft/azure-pipelines-yaml/
 
 Artifacts from the `pipeline` resource are downloaded to `$PIPELINES_RESOURCESDIR/<pipeline-identifier>/<artifact-identifier>` folder.
 
+
+
+## Resources: `builds`
+
+If you have any external CI build system that produces artifacts, you can consume the artifacts by defining a `builds` resource. A `builds` resource can be any external CI systems like Jenkins, TeamCity, CircleCI etc.
+
+### Schema
+
+```yaml
+resources:        # types: pipelines | builds | repositories | containers | packages
+  builds:
+  - build: string   # identifier for the build resource
+    type: enum   # the type of your build service like jenkins, circleCI etc.
+    connection: string   # service connection for your build service.
+    source: string   # source definition of the build
+    version: string   # the build number to pick the artifact, defaults to Latest successful build
+    branch: string   # branch to pick the artifact; defaults to master branch
+    tag: string  # picks the artifacts from the build with given tag.
+```
+
+### Examples
+
+The inputs for the `build` resource can change based on the `type` of the build service.
+
+```yaml
+resources:
+  builds:
+  - build: Spaceworkz
+    type: Jenkins
+    connection: MyJenkinsServer 
+    source: SpaceworkzProj   # name of the jenkins source project
+```
+
+
+### `downloadBuild` for builds
+
+All artifacts from the defined `build` resources are automatically downloaded and made available at the beginning of each job. However, you can override this behavior using `downloadBuild` macro.
+
+### Schema
+
+```yaml
+- downloadBuild: string # identifier for the resource from which to download artifacts
+  name: string # identifier for the artifact to download; if left blank, downloads all artifacts associated with the resource provided
+  patterns: string | [ string ] # a minimatch path or list of [minimatch paths](tasks/file-matching-patterns.md) to download; if blank, the entire artifact is downloaded
+  root: string # the directory in which to download files, defaults to $PIPELINES_RESOURCESDIR
+```
+
+### Examples
+
+```yaml
+- job: deploy_windows_x86_agent
+  steps:
+  - downloadBuild: Spaceworkz   # build resource identifier.
+    name: WebTier1  # artifact to download, optional; defaults to all the artifacts from the resource.
+    patterns: '**/*.zip'  # mini match pattern to download specific files, optional; defaults to all files.
+    root: $(PIPELINES_RESOURCESDIR)/
+```
+
+Or to avoid downloading any of the artifacts at all:
+
+```yaml
+- downloadBuild: none
+```
+
+Artifacts from the `build` resource are downloaded to `$PIPELINES_RESOURCESDIR/<build-identifier>/<artifact-identifier>` folder.
+
 ## Resources: `repositories`
 
 If you have multiple repositories from which you need to sync the code into your pipeline, you can consume the repos by defining a `repositories` resource. A repository can be another Azure Repo or any external repo like GitHub etc.
@@ -99,7 +167,7 @@ resources:          # types: pipelines | repositories | containers | packages
     type: enum # type of the repository source like AzureRepos, GitHub etc. In future this can extend to other source types
     connection: string # service connection to connect to the source, defaults to primary source connection
     source: string  # source repository to fetch
-    refs: string  # ref name to use, defaults to 'refs/heads/master'
+    ref: string  # ref name to use, defaults to 'refs/heads/master'
 ```
 
 ### Examples
