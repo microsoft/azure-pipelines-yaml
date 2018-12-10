@@ -36,7 +36,7 @@ variables:
   # ========================================================================
 
   ACR.RepositoryName: '$(ACR.Name)'
-  ACR.ImageName: '$(ACR.Name):$(Build.BuildId)'
+  ACR.ImageName: '$(ACR.Name).azurecr.io/{{ repositoryName }}:$(Build.BuildId)'
   ACR.FullName: '$(ACR.Name).azurecr.io'
   ACR.Sku: 'Standard'
   Azure.CreateResources: 'true' # Update Azure.CreateResources to false if you have already created resources like resource group and azure container registry.

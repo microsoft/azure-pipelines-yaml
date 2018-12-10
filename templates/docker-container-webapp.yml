@@ -34,8 +34,7 @@ variables:
   # ========================================================================
 
   ACR.RepositoryName: '$(ACR.Name)'
-  ACR.ImageName: '$(ACR.Name):$(Build.BuildId)'
-  ACR.FullName: '$(ACR.Name).azurecr.io'
+  ACR.ImageName: '$(ACR.Name).azurecr.io/{{ repositoryName }}:$(Build.BuildId)'
   ACR.Sku: 'Standard'
   Azure.CreateResources: 'true' # Update Azure.CreateResources to false if you have already created resources like resource group and azure container registry.
   ServicePlan.SKU: S1
@@ -83,7 +82,7 @@ jobs:
           az appservice plan create -g $(Azure.ResourceGroupName) -n $(ServicePlan.Name) --is-linux --number-of-workers $(ServicePlan.NumberOfWorkers) --sku $(ServicePlan.SKU)
           echo "Created App service plan: $(ServicePlan.Name)"
           echo "Creating Web app: $(WebApp.Name)"
-          az webapp create -g $(Azure.ResourceGroupName) -n $(WebApp.Name) --plan $(ServicePlan.Name)
+          az webapp create -g $(Azure.ResourceGroupName) -n $(WebApp.Name) --plan $(ServicePlan.Name) --deployment-container-image-name $(ACR.ImageName)
           echo "Created Web app: $(WebApp.Name)"
         else
           echo "Create Web App: false"
