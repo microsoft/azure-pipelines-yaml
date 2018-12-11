@@ -26,10 +26,10 @@ Current scopes are agent, orchestration time, and available
 
 ### New namespace for variables
 
-We'll introduce a new Pipelines.\* namespace for variables.
+We'll introduce a new Pipeline.\* namespace for variables.
 We'll bring forward the parts of Build.\* and Release.\* that make sense.
 *TODO: define what those are.*
-This is the desired future state: all relevant variables are available under Pipelines.\*, Agent.\*, or System.\*.
+This is the desired future state: all relevant variables are available under Pipeline.\*, Agent.\*, or System.\*.
 Some of these may be set conditionally, such as "only for pipelines triggered by a PR".
 
 ### Task migration
@@ -51,7 +51,7 @@ We'll introduce a "compat mode" flag on the Pipeline level.
 All existing designer pipelines and all YAML pipelines will default to "compat mode".
 When a pipeline runs in compat mode, both the old and new namespace variables are injected.
 This way, older tasks and scripts are not broken, but the new world is available.
-In non-compat mode, only the Pipelines.\* variables are injected -- not Build.\* or Release.\*.
+In non-compat mode, only the Pipeline.\* variables are injected -- not Build.\* or Release.\*.
 
 If any task in a pipeline is not Pipeline-aware, the flag cannot be unset on the pipeline.
 Once the pipeline is free of non-Pipeline-aware tasks, it becomes a user option to change.
@@ -64,12 +64,12 @@ In the designer, we give immediate feedback, and for YAML, we throw a YAML-compi
 For the designer, the compat mode flag is a UI checkbox.
 Newly created pipelines will default to having compat mode off.
 
-For YAML, it's a `version: 2` keyword at the root level of the file.
-YAML v2 may also introduce other breaking changes; those need to be documented elsewhere.
+For YAML, it's a `version: 1` keyword at the root level of the file.
+YAML v1 may also introduce other breaking changes; those need to be documented elsewhere.
 
 ## Variable scope
 
 We'll ensure everything under System.\* is available at orchestration time, including for pipeline run numbers.
-Variables under Pipelines.\* will also be available at orchestration time including run numbers.
+Variables under Pipeline.\* will also be available at orchestration time including run numbers.
 *TODO: Ensure this is possible.*
 Agent.\* variables are never available at orchestration time.
