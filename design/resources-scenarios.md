@@ -47,6 +47,8 @@ The pipeline is triggered by one resource, depends on another resource, and prod
 All three are tracked across multiple stages and environments.
 When I want to know what's deployed where, where it came from, and if I've ever seen/tested this combination of resources before, Azure Pipelines can answer those questions.
 
+### TODO: rollback/redeploy scenario
+
 ### Integration with other systems
 - I have a deep investment in my Jenkins infrastructure and don't want to upend all that (yet). But, I want to power my deployments with Azure Pipelines.
 - I can set up a Jenkins resource just as easily as I set up other resources.
