@@ -1,4 +1,4 @@
-# Docker image and Azure container registry
+# Docker image, Azure container registry and Web App
 # Build a Docker image and push to a container registry and deploy to Azure Web App Service
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
