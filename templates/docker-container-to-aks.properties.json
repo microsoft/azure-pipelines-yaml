@@ -1,4 +1,4 @@
 {
-  "iconName": "kubernetes",
+  "iconName": "aks",
   "requires": [ "azuresubscription"]
 }
