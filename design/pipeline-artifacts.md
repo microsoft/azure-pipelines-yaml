@@ -1,6 +1,6 @@
 # Pipeline Artifacts YAML shortcut
 
-**Status: Signed off**
+**Status: Ready for dev design**
 
 Pipeline Artifacts are the new way to move files between jobs and stages in your pipeline. They are hosted in Azure Artifacts and will eventually entirely replace FCS "Build Artifacts". Because moving files between jobs and stages is a crucial part of most CI/CD workflows, and because Pipeline Artifacts are expected to be the default way to do so, this spec proposes a YAML shortcut syntax for uploading and downloading artifacts.
 
@@ -35,10 +35,7 @@ Artifacts are distinct from other `resources` types, including `containers`, `re
 
 ## Downloading artifacts: `download`
 
-`download` is a shortcut for two tasks:
-
-- The [Download Pipeline Artifacts](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/download-pipeline-artifact) task
-- The [Download Fileshare Artifacts](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/download-fileshare-artifacts) task
+`download` is a shortcut for the [Download Pipeline Artifacts](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/download-pipeline-artifact) task.
 
 It will download artifacts uploaded from a previous job or stage or from another pipeline.
 
@@ -49,7 +46,7 @@ Artifacts are downloaded either to `$PIPELINE_RESOURCESDIRECTORY` or to the dire
 ### Schema
 
 ```yaml
-- download: string # identifier for the pipeline resource from which to download artifacts, optional; leave blank to download artifacts from the current pipeline
+- download: string # identifier for the pipeline resource from which to download artifacts, optional; "current" means the current pipeline
   artifact: string # identifier for the artifact to download; if left blank, downloads all artifacts associated with the resource provided
   patterns: string | [ string ] # a minimatch path or list of [minimatch paths](tasks/file-matching-patterns.md) to download; if blank, the entire artifact is downloaded
   root: string # the directory in which to download files, defaults to $PIPELINE_RESOURCESDIRECTORY; if a relative path is provided, it will be rooted from $SYSTEM_DEFAULTWORKINGDIRECTORY
@@ -58,7 +55,7 @@ Artifacts are downloaded either to `$PIPELINE_RESOURCESDIRECTORY` or to the dire
 ### Examples
 
 ```yaml
-- download:
+- download: current
   artifact: webapp
 - download: tools-pipeline
 ```
@@ -151,8 +148,10 @@ You can give an artifact a name, and you can upload multiple named artifacts. Al
     artifact: MobileApp
 - job: Deploy
   steps:
-  - download: WebApp
-  - download: MobileApp
+  - download:
+    name: WebApp
+  - download:
+    name: MobileApp
   - script: TODO-some-cool-deploy-script-here $(Pipeline.ResourcesDirectory)/WebApp/bin/
   - script: TODO-xamarin-magic $(Pipeline.ResourcesDirectory)/MobileApp/
 ```
