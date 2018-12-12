@@ -1,4 +1,4 @@
 {
-  "iconName": "webappforcontainers",
+  "iconName": "docker",
   "requires": [ "azuresubscription"]
 }
