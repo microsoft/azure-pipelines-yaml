@@ -56,13 +56,27 @@ Here, "Jenkins" stands in for any other CI provider.
 In fact, the model can be generalized to any artifact provider: Artifactory or MyGet could also be a valid source.
 Resources are third-party extensible -- first by way of tasks, but perhaps also into YAML syntax.
 
+## Resource behaviors
+
+Resources influence the operation of a pipeline.
+For each type of resource, we need to define default and available behaviors.
+For instance, a pipeline artifact should be automatically available to all jobs downstream of where it's produced (or all jobs, period, if it comes from another pipeline).
+Customers must have the ability to override these defaults.
+A full listing of resource behaviors is beyond the scope of this spec, however, here's a starting point:
+
+Resource | Default behavior | Other behaviors
+---------|------------------|----------------
+repository | synced and checked out in a known location | <ul><li>not synced <li>synced with additional provider-specific options <li>checked out in a non-default location</ul>
+container | <ul><li>`docker pull`ed for a `job` <li>not pulled for a `deployment`</ul> | <ul><li>not pulled <li>pulled from a non-Docker Hub location</ul>
+pipeline | artifacts automatically downloaded | <ul><li>artifacts selectively downloaded <li>artifacts uploaded</ul>
+
 ## User interface
 
 A user's first contact with resources is likely the YAML file.
 Two resource types exist today: `repositories` and `containers`.
 We'll bias towards compat with those resources, but also consider breaking with tradition (or even changing those resources) if it makes the overall model simpler.
 
-Existing YAML schema:
+### Existing YAML schema
 ```yaml
 # Resources
 resources:
@@ -88,4 +102,57 @@ resources:
     endpoint: string  # name of the service connection to use (for non-Azure Repos types)
 ```
 
-TODO: additions to schema
+In the current system, only the `self` repository (which is implied) supports triggers.
+Those triggers live at the pipeline level, not on a resource declaration.
+```yaml
+# CI triggers
+trigger:
+  batch: boolean # batch changes if true, start a new build for every push if false
+  branches:
+    include: [ string ] # branch names which will trigger a pipeline
+    exclude: [ string ] # branch names which will not
+  paths:
+    include: [ string ] # file paths which must match to trigger a pipeline
+    exclude: [ string ] # file paths which will not trigger a pipeline
+
+# PR triggers
+pr:
+  branches:
+    include: [ string ] # branch names which will trigger a pipeline
+    exclude: [ string ] # branch names which will not
+  paths:
+    include: [ string ] # file paths which must match to trigger a pipeline
+    exclude: [ string ] # file paths which will not trigger a pipeline
+```
+
+### Additions to YAML schema
+
+The most obvious change is to support triggering on containers and other repositories.
+```yaml
+resources:
+  repositories:
+  - repository: string  # identifier (A-Z, a-z, 0-9, and underscore)
+    name: string  # repository name (format depends on `type`)
+    ... (properties removed for brevity)
+    trigger:
+      branches:
+        include: [ string ] # branch names which will trigger a pipeline
+        exclude: [ string ] # branch names which will not
+      paths:
+        include: [ string ] # file paths which must match to trigger a pipeline
+        exclude: [ string ] # file paths which will not trigger a pipeline
+  containers:
+  - container: string  # identifier (A-Z, a-z, 0-9, and underscore)
+    image: string  # container image name
+    ... (properties removed for brevity)
+    trigger:
+      tags:
+        include: [ string ] # tags which will trigger a pipeline
+        exclude: [ string ] # tags which will not trigger
+```
+
+TODO: add pipelines schema
+
+### Working with resource metadata
+
+TODO - talk about offering up the metadata in expression context
