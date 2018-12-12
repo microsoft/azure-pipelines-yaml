@@ -1,4 +1,4 @@
-# Build and push docker image
+# Docker image and Azure container registry
 # Build a Docker image and push to a container registry
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
