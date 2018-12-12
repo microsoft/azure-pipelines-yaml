@@ -24,11 +24,14 @@ variables:
 
   # Update ACR.Name value with ACR name. Please note ACR names should be all lower-case and alphanumeric only.
   ACR.Name: '{{#toAlphaNumericString repositoryName 46}}{{/toAlphaNumericString}}{{#shortGuid}}{{/shortGuid}}'
-
+  
+  # Update FunctionApp.Name value with a name that identifies your new function app. Valid characters are a-z, 0-9, and -.
   FunctionApp.Name: '{{#toAlphaNumericString repositoryName 46}}{{/toAlphaNumericString}}{{#shortGuid}}{{/shortGuid}}'
   
-  StorageAccount.Name: '{{#toAlphaNumericString repositoryName 46}}{{/toAlphaNumericString}}{{#shortGuid}}{{/shortGuid}}'
-
+  # Update StorageAccount.Name value with Storage account name. Storage account names must be between 3 and 24 characters in length and use numbers and lower-case letters only.
+  StorageAccount.Name: '{{#toAlphaNumericString repositoryName 20}}{{/toAlphaNumericString}}{{#shortGuid}}{{/shortGuid}}'
+  
+  # Update ServicePlan.Name value with a name of the app service plan.
   ServicePlan.Name: '{{#toAlphaNumericString repositoryName 45}}{{/toAlphaNumericString}}-plan'
 
   # ========================================================================
