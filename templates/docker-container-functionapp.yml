@@ -1,5 +1,5 @@
-# Docker image, Azure container registry and Function App.
-# Build a Docker image and push to a container registry and deploy to Azure Function App
+# Build and Deploy container to Function App
+# Build a Docker image, push to an Azure container registry and deploy to Azure Function App
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
