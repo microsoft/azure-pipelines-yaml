@@ -1,5 +1,5 @@
 # Docker image and Azure container registry
-# Build a Docker image and push to a container registry
+# Build a Docker image and push to a Azure container registry
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
