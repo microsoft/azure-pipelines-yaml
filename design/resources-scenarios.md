@@ -5,9 +5,9 @@ A resource is the interesting unit that a customer wants to produce, consume, an
 If tasks and jobs are the "verbs", resources are the "nouns".
 
 Resources in Azure Pipelines provide three things:
-1. versioning, including locking to a specific version
-2. triggering, the ability to perform work in response to a new version of a resource appearing
-3. traceability, seeing where a version of a resource came from and went to
+1. versioning: locking to a specific, immutable version
+2. triggering: the ability to perform work in response to a new version of a resource appearing
+3. traceability: seeing where a version of a resource came from and went to
 
 These three properties support all of the following customer scenarios.
 
@@ -49,12 +49,28 @@ When I want to know what's deployed where, where it came from, and if I've ever 
 
 ### TODO: rollback/redeploy scenario
 
+### TODO: retry (deployment fails)
+(re-get the exact same snaps of each resource)
+
+### TODO: pipeline (or run) was deleted, is my artifact linking to an environment preserved?
+(external tracing system vs relying on pipeline data)
+
+### TODO: resources participating in cleanup
+(e.g. notify ACR when the pipeline goes away so container can go away)
+
+### TODO: retention tracking
+(because a deployment happened, add a lock to retain the resource)
+
+### TODO: work items and commits tracked through to the environment
+
 ### Integration with other systems
 - I have a deep investment in my Jenkins infrastructure and don't want to upend all that (yet). But, I want to power my deployments with Azure Pipelines.
 - I can set up a Jenkins resource just as easily as I set up other resources.
 - Azure Pipelines can trigger and track artifacts produced by Jenkins.
+- Additionally, Jenkins offers up the JIRA work items which were included in the build of this artifact.
 
 Here, "Jenkins" stands in for any other CI provider.
+"Work items" and "changes" are first-class entities for any upstream CI provider.
 In fact, the model can be generalized to any artifact provider: Artifactory or MyGet could also be a valid source.
 Resources are third-party extensible -- first by way of tasks, but perhaps also into YAML syntax.
 
