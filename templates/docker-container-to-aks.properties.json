@@ -1,4 +1,4 @@
 {
-  "iconName": "docker",
+  "iconName": "aks",
   "requires": [ "azuresubscription"]
 }
