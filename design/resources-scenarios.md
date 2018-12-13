@@ -63,8 +63,7 @@ When I want to know what's deployed where, where it came from, and if I've ever 
 - I need to roll back to the last "good" code before the break.
 - I want to re-deploy the exact versions of each resource (code, containers, etc.) which were working previously.
 
-### Long-term preservation of history
-*To be determined: is this a required scenario?*
+### Long-term preservation of metadata
 - On January 1, I deploy a version of my code.
 - On February 1, because it's been at least 30 days, my pipelines age out of retention. This includes all the resources like containers, packages, etc.
 - On July 1, a massive exploit is revealed that has affected hosted services for at least 6 months.
@@ -73,7 +72,7 @@ When I want to know what's deployed where, where it came from, and if I've ever 
 ### Retention tracking and resource cleanup
 - When I deploy a resource to my environment, this implicitly adds a lock. Those resources will not age out while they're deployed.
 - When the resource is replaced by a later version, the lock is removed. Resources no longer in an environment are eligible for cleanup.
-- *Stretch goal* When my containers age out, Azure Container Registry is notified and can begin its retention / cleanup for old, unused container versions. (This isn't limited to containers, either -- any resource could participate.)
+- *Stretch goal:* When my containers age out, Azure Container Registry is notified and can begin its retention / cleanup for old, unused container versions. (This isn't limited to containers, either -- any resource could participate.)
 
 ### Integration with other systems
 - I have a deep investment in my Jenkins infrastructure and don't want to upend all that (yet). But, I want to power my deployments with Azure Pipelines.
@@ -186,3 +185,14 @@ TODO: add pipelines schema
 ### Working with resource metadata
 
 TODO - talk about offering up the metadata in expression context
+
+### Other TODOs:
+- illustrate version vs versionSpec
+- retry vs redeploy: is this about "re-run this stage as a new attempt" vs "start a whole new run, snapping to the same things" (getting re-approvals may be relevant here)
+- pipeline triggering another pipeline
+- locking/retention - controlled by environment? need some kind of overall policy, too
+- show source provider offering up work items
+- show how defaults are represented in YAML
+- add back `packages` as a resource type (triggers)
+- third-party extensibility for steps
+- can we offer the auth, proxy, caching stuff as a function of using resources and not even require a task/`use`?
