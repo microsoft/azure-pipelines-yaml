@@ -40,11 +40,11 @@ resources:        # types: pipelines | builds | repositories | containers | pack
     source: string  # source defintion of the pipeline
     version: string  # the pipeline run number to pick the artifact, defaults to Latest pipeline successful across all stages
     branch: string  # branch to pick the artiafct, optional; defaults to master branch
-    tags: string # picks the artifacts on from the pipeline with given tag, optional; defaults to any tag or no tag.
-    trigger:
-      branches:
-        include: [ string ]  # branches on which the trigger events are considered, optional; Defaults to all branches are included.
-        exclude: [ string ]  # branches on which the trigger events are discarded, optional; Defaults to none.
+    tag: string # picks the artifacts on from the pipeline with given tag, optional; defaults to any tag or no tag.
+    trigger:     # enables triggers for this resource, optional; Defaults to no triggers.
+      branches:  # branch conditions to filter the events, optional; Defaults to all branches.
+        include: [ string ]  # branches to consider the trigger events, optional; Defaults to all branches.
+        exclude: [ string ]  # branches to discard the trigger events, optional; Defaults to none.
       stages: [ string ]  # trigger after completion of given stage, optional; Defaults to all stage completion.
       tags: [ string ]  # tags on which the trigger events are considered, optional; Defaults to any tag or no tag.
 ```
@@ -93,11 +93,54 @@ Artifacts from the `pipeline` resource are downloaded to `$PIPELINE.RESOURCESDIR
 
 ### `trigger` examples
 
+Unless specified, no triggers are enabled on resources.
 
+If you need to enable trigger on a `pipeline` resource so that a new pipeline run is triggered whenever a pipeline run is succesfully completed by the `pipeline` resource. And if the pipeline run can be of any branch or tag, the trigger syntax can be further simplified to:
+
+```yaml
+resources:
+  pipelines:
+  - pipeline: SmartHotel
+    source: SmartHotel-CI 
+    trigger: true
+```
+
+
+If you would like to enable trigger if the run of the `pipeline` resource is succesfully completed only on specific branches and only if the pipeline run has specific tags:
+
+```yaml
+resources:
+  pipelines:
+  - pipeline: SmartHotel
+    source: SmartHotel-CI 
+    trigger: 
+      branches:
+        include: 
+        - releases/*
+        exclude:
+        - master
+      tags: 
+      - Production
+      - Signed
+ ```
+ 
+ 
+If you don't want to wait until all the stages of the run are completed for the `pipeline` resource. You can provide the stage to be completed to trigger you pipeline. 
+
+```yaml
+resources:
+  pipelines:
+  - pipeline: SmartHotel
+    source: SmartHotel-CI 
+    trigger: 
+      branches:
+        exclude: users/ashkir/*
+      stages: QA
+ ```
 
 ## Resources: `builds`
 
-If you have any external CI build system that produces artifacts, you can consume the artifacts by defining a `builds` resource. A `builds` resource can be any external CI systems like Jenkins, TeamCity, CircleCI etc.
+If you have any external CI build system that produces artifacts, you can consume the artifacts by defining a `build` resource. A `build` resource can be any external CI systems like Jenkins, TeamCity, CircleCI etc. And you can enable triggers on the `build` resource. 
 
 ### Schema
 
@@ -105,13 +148,19 @@ If you have any external CI build system that produces artifacts, you can consum
 resources:        # types: pipelines | builds | repositories | containers | packages
   builds:
   - build: string   # identifier for the build resource
-    type: enum   # the type of your build service like jenkins, circleCI etc.
+    type: enum   # the type of your build service like Jenkins, circleCI etc.
     connection: string   # service connection for your build service.
     source: string   # source definition of the build
     version: string   # the build number to pick the artifact, defaults to Latest successful build
     branch: string   # branch to pick the artifact; defaults to master branch
     tag: string  # picks the artifacts from the build with given tag.
+    trigger:   # enables triggers for this resource, optional; Defaults to no triggers.
+      branches:  # branch conditions to filter the events, optional; Defaults to all branches.
+        include: [ string ]  # branches to consider the trigger events, optional; Defaults to all branches.
+        exclude: [ string ]  # branches to discard the trigger events, optional; Defaults to none.  
 ```
+
+The source specific properties like version, branch, tag etc. and the trigger definition can change based on the type of `build` resource. The above schema is for Jenkins.
 
 ### Examples
 
@@ -156,11 +205,18 @@ Or to avoid downloading any of the artifacts at all:
 - downloadBuild: none
 ```
 
-Artifacts from the `build` resource are downloaded to `$PIPELINES_RESOURCESDIR/<build-identifier>/<artifact-identifier>` folder.
+Artifacts from the `build` resource are downloaded to `$PIPELINES_RESOURCESDIRECTORY/<build-identifier>/<artifact-identifier>` folder.
+
 
 ## Resources: `repositories`
 
-If you have multiple repositories from which you need to sync the code into your pipeline, you can consume the repos by defining a `repositories` resource. A repository can be another Azure Repo or any external repo like GitHub etc.
+If you have multiple repositories from which you need to sync the code into your pipeline, you can consume the repos by defining a `repository` resource. A repository can be another Azure Repo or any external repo like GitHub etc. 
+
+You can define triggers for your `repository` resource. Repository triggers can be of two types.
+Normal triggers: Events raised upon commit activity on the `repository` resource.
+PR triggers: Events raised when a pull request is raised to merge into `repository` resource.
+
+You can take advantage of these two triggers to run your production and testing pipelines.
 
 
 ### Schema
@@ -173,6 +229,21 @@ resources:          # types: pipelines | repositories | containers | packages
     connection: string # service connection to connect to the source, defaults to primary source connection
     source: string  # source repository to fetch
     ref: string  # ref name to use, defaults to 'refs/heads/master'
+    trigger:  # enables triggers for this resource, optional; Defaults to no triggers.
+      batch: boolean 
+      branches:  # branch conditions to filter the events, optional; Defaults to all branches.
+        include: [ string ]  # branches to consider the trigger events, optional; Defaults to all branches.
+        exclude: [ string ]  # branches to discard the trigger events, optional; Defaults to none.  
+      paths:
+        include: [ string ]  # file paths to consider the trigger events, optional; Defaults to all branches.
+        exclude: [ string ]  # file paths to discard the trigger events, optional; Defaults to none.  
+    pr:
+      branches:  # branch conditions to filter the events, optional; Defaults to all branches.
+        include: [ string ]  # branches to consider the trigger events, optional; Defaults to all branches.
+        exclude: [ string ]  # branches to discard the trigger events, optional; Defaults to none.  
+      paths:
+        include: [ string ]  # file paths to consider the trigger events, optional; Defaults to all branches.
+        exclude: [ string ]  # file paths to discard the trigger events, optional; Defaults to none.
 ```
 
 ### Examples
@@ -200,7 +271,7 @@ Repos from the `repository` resources defined are automatically synced and made 
   root: string        # directory to checkout the repo
 ```
 
-The repo is checked-out to `$PIPELINES_RESOURCESDIR/<pipeline-identifier>/` folder.
+The repo is checked-out to `$(PIPELINE.RESOURCESDIRECTORY)/<pipeline-identifier>/` folder.
 
 ### Example
 
@@ -224,12 +295,69 @@ Or to avoid syncing any of the repository resources use:
 
 When you use `checkout` to sync a specific repository resource, all the other repositories are not synced. 
 
-`self` checkout directory: `$PIPELINES_SOURCESDIR`
-other repositories' checkout directory: `$PIPELINES_RESOURCESDIR/<repository-identifier>/`
+`self` checkout directory: `$(PIPELINE.SOURCESDIRECTORY)`
+other repositories' checkout directory: `$(PIPELINE.RESOURCESDIRECTORY)/<repository-identifier>/`
+
+### `trigger` examples
+
+Triggers on `repository` resource are diabled by default and you can enable them by defining triggers on the resource.
+
+If you need to enable triggers on `repository` resource when a commit happens on a specific branch and if you want to run only one pipeline at a time:
+
+```yaml
+resources:         
+  repositories:
+  - repository: myPHPApp      
+    type: GitHub
+    connection: myGitHubConnection
+    source: ashokirla/phpApp
+    trigger:
+      batch: true
+      branches:
+        include: master
+```
+
+
+If you need to enable trigger only when a commit happens to specific file paths:
+
+```yaml
+resources:         
+  repositories:
+  - repository: myPHPApp      
+    type: GitHub
+    connection: myGitHubConnection
+    source: ashokirla/phpApp
+    trigger:
+      paths:
+        include:
+        - web/*
+        exclude:
+        - README.md
+```
+
+If you need to enable PR triggers on the `repository` resource:
+
+```yaml
+resources:         
+  repositories:
+  - repository: myPHPApp      
+    type: GitHub
+    connection: myGitHubConnection
+    source: ashokirla/phpApp
+    pr:
+      branches:
+        include:
+        - features/*
+        exclude:
+        - features/experimental/*
+      paths:
+        exclude:
+        - README.md
+```
 
 ## Resources: `containers`
 
-If you need to consume a container image as part of your CI/CD pipeline, you can achieve it using `containers`. A container can be an Azure Container Registry or any external Docker registry.
+If you need to consume a container image as part of your CI/CD pipeline, you can achieve it using `container`. A container can be an Azure Container Registry or any external Docker registry. You can enable triggers on the `container` resource. A new pipeline run get triggered whenever an image is published.
 
 ### Schema
 
@@ -237,11 +365,16 @@ If you need to consume a container image as part of your CI/CD pipeline, you can
 resources:          # types: pipelines | repositories | containers | packages
   containers:
   - container: string # identifier for the container resource      
-    type: enum # type of the registry like ACR, Docker etc. 
+    type: enum # type of the registry like ACR, DockerHub etc. 
     connection: string # service connection to connect to the image registry, defaults to ACR??
     image: string # container image name, Tag/Digest is optional; defaults to latest image
     options: string # arguments to pass to container at startup
     env: { string:string } # list of environment variables to add
+    trigger:
+      tags:
+        include: [ string ]  # image tags to consider the trigger events, optional; defaults to any new tag
+        exclude: [ string ]  # image tags on discard the trigger events, option; defaults to none
+      location: [ string ]  # geo-location the image published to; ACR specific setting.
 ```
 
 ### Examples
@@ -253,6 +386,34 @@ resources:
     type: Docker
     connection: myDockerRegistry
     image: smartHotelApp 
+```
+
+### `trigger` examples
+If you need to trigger your pipeline when a new image got published by the `container` resource.
+
+```yaml
+resources:
+  containers:
+  - container: K8sApp 
+    type: DockerHub
+    connection: MyDocker
+    image: Microsoft/alphaworz
+    trigger: true
+```
+
+If you need to enable when a new image got published to ACR with a specific tag format and to a specific geo location:
+
+```yaml
+repositories:
+  containers:
+  - container: MyACR    
+    connection: RMPM
+    registry: contosodemo
+    image: Microsoft/alphaworz
+    trigger: 
+      tags:
+        include: production*
+      location: east-US, west-EU
 ```
 
 Once you define a container as resource, container image metadata passed to the pipeline in the form of variables. Information like image, registry and connection details are made accessible across all the jobs so that your kubernetes deploy tasks can extract the image pull secrets and pass it to the cluster.
