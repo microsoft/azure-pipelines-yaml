@@ -18,10 +18,10 @@ These three properties support all of the following customer scenarios.
 - Whenever I push changes to a branch, I want the source built and tested.
 - Test status is reported back to GitHub on that particular commit.
 
-Here, the only resource is a repository.
+The only resource is a repository.
 A new version of the resource triggers a pipeline.
 That particular version (a commit) is built and tested.
-Then, that version of the source can be marked with a status update in GitHub.
+That version of the source can be marked with a status update in GitHub.
 Azure Pipelines provides a comprehensive, tracked view of that resource, from its start as a push to Git through a successful test pass.
 
 ### Deploy a container to Kubernetes
@@ -30,10 +30,10 @@ Azure Pipelines provides a comprehensive, tracked view of that resource, from it
 - When a new image of `alpine:edge` (bleeding edge of Alpine development) is released, I want to build my container and deploy it to a local testing cluster.
 - From there, I'll run integration tests and perhaps do a bit of manual testing to make sure nothing's broken.
 
-Here, two resources are in play.
-The first is, again, a repository containing both my source and my pipeline definition.
+Here, two resources are used.
+The first is a repository containing both my source and my pipeline definition.
 The other is a container on Docker Hub.
-In this case, the trigger isn't my source, it's the container.
+In this case, the trigger isn't source, it's the container.
 When I look at my testing Kubernetes cluster, I need to trace back both the commit version and the container image SHA to understand exactly what's been tested together.
 
 ### Complex, multi-stage deployment
@@ -42,26 +42,38 @@ When I look at my testing Kubernetes cluster, I need to trace back both the comm
 - Then, my container is deployed to a canary environment, where it must pass health checks and a test pass before continuing to the rest of production.
 - At any given moment, other engineers in my organization need to understand what bits are deployed to which environments.
 
-Here we add a third resource: the container doesn't exist at the beginning of the pipeline, but is created during the pipeline.
+There are the two resources described in previous scenarios.
+This pipeline adds a container doesn't exist at the beginning of the pipeline and is created during the pipeline.
 The pipeline is triggered by one resource, depends on another resource, and produces a third resource.
 All three are tracked across multiple stages and environments.
 When I want to know what's deployed where, where it came from, and if I've ever seen/tested this combination of resources before, Azure Pipelines can answer those questions.
 
-### TODO: rollback/redeploy scenario
+### Work items and commits tracked through to the environment
+- Beginning from a work item, I can trace its path through source to CI to deployment into an environment.
+- This gives me end-to-end traceability for a feature from inception to consumption.
+- The same tracing can be done in reverse; starting from an environment, I can track back to what work items got deployed for the first time.
 
-### TODO: retry (deployment fails)
-(re-get the exact same snaps of each resource)
+### Retry
+- In the middle of a deployment stage, the network fails. This causes the deployment to fail.
+- After fixing the infrastructure, I want to re-try the deployment.
+- It must snap to exactly the same versions of all resources as the previous attempt.
 
-### TODO: pipeline (or run) was deleted, is my artifact linking to an environment preserved?
-(external tracing system vs relying on pipeline data)
+### Rollback (redeploy)
+- A recent code change broke something for a small number of customers.
+- I need to roll back to the last "good" code before the break.
+- I want to re-deploy the exact versions of each resource (code, containers, etc.) which were working previously.
 
-### TODO: resources participating in cleanup
-(e.g. notify ACR when the pipeline goes away so container can go away)
+### Long-term preservation of history
+*To be determined: is this a required scenario?*
+- On January 1, I deploy a version of my code.
+- On February 1, because it's been at least 30 days, my pipelines age out of retention. This includes all the resources like containers, packages, etc.
+- On July 1, a massive exploit is revealed that has affected hosted services for at least 6 months.
+- In order to determine if my customers' data was ever at risk, I want to audit what versions of each resource were in production on January 1. Although the resources have aged out, the information still has forensic value. For example, I can look back at commits (code is unlikely to have been cleaned up).
 
-### TODO: retention tracking
-(because a deployment happened, add a lock to retain the resource)
-
-### TODO: work items and commits tracked through to the environment
+### Retention tracking and resource cleanup
+- When I deploy a resource to my environment, this implicitly adds a lock. Those resources will not age out while they're deployed.
+- When the resource is replaced by a later version, the lock is removed. Resources no longer in an environment are eligible for cleanup.
+- *Stretch goal* When my containers age out, Azure Container Registry is notified and can begin its retention / cleanup for old, unused container versions. (This isn't limited to containers, either -- any resource could participate.)
 
 ### Integration with other systems
 - I have a deep investment in my Jenkins infrastructure and don't want to upend all that (yet). But, I want to power my deployments with Azure Pipelines.
