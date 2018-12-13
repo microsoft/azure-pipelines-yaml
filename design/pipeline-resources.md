@@ -27,7 +27,7 @@ resources:
 ## Resources: `pipelines`
  
 
-If you have an Azure Pipeline that produces artifacts, you can consume the artifacts by defining a `pipelines` resource. `pipelines` is a dedicated resource only for Azure Pipelines.
+If you have an Azure Pipeline that produces artifacts, you can consume the artifacts by defining a `pipelines` resource. `pipelines` is a dedicated resource only for Azure Pipelines. You can define a trigger on `pipeline` resource. A new pipeline run will be triggered on receiving an event based on the trigger defined on the `pipeline` resource.
 
 ### Schema
 
@@ -40,7 +40,13 @@ resources:        # types: pipelines | builds | repositories | containers | pack
     source: string  # source defintion of the pipeline
     version: string  # the pipeline run number to pick the artifact, defaults to Latest pipeline successful across all stages
     branch: string  # branch to pick the artiafct, optional; defaults to master branch
-    tags: string # picks the artifacts on from the pipeline with given tag, optional; defaults to no tags
+    tags: string # picks the artifacts on from the pipeline with given tag, optional; defaults to any tag or no tag.
+    trigger:
+      branches:
+        include: [ string ]  # branches on which the trigger events are considered, optional; Defaults to all branches are included.
+        exclude: [ string ]  # branches on which the trigger events are discarded, optional; Defaults to none.
+      stages: [ string ]  # trigger after completion of given stage, optional; Defaults to all stage completion.
+      tags: [ string ]  # tags on which the trigger events are considered, optional; Defaults to any tag or no tag.
 ```
 
 ### Examples
@@ -83,7 +89,11 @@ Or to avoid downloading any of the artifacts at all:
 - download: none
 ```
 
-Artifacts from the `pipeline` resource are downloaded to `$PIPELINES_RESOURCESDIR/<pipeline-identifier>/<artifact-identifier>` folder; see [artifact download location](https://github.com/Microsoft/azure-pipelines-yaml/blob/master/design/pipeline-artifacts.md#artifact-download-location) for more details.
+Artifacts from the `pipeline` resource are downloaded to `$PIPELINE.RESOURCESDIRECTORY/<pipeline-identifier>/<artifact-identifier>` folder; see [artifact download location](https://github.com/Microsoft/azure-pipelines-yaml/blob/master/design/pipeline-artifacts.md#artifact-download-location) for more details.
+
+### `trigger` examples
+
+
 
 ## Resources: `builds`
 
