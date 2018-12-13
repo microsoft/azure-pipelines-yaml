@@ -56,7 +56,7 @@ jobs:
   condition: and(succeeded(), eq(variables['Azure.CreateResources'], 'true'))
 
   pool:
-    name: Hosted Ubuntu 1604
+    name: '{{ #GetAgentPoolName linux }}'
 
   steps:
   - task: AzureCLI@1
@@ -105,7 +105,7 @@ jobs:
   condition: or(succeeded(), ne(variables['Azure.CreateResources'], 'true'))
 
   pool:
-    name: Hosted Ubuntu 1604
+    name: '{{ #GetAgentPoolName linux }}'
 
   steps:
   - task: Docker@1
@@ -131,7 +131,7 @@ jobs:
   condition: succeeded()
 
   pool:
-    name: Hosted Ubuntu 1604
+    name: '{{ #GetAgentPoolName linux }}'
 
   steps:
   - task: AzureCLI@1

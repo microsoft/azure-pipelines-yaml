@@ -1,5 +1,5 @@
 # Docker image and Azure container registry
-# Build a Docker image and push to a Azure container registry
+# Build a Docker image and push to an Azure container registry
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
@@ -43,7 +43,7 @@ jobs:
   condition: and(succeeded(), eq(variables['Azure.CreateResources'], 'true'))
 
   pool:
-    name: Hosted Ubuntu 1604
+    name: '{{ #GetAgentPoolName linux }}'
 
   steps:
   - task: AzureCLI@1
@@ -74,7 +74,7 @@ jobs:
   condition: or(succeeded(), ne(variables['Azure.CreateResources'], 'true'))
 
   pool:
-    name: Hosted Ubuntu 1604
+    name: '{{ #GetAgentPoolName linux }}'
 
   steps:
   - task: Docker@1
