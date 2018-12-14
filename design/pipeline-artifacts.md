@@ -15,9 +15,9 @@ Artifacts are distinct from other `resources` types, including `containers`, `re
 ### Schema
 
 ```yaml
-- upload: string | [ string ]  # a minimatch path or list of [minimatch paths](tasks/file-matching-patterns.md) to upload
+- upload: string # a minimatch path or list of [minimatch paths](tasks/file-matching-patterns.md) to upload
   artifact: string # identifier for this artifact (no spaces allowed), defaults to 'default'
-  prependPath: string # a directory path that will be prepended to all uploaded files
+  prependDirectory: string # a directory path that will be prepended to all uploaded files
   seal: boolean # if true, finalizes the artifact so no more files can be added after this step
 ```
 
@@ -47,9 +47,16 @@ Artifacts are downloaded either to `$PIPELINE_RESOURCESDIRECTORY` or to the dire
 
 ```yaml
 - download: string # identifier for the pipeline resource from which to download artifacts, optional; "current" means the current pipeline
-  artifact: string # identifier for the artifact to download; if left blank, downloads all artifacts associated with the resource provided
-  patterns: string | [ string ] # a minimatch path or list of [minimatch paths](tasks/file-matching-patterns.md) to download; if blank, the entire artifact is downloaded
+  artifact: string # identifier for the artifact to download; required
+  patterns: string # a minimatch path or list of [minimatch paths](tasks/file-matching-patterns.md) to download; if blank, the entire artifact is downloaded
   root: string # the directory in which to download files, defaults to $PIPELINE_RESOURCESDIRECTORY; if a relative path is provided, it will be rooted from $SYSTEM_DEFAULTWORKINGDIRECTORY
+  displayName: string # friendly name displayed in the UI
+  name: string # identifier for this step (A-Z, a-z, 0-9, and underscore)
+  condition: string
+  conditionOnError: boolean # 'true' if future steps should run even if this step fails; default to 'false'
+  enabled: true # whether or not to run this ste; defaults to 'true'
+  timeoutInMinutes: number
+  env: { string: string } # list of environment varibles to add
 ```
 
 ### Examples
