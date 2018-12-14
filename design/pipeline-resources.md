@@ -27,7 +27,7 @@ resources:
 ## Resources: `pipelines`
  
 
-If you have an Azure Pipeline that produces artifacts, you can consume the artifacts by defining a `pipelines` resource. `pipelines` is a dedicated resource only for Azure Pipelines. You can define a trigger on `pipeline` resource. A new pipeline run will be triggered on receiving an event based on the trigger defined on the `pipeline` resource.
+An Azure Pipeline that produces artifacts can be consumed by defining a `pipelines` resource. `pipelines` is a dedicated resource only for Azure Pipelines. A new pipeline is triggered automatically whenever a new run of the `pipeline` resource is succesfully completed. However, you can provide specific conditions to override the `trigger`.
 
 ### Schema
 
@@ -41,7 +41,7 @@ resources:        # types: pipelines | builds | repositories | containers | pack
     version: string  # the pipeline run number to pick the artifact, defaults to Latest pipeline successful across all stages
     branch: string  # branch to pick the artiafct, optional; defaults to master branch
     tag: string # picks the artifacts on from the pipeline with given tag, optional; defaults to any tag or no tag.
-    trigger:     # enables triggers for this resource, optional; Defaults to no triggers.
+    trigger:     # Optional; Triggers are enabled by default.
       branches:  # branch conditions to filter the events, optional; Defaults to all branches.
         include: [ string ]  # branches to consider the trigger events, optional; Defaults to all branches.
         exclude: [ string ]  # branches to discard the trigger events, optional; Defaults to none.
@@ -71,6 +71,80 @@ resources:
     branch: releases/M142
 ```
 
+### `trigger` for pipelines
+
+Triggers are enabled by default unless expliciltly opted out.
+
+You can disable the triggers on the `pipeline` resource.
+
+```yaml
+resources:
+  pipelines:
+  - pipeline: SmartHotel
+    source: SmartHotel-CI 
+    trigger: none
+    
+```
+
+You can control which branches get the triggers with a simple syntax.
+
+```yaml
+resources:
+  pipelines:
+  - pipeline: SmartHotel
+    source: SmartHotel-CI 
+    trigger: 
+    - releases/*
+    - master
+ ```
+ 
+ You can specify the full name of the branch (for example, master) or a prefix-matching wildcard (for example, releases/*). You cannot put a wildcard in the middle of a value. For example, releases/*2018 is invalid.
+ 
+
+You can specify the branches to include and exclude.
+
+```yaml
+resources:
+  pipelines:
+  - pipeline: SmartHotel
+    source: SmartHotel-CI 
+    trigger: 
+      branches:
+        include: 
+        - releases/*
+        exclude:
+        - master
+ ```
+ 
+ You can specify which tags to control the triggers.
+ 
+ ```yaml
+resources:
+  pipelines:
+  - pipeline: SmartHotel
+    source: SmartHotel-CI 
+    trigger: 
+      branches:
+        include: 
+        - releases/*
+      tags: 
+      - Production
+      - Signed
+ ```
+ 
+If you don't want to wait until all the stages of the run are completed for the `pipeline` resource. You can provide the stage to be completed to trigger you pipeline. 
+
+```yaml
+resources:
+  pipelines:
+  - pipeline: SmartHotel
+    source: SmartHotel-CI 
+    trigger: 
+      branches:
+        include: master
+      stages: 
+      - QA
+ ```
 ### `download` for pipelines
 
 All artifacts from the current pipeline and from all `pipeline` resources are automatically downloaded and made available at the beginning of each job. You can override this behavior: see [Pipeline Artifacts](pipeline-artifacts.md#default-and-named-artifacts) for more details.
@@ -91,52 +165,8 @@ Or to avoid downloading any of the artifacts at all:
 
 Artifacts from the `pipeline` resource are downloaded to `$PIPELINE.RESOURCESDIRECTORY/<pipeline-identifier>/<artifact-identifier>` folder; see [artifact download location](https://github.com/Microsoft/azure-pipelines-yaml/blob/master/design/pipeline-artifacts.md#artifact-download-location) for more details.
 
-### `trigger` examples
-
-Unless specified, no triggers are enabled on resources.
-
-If you need to enable trigger on a `pipeline` resource so that a new pipeline run is triggered whenever a pipeline run is succesfully completed by the `pipeline` resource. And if the pipeline run can be of any branch or tag, the trigger syntax can be further simplified to:
-
-```yaml
-resources:
-  pipelines:
-  - pipeline: SmartHotel
-    source: SmartHotel-CI 
-    trigger: true
-```
 
 
-If you would like to enable trigger if the run of the `pipeline` resource is succesfully completed only on specific branches and only if the pipeline run has specific tags:
-
-```yaml
-resources:
-  pipelines:
-  - pipeline: SmartHotel
-    source: SmartHotel-CI 
-    trigger: 
-      branches:
-        include: 
-        - releases/*
-        exclude:
-        - master
-      tags: 
-      - Production
-      - Signed
- ```
- 
- 
-If you don't want to wait until all the stages of the run are completed for the `pipeline` resource. You can provide the stage to be completed to trigger you pipeline. 
-
-```yaml
-resources:
-  pipelines:
-  - pipeline: SmartHotel
-    source: SmartHotel-CI 
-    trigger: 
-      branches:
-        exclude: users/ashkir/*
-      stages: QA
- ```
 
 ## Resources: `builds`
 
@@ -154,7 +184,7 @@ resources:        # types: pipelines | builds | repositories | containers | pack
     version: string   # the build number to pick the artifact, defaults to Latest successful build
     branch: string   # branch to pick the artifact; defaults to master branch
     tag: string  # picks the artifacts from the build with given tag.
-    trigger:   # enables triggers for this resource, optional; Defaults to no triggers.
+    trigger:   # Optional; Triggers are enabled by default.
       branches:  # branch conditions to filter the events, optional; Defaults to all branches.
         include: [ string ]  # branches to consider the trigger events, optional; Defaults to all branches.
         exclude: [ string ]  # branches to discard the trigger events, optional; Defaults to none.  
@@ -175,6 +205,38 @@ resources:
     source: SpaceworkzProj   # name of the jenkins source project
 ```
 
+### `trigger` for builds
+
+Triggers are enabled by default unless expliciltly opted out.
+
+To disable the triggers on the `build` resource:
+
+```yaml
+resources:
+  builds:
+  - build: Spaceworkz
+    type: Jenkins
+    connection: MyJenkinsServer 
+    source: SpaceworkzProj   
+    trigger: none
+```
+
+You can control which branches get the triggers.
+
+```yaml
+resources:
+  builds:
+  - build: Spaceworkz
+    type: Jenkins
+    connection: MyJenkinsServer 
+    source: SpaceworkzProj    
+    trigger: 
+      branches:
+        include: 
+        - releases/*
+        exclude:
+        - master
+ ```
 
 ### `downloadBuild` for builds
 
@@ -208,13 +270,14 @@ Or to avoid downloading any of the artifacts at all:
 Artifacts from the `build` resource are downloaded to `$PIPELINES_RESOURCESDIRECTORY/<build-identifier>/<artifact-identifier>` folder.
 
 
+
 ## Resources: `repositories`
 
 If you have multiple repositories from which you need to sync the code into your pipeline, you can consume the repos by defining a `repository` resource. A repository can be another Azure Repo or any external repo like GitHub etc. 
 
 You can define triggers for your `repository` resource. Repository triggers can be of two types.
-Normal triggers: Events raised upon commit activity on the `repository` resource.
-PR triggers: Events raised when a pull request is raised to merge into `repository` resource.
+Normal triggers: Events raised upon commit activity on the `repository` resource. By default, triggers are enabled on the `repository` resource.
+PR triggers: Events raised when a pull request is raised to merge into `repository` resource. By default, pr triggers are disabled and you can to explicitly opt in. 
 
 You can take advantage of these two triggers to run your production and testing pipelines.
 
@@ -248,6 +311,8 @@ resources:          # types: pipelines | repositories | containers | packages
 
 ### Examples
 
+You can consume a github repo as a `repository` resource.
+
 ```yaml
 resources:         
   repositories:
@@ -256,6 +321,122 @@ resources:
     connection: myGitHubConnection
     source: Microsoft/alphaworz
 ```
+
+### `trigger` in repositories
+
+Triggers are enabled by default and any new change to your repo will start a new pipeline run automatically.
+You can disable trigger on your repository.
+
+```yaml
+resources:         
+  repositories:
+  - repository: secondaryRepo      
+    type: GitHub
+    connection: myGitHubConnection
+    source: Microsoft/alphaworz
+    trigger: none
+```
+
+You can control which branches to get triggers with simple syntax.
+```yaml
+resources:         
+  repositories:
+  - repository: myPHPApp      
+    type: GitHub
+    connection: myGitHubConnection
+    source: ashokirla/phpApp
+    trigger:
+      - master
+      - releases/*
+```
+
+You can specify branches and paths to include and exclude.
+
+```yaml
+resources:         
+  repositories:
+  - repository: myPHPApp      
+    type: GitHub
+    connection: myGitHubConnection
+    source: ashokirla/phpApp
+    trigger:
+      branches:
+        include:
+        - features/*
+        exclude:
+        - features/experimental/*
+      paths:
+        exclude:
+        - README.md
+```
+
+
+If you have a lot of team members uploading changes often, then you might want to reduce the number of builds you're running. If you set batch to true, when a build is running, the system waits until the build is completed, then queues another build of all changes that have not yet been built.
+
+```yaml
+resources:         
+  repositories:
+  - repository: myPHPApp      
+    type: GitHub
+    connection: myGitHubConnection
+    source: ashokirla/phpApp
+    trigger:
+      batch: true
+      branches:
+        - master
+```
+
+### `pr` triggers for repositories
+Unless you specify, `pr` triggers are disabled for your repository. 
+
+You can enable pull request based pipeline runs.
+
+```yaml
+resources:         
+  repositories:
+  - repository: myPHPApp      
+    type: GitHub
+    connection: myGitHubConnection
+    source: ashokirla/phpApp
+    pr: true
+```
+
+You can control the target branches for your pull request based pipeline runs by simple syntax.
+
+```yaml
+resources:         
+  repositories:
+  - repository: myPHPApp      
+    type: GitHub
+    connection: myGitHubConnection
+    source: ashokirla/phpApp
+    pr: 
+    - master
+    - releases/*
+```
+
+You can specify the branches and file paths to include and exclude.
+
+```yaml
+resources:         
+  repositories:
+  - repository: myPHPApp      
+    type: GitHub
+    connection: myGitHubConnection
+    source: ashokirla/phpApp
+    pr:
+      branches:
+        include:
+        - releases/*
+        exclude:
+        - releases/experimental/*
+      paths:
+        include:
+        - web/*
+        exclude:
+        - web/README.md
+```
+
 
 ### `checkout` your repository
 
@@ -298,62 +479,7 @@ When you use `checkout` to sync a specific repository resource, all the other re
 `self` checkout directory: `$(PIPELINE.SOURCESDIRECTORY)`
 other repositories' checkout directory: `$(PIPELINE.RESOURCESDIRECTORY)/<repository-identifier>/`
 
-### `trigger` examples
 
-Triggers on `repository` resource are diabled by default and you can enable them by defining triggers on the resource.
-
-If you need to enable triggers on `repository` resource when a commit happens on a specific branch and if you want to run only one pipeline at a time:
-
-```yaml
-resources:         
-  repositories:
-  - repository: myPHPApp      
-    type: GitHub
-    connection: myGitHubConnection
-    source: ashokirla/phpApp
-    trigger:
-      batch: true
-      branches:
-        include: master
-```
-
-
-If you need to enable trigger only when a commit happens to specific file paths:
-
-```yaml
-resources:         
-  repositories:
-  - repository: myPHPApp      
-    type: GitHub
-    connection: myGitHubConnection
-    source: ashokirla/phpApp
-    trigger:
-      paths:
-        include:
-        - web/*
-        exclude:
-        - README.md
-```
-
-If you need to enable PR triggers on the `repository` resource:
-
-```yaml
-resources:         
-  repositories:
-  - repository: myPHPApp      
-    type: GitHub
-    connection: myGitHubConnection
-    source: ashokirla/phpApp
-    pr:
-      branches:
-        include:
-        - features/*
-        exclude:
-        - features/experimental/*
-      paths:
-        exclude:
-        - README.md
-```
 
 ## Resources: `containers`
 
@@ -388,20 +514,47 @@ resources:
     image: smartHotelApp 
 ```
 
-### `trigger` examples
-If you need to trigger your pipeline when a new image got published by the `container` resource.
+Triggers are enabled by default on the `container` resource. When a new image gets published to your image registry, pipeline run starts automatically. You can disable the triggers on your `container`.
 
 ```yaml
-resources:
+resources:         
   containers:
-  - container: K8sApp 
-    type: DockerHub
-    connection: MyDocker
-    image: Microsoft/alphaworz
-    trigger: true
+  - container: smartHotel 
+    type: Docker
+    connection: myDockerRegistry
+    image: smartHotelApp 
+    trigger: none
 ```
 
-If you need to enable when a new image got published to ACR with a specific tag format and to a specific geo location:
+You can specify the image tag format to get the trigger by simple syntax.
+```yaml
+resources:         
+  containers:
+  - container: smartHotel 
+    type: Docker
+    connection: myDockerRegistry
+    image: smartHotelApp 
+    trigger:
+    - version-*
+```
+
+You can specify the image tags to include and exclude.
+```yaml
+resources:         
+  containers:
+  - container: smartHotel 
+    type: Docker
+    connection: myDockerRegistry
+    image: smartHotelApp 
+    trigger:
+      tags:
+        include:
+        - version-*
+        exclude:
+        - version-2017*
+```
+
+If you have an ACR `container` resource, you can specify the geo location to get the triggers.
 
 ```yaml
 repositories:
@@ -412,7 +565,8 @@ repositories:
     image: Microsoft/alphaworz
     trigger: 
       tags:
-        include: production*
+        include: 
+        - production*
       location: 
       - east-US
       - west-EU
