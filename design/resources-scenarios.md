@@ -13,16 +13,17 @@ These three properties support all of the following customer scenarios.
 
 ## Scenarios
 
-### Build source into a product: classic continuous integration
+### Build source into a product (classic continuous integration)
 - My source code lives in a repository on GitHub.
 - Whenever I push changes to a branch, I want the source built and tested.
 - Test status is reported back to GitHub on that particular commit.
 
 The only resource is a repository.
 A new version of the resource triggers a pipeline.
+(Because GitHub can associate issues with commits, I can also see which issues are addressed with this push.)
 That particular version (a commit) is built and tested.
 That version of the source can be marked with a status update in GitHub.
-Azure Pipelines provides a comprehensive, tracked view of that resource, from its start as a push to Git through a successful test pass.
+Azure Pipelines provides a comprehensive, tracked view of that resource, from its start as a work item and push to Git through a successful test pass.
 
 ### Deploy a container to Kubernetes
 - My web app is containerized and deployed to Kubernetes. My containers are based on Alpine Linux, and I use the official Alpine container as my base.
@@ -35,6 +36,13 @@ The first is a repository containing both my source and my pipeline definition.
 The other is a container on Docker Hub.
 In this case, the trigger isn't source, it's the container.
 When I look at my testing Kubernetes cluster, I need to trace back both the commit version and the container image SHA to understand exactly what's been tested together.
+
+### Decoupled pipelines
+- When a partner team finishes a deployment, I want to try out their latest dependencies in a test environment of my own.
+- Rather than complicate their pipeline, I simply set up my pipeline to trigger on the completion of theirs.
+
+In this case, the "resource" is a pipeline run.
+Crucially, I wait until the partner's *deployment* is done, which may not produce any new artifacts of its own (other than the run).
 
 ### Complex, multi-stage deployment
 - For safety, I run canary deployments before pushing changes out to 100% of my customers.
@@ -62,10 +70,14 @@ We have to offer a way to track the resource produced even if we don't get the d
 - After fixing the infrastructure, I want to re-try the deployment.
 - It must snap to exactly the same versions of all resources as the previous attempt.
 
+In this scenario, no new approvals are sought to retry the failed stage.
+
 ### Rollback (redeploy)
 - A recent code change broke something for a small number of customers.
 - I need to roll back to the last "good" code before the break.
 - I want to re-deploy the exact versions of each resource (code, containers, etc.) which were working previously.
+
+In this scenario, the resources required (or the environment) may require the user to get new approvals.
 
 ### Long-term preservation of metadata
 - On January 1, I deploy a version of my code.
@@ -102,6 +114,7 @@ Resource | Default behavior | Other behaviors
 repository | synced and checked out in a known location | <ul><li>not synced <li>synced with additional provider-specific options <li>checked out in a non-default location</ul>
 container | <ul><li>`docker pull`ed for a `job` <li>not pulled for a `deployment`</ul> | <ul><li>not pulled <li>pulled from a non-Docker Hub location</ul>
 pipeline | artifacts automatically downloaded | <ul><li>artifacts selectively downloaded <li>artifacts uploaded</ul>
+packages | t.b.d. | t.b.d.
 
 ## User interface
 
@@ -184,7 +197,7 @@ resources:
         exclude: [ string ] # tags which will not trigger
 ```
 
-TODO: add pipelines schema
+TODO: add pipelines schema, packages schema, 3pp extensibility schema
 
 ### Working with resource metadata
 
@@ -192,11 +205,7 @@ TODO - talk about offering up the metadata in expression context
 
 ### Other TODOs:
 - illustrate version vs versionSpec
-- retry vs redeploy: is this about "re-run this stage as a new attempt" vs "start a whole new run, snapping to the same things" (getting re-approvals may be relevant here)
-- pipeline triggering another pipeline
 - locking/retention - controlled by environment? need some kind of overall policy, too
-- show source provider offering up work items
 - show how defaults are represented in YAML
-- add back `packages` as a resource type (triggers)
-- third-party extensibility for steps
+- talk about third-party extensibility for steps: an extension can offer up resource schema, step schema, and a backing task to perform the work
 - can we offer the auth, proxy, caching stuff as a function of using resources and not even require a task/`use`?
