@@ -51,7 +51,7 @@ resources:        # types: pipelines | builds | repositories | containers | pack
 
 ### Examples
 
-If you need to consume artifacts from another azure pipeline from the current project and if you dont require setting branch, version and tags etc., this can be shortened to:
+You can consume artifacts from another azure pipeline from current project with simple syntax.
 
 ```yaml
 resources:
@@ -60,7 +60,7 @@ resources:
     source: SmartHotel-CI # name of the pipeline source definition
 ```
 
-In case you need to consume a Pipeline from other project, then you need to include the project name while providing source name.
+You can consume a azure pipeline from another project.
 
 ```yaml
 resources:
@@ -292,7 +292,7 @@ resources:          # types: pipelines | repositories | containers | packages
     connection: string # service connection to connect to the source, defaults to primary source connection
     source: string  # source repository to fetch
     ref: string  # ref name to use, defaults to 'refs/heads/master'
-    trigger:  # enables triggers for this resource, optional; Defaults to no triggers.
+    trigger:  # Optional; Triggers are enabled by default
       batch: boolean 
       branches:  # branch conditions to filter the events, optional; Defaults to all branches.
         include: [ string ]  # branches to consider the trigger events, optional; Defaults to all branches.
@@ -300,7 +300,7 @@ resources:          # types: pipelines | repositories | containers | packages
       paths:
         include: [ string ]  # file paths to consider the trigger events, optional; Defaults to all branches.
         exclude: [ string ]  # file paths to discard the trigger events, optional; Defaults to none.  
-    pr:
+    pr:        # Optional; pr triggers are disabled by default
       branches:  # branch conditions to filter the events, optional; Defaults to all branches.
         include: [ string ]  # branches to consider the trigger events, optional; Defaults to all branches.
         exclude: [ string ]  # branches to discard the trigger events, optional; Defaults to none.  
@@ -324,8 +324,9 @@ resources:
 
 ### `trigger` in repositories
 
-Triggers are enabled by default and any new change to your repo will start a new pipeline run automatically.
-You can disable trigger on your repository.
+Triggers are enabled by default and any new change to your repo will trigger a new pipeline run automatically.
+
+You can disable triggers on your repository.
 
 ```yaml
 resources:         
@@ -338,6 +339,7 @@ resources:
 ```
 
 You can control which branches to get triggers with simple syntax.
+
 ```yaml
 resources:         
   repositories:
