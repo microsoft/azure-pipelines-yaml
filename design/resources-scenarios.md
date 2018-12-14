@@ -71,6 +71,7 @@ We have to offer a way to track the resource produced even if we don't get the d
 - It must snap to exactly the same versions of all resources as the previous attempt.
 
 In this scenario, no new approvals are sought to retry the failed stage.
+This is a new attempt at the same logical pipeline run.
 
 ### Rollback (redeploy)
 - A recent code change broke something for a small number of customers.
@@ -78,6 +79,7 @@ In this scenario, no new approvals are sought to retry the failed stage.
 - I want to re-deploy the exact versions of each resource (code, containers, etc.) which were working previously.
 
 In this scenario, the resources required (or the environment) may require the user to get new approvals.
+This is a new instance (new run) of a pipeline, it just happens to lock to the same resource versions as another run.
 
 ### Long-term preservation of metadata
 - On January 1, I deploy a version of my code.
