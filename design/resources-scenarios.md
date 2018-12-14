@@ -45,8 +45,12 @@ When I look at my testing Kubernetes cluster, I need to trace back both the comm
 There are the two resources described in previous scenarios.
 This pipeline adds a container doesn't exist at the beginning of the pipeline and is created during the pipeline.
 The pipeline is triggered by one resource, depends on another resource, and produces a third resource.
+
 All three are tracked across multiple stages and environments.
 When I want to know what's deployed where, where it came from, and if I've ever seen/tested this combination of resources before, Azure Pipelines can answer those questions.
+Crucially, Azure Pipelines isn't the "owner" of every piece of data.
+The `docker build && docker push` step may never hit an Azure Pipelines task.
+We have to offer a way to track the resource produced even if we don't get the data.
 
 ### Work items and commits tracked through to the environment
 - Beginning from a work item, I can trace its path through source to CI to deployment into an environment.
