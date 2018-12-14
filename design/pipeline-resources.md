@@ -73,9 +73,7 @@ resources:
 
 ### `trigger` for pipelines
 
-Triggers are enabled by default unless expliciltly opted out.
-
-You can disable the triggers on the `pipeline` resource.
+Triggers are enabled by default unless expliciltly opted out. You can disable the triggers on the `pipeline` resource.
 
 ```yaml
 resources:
@@ -87,7 +85,6 @@ resources:
 ```
 
 You can control which branches get the triggers with a simple syntax.
-
 ```yaml
 resources:
   pipelines:
@@ -102,7 +99,6 @@ resources:
  
 
 You can specify the branches to include and exclude.
-
 ```yaml
 resources:
   pipelines:
@@ -117,7 +113,6 @@ resources:
  ```
  
  You can specify which tags to control the triggers.
- 
  ```yaml
 resources:
   pipelines:
@@ -195,7 +190,6 @@ The source specific properties like version, branch, tag etc. and the trigger de
 ### Examples
 
 The inputs for the `build` resource can change based on the `type` of the build service.
-
 ```yaml
 resources:
   builds:
@@ -207,10 +201,7 @@ resources:
 
 ### `trigger` for builds
 
-Triggers are enabled by default unless expliciltly opted out.
-
-To disable the triggers on the `build` resource:
-
+Triggers are enabled by default unless expliciltly opted out. You can disable the triggers on the `build` resource.
 ```yaml
 resources:
   builds:
@@ -222,7 +213,6 @@ resources:
 ```
 
 You can control which branches get the triggers.
-
 ```yaml
 resources:
   builds:
@@ -312,7 +302,6 @@ resources:          # types: pipelines | repositories | containers | packages
 ### Examples
 
 You can consume a github repo as a `repository` resource.
-
 ```yaml
 resources:         
   repositories:
@@ -325,7 +314,6 @@ resources:
 ### `trigger` in repositories
 
 Triggers are enabled by default and any new change to your repo will trigger a new pipeline run automatically.
-
 You can disable triggers on your repository.
 
 ```yaml
@@ -339,7 +327,6 @@ resources:
 ```
 
 You can control which branches to get triggers with simple syntax.
-
 ```yaml
 resources:         
   repositories:
@@ -353,7 +340,6 @@ resources:
 ```
 
 You can specify branches and paths to include and exclude.
-
 ```yaml
 resources:         
   repositories:
@@ -389,9 +375,7 @@ resources:
 ```
 
 ### `pr` triggers for repositories
-Unless you specify, `pr` triggers are disabled for your repository. 
-
-You can enable pull request based pipeline runs.
+Unless you specify, `pr` triggers are disabled for your repository. You can enable pull request based pipeline runs.
 
 ```yaml
 resources:         
@@ -404,7 +388,6 @@ resources:
 ```
 
 You can control the target branches for your pull request based pipeline runs by simple syntax.
-
 ```yaml
 resources:         
   repositories:
@@ -418,7 +401,6 @@ resources:
 ```
 
 You can specify the branches and file paths to include and exclude.
-
 ```yaml
 resources:         
   repositories:
@@ -557,7 +539,6 @@ resources:
 ```
 
 If you have an ACR `container` resource, you can specify the geo location to get the triggers.
-
 ```yaml
 repositories:
   containers:
