@@ -361,3 +361,7 @@ repositories:
       - east-US
       - west-EU
 ```
+
+## Schedule triggers
+TBD
+
