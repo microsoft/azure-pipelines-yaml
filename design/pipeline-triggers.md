@@ -14,7 +14,7 @@ Triggers are enabled by default on all the resources. However, you can choose to
 
 
 ### Pipelines
-A new pipeline is triggered automatically whenever a new run of the `pipeline` resource is succesfully completed. 
+A new pipeline is triggered automatically whenever a new run of the `pipeline` resource is succesfully completed. See [pipeline resources] (pipeline-resources.md#resources-pipelines) for more details.
 
 #### Scenarios
 - I would like to trigger my pipeline when a new ‘helm-package’ artifact is published by ‘Helm-CI’ pipeline that ran on `releases/*` branch.
@@ -106,7 +106,9 @@ resources:
  
  
 ### Repositories
-Triggers can be set on `repository` resources defined the pipeline. For repositories, you can set two types of triggers.
+Triggers can be set on `repository` resources defined the pipeline. See [repository resource](pipeline-resources.md#resources-repositories) for more details.
+
+For repositories, you can set two types of triggers.
 1. Repo triggers
 2. PR triggers
 
@@ -277,7 +279,7 @@ resources:
 
 
 ### Containers
-Whenever a new image got published to the container registry, your pipeline run will be triggered. 
+Whenever a new image got published to the container registry, your pipeline run will be triggered. See [container resource](pipeline-resources.md#resources-containers) for more details.
 
 
 #### Scenarios	
