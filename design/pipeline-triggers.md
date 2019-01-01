@@ -14,7 +14,7 @@ Triggers are enabled by default on all the resources. However, you can choose to
 
 
 ### Pipelines
-A new pipeline is triggered automatically whenever a new run of the `pipeline` resource is succesfully completed. See [pipeline resources] (pipeline-resources.md#resources-pipelines) for more details.
+A new pipeline is triggered automatically whenever a new run of the `pipeline` resource is succesfully completed. See [pipeline resources](pipeline-resources.md#resources-pipelines) for more details.
 
 #### Scenarios
 - I would like to trigger my pipeline when a new ‘helm-package’ artifact is published by ‘Helm-CI’ pipeline that ran on `releases/*` branch.
