@@ -11,16 +11,17 @@ At high level there are 3 different types of pipeline triggers.
 You can enable triggers on the resources defined in your pipeline. Resources can be of types pipelines, repositories, containers and packages.
 Triggers are enabled by default on all the resources. However, you can choose to override/disable triggers for each resource.
 
+
+
 ### Pipelines
-A new pipeline is triggered automatically whenever a new run of the `pipeline` resource is succesfully completed. However, you can provide specific conditions to override the `trigger`.
+A new pipeline is triggered automatically whenever a new run of the `pipeline` resource is succesfully completed. 
 
 #### Scenarios
-- I would like to trigger my pipeline when a new ‘helm-package’ artifact is published by ‘Helm-CI’ pipeline that ran on ‘releases/*’ branch.
-- I would like to trigger my pipeline when a new ‘helm-package’ artifact is published and tested as part of Helm-CI pipeline and tagged as “Production”.
+- I would like to trigger my pipeline when a new ‘helm-package’ artifact is published by ‘Helm-CI’ pipeline that ran on `releases/*` branch.
+- I would like to trigger my pipeline when a new ‘helm-package’ artifact is published and tested as part of Helm-CI pipeline and tagged as 'Production'.
 - I would like to trigger my pipeline when ‘TFS-Update’ pipeline has completed ‘Ring2’ stage.  
 
 #### Schema
-
 ```yaml
 resources:       
   pipelines:
@@ -35,7 +36,6 @@ resources:
 ```
 
 #### Examples
-
 Triggers are enabled by default unless expliciltly opted out. You can disable the triggers on the `pipeline` resource.
 ```yaml
 resources:
@@ -44,6 +44,7 @@ resources:
     source: SmartHotel-CI 
     trigger: none   
 ```
+
 
 You can control which branches get the triggers with a simple syntax.
 ```yaml
@@ -58,6 +59,7 @@ resources:
  You can specify the full name of the branch (for example, master) or a prefix-matching wildcard (for example, releases/*). You cannot put a wildcard in the middle of a value. For example, releases/*2018 is invalid.
  
 
+
 You can specify the branches to include and exclude.
 ```yaml
 resources:
@@ -71,6 +73,7 @@ resources:
         exclude:
         - master
  ```
+ 
  
  You can specify which tags to control the triggers.
  ```yaml
@@ -87,6 +90,7 @@ resources:
       - Signed
  ```
  
+ 
 If you don't want to wait until all the stages of the run are completed for the `pipeline` resource. You can provide the stage to be completed to trigger you pipeline. 
 ```yaml
 resources:
@@ -100,16 +104,22 @@ resources:
       - QA
  ```
  
- ### Repositories
-Triggers can be set on `repository` resources defined the pipeline. For repositories, you can set Repo triggers and PR triggers. 
+ 
+### Repositories
+Triggers can be set on `repository` resources defined the pipeline. For repositories, you can set two types of triggers.
+1. Repo triggers
+2. PR triggers
+
 
 #### Repo triggers
-Whenever a commit goes to your `repository`, a new pipeline run gets triggered. Repo triggers are enabled on the `repository` resource by default. You can choose to override/disable the trigger.
+Whenever a commit goes to your `repository`, a new pipeline run gets triggered. 
+
 
 #### Scenarios:	
 - I would like to trigger my pipeline only when a commit happens on ‘releases/*’ branch of the repository.
 - I would like to trigger my pipeline when a new commit happens, however, I would like to enable batching so that only one pipeline runs at a time. 
 - I would like to trigger my pipeline only when a new commit goes into the file path “Repository/Web/*”.
+
 
 #### Schema
 ```yaml
@@ -191,15 +201,18 @@ resources:
         - master
 ```
 
+
+
 #### PR triggers
 Whenever a PR is raised on the repository, you can choose to trigger your pipeline using PR triggers. PR triggers are not enabled by defaut. You can enable PR triggers on the repository by defining `pr` trigger on the `repository` resource.
+
 
 #### Scenarios
 	I would like to trigger my pipeline only when a PR is targeted to `releases/*` branch of the repository.
 	I would like to trigger my pipeline only when a PR is targeted to the file path `Web/*` of the repository.
 
-#### Schema
 
+#### Schema
 ```yaml
 resources:         
   repositories:
@@ -261,12 +274,16 @@ resources:
         - web/README.md
 ```
 
+
+
 ### Containers
 Whenever a new image got published to the container registry, your pipeline run will be triggered. 
+
 
 #### Scenarios	
 - I would like to trigger my pipeline whenever a new image got published.
 - I would like to trigger my pipeline whenever a new image got published to ‘East-US’ location (ACR specific filter).
+
 
 #### Schema
 ```yaml
@@ -297,6 +314,7 @@ resources:
     trigger: none
 ```
 
+
 You can specify the image tag format to get the trigger by simple syntax.
 ```yaml
 resources:         
@@ -308,6 +326,7 @@ resources:
     trigger:
     - version-*
 ```
+
 
 You can specify the image tags to include and exclude.
 ```yaml
@@ -325,6 +344,7 @@ resources:
         - version-2017*
 ```
 
+
 If you have an ACR `container` resource, you can specify the geo location to get the triggers.
 ```yaml
 repositories:
@@ -341,7 +361,3 @@ repositories:
       - east-US
       - west-EU
 ```
-
-
-
-
