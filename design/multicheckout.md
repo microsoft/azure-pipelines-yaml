@@ -23,7 +23,7 @@ resources:
 steps:
 - checkout: self
 - checkout: tools
-  root: buildTools
+  path: buildTools
 - checkout: scripts
 ```
 
@@ -67,7 +67,7 @@ resources:
 steps:
 - checkout: self
 - checkout: tools
-  root: buildTools  # relative paths are assumed to be rooted at $(Pipelines.ResourcesDirectory)
+  path: buildTools  # relative paths are assumed to be rooted at $(Pipelines.ResourcesDirectory)
 ```
 
 ### Code in one repository, pipeline YAML in another
@@ -102,9 +102,9 @@ steps:
 - checkout: self
   root: $(Pipelines.DefaultSourcesDirectory)/module1
 - checkout: code2
-  root: $(Pipelines.DefaultSourcesDirectory)/module2
+  path: $(Pipelines.DefaultSourcesDirectory)/module2
 - checkout: code3
-  root: $(Pipelines.DefaultSourcesDirectory)/module3
+  path: $(Pipelines.DefaultSourcesDirectory)/module3
 ```
 
 ### Control the checkout location of code
@@ -112,7 +112,7 @@ steps:
 ```yaml
 steps:
 - checkout: self
-  root: $(Pipelines.DefaultSourcesDirectory)/PutMyCodeHere
+  path: $(Pipelines.DefaultSourcesDirectory)/PutMyCodeHere
 - script: ./build.sh
   workingDirectory: $(Pipelines.SourcesDirectory)  # correctly set based on the self checkout step
 ```
