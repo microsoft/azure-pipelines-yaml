@@ -365,5 +365,5 @@ repositories:
 ```
 
 ## Schedule triggers
-TBD
+This is out of scope for this iteration.
 
