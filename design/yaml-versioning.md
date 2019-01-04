@@ -57,11 +57,29 @@ Instead, it lists only the breaking changes we'll make now.
 * Remove `phases`/`phase`. This became `jobs`/`job` with minimal other changes.
 * Remove `queue`. This includes all the nodes which moved under `strategy`.
 * Remove Git-LFS, shallow fetch, and other non-core properties from `repository`. These are now handled by `checkout`.
-* ...
+* Remove sequence form of `resources`. This is completely handled by the current mapping form.
+* (Tentative) Remove `$[ ]` syntax, as we're planning to make `${{ }}` execute just-in-time.
 
 #### Behavior changes
 * `repository` and `container` gain triggers by default. Users must suppress them using `trigger: none` if they don't want trigger behavior.
 * ...
+
+#### Syntax strictness
+* `repository` and `container` allow arbitrary properties today. In v1, we will fix the set of properties that are allowed and error if unknown properties are passed.
+* `task` inputs are arbitrary. In v1, only valid inputs (and aliases of inputs) will be accepted.
+* ...
+
+#### Wishlist - to discuss/debate
+* Match YAML representation model semantics. [Mapping keys are unordered](https://yaml.org/spec/1.1/#id863110). Steps are the key offender, requiring a key like `task` or `script` to appear first. v1 relaxes this restriction, allowing for constructions like:
+```yaml
+steps:
+- displayName: Display name first
+  task: Foo@1
+- name: bar
+  task: Bar@1
+- condition: failed()
+  script: echo Executes only if failed
+```
 
 ### Templates
 
