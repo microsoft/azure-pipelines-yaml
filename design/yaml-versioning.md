@@ -77,7 +77,7 @@ Instead, it lists only the breaking changes we'll make now.
 * `task` inputs are arbitrary. In v1, only valid inputs (and aliases of inputs) will be accepted.
 * ...
 
-#### Wishlist - to discuss/debate
+#### Still under discussion
 * Match YAML representation model semantics. [Mapping keys are unordered](https://yaml.org/spec/1.1/#id863110). Steps are the key offender, requiring a key like `task` or `script` to appear first. v1 relaxes this restriction, allowing for constructions like:
 ```yaml
 steps:
@@ -88,6 +88,21 @@ steps:
 - condition: failed()
   script: echo Executes only if failed
 ```
+* Multiline strings: occassionally there places where we expect multiline string inputs (for example, path specifiers on artifact tasks). Today you must use:
+```yaml
+foo: |
+  multi
+  line
+  string
+```
+We could support an alternate syntax:
+```yaml
+foo:
+- multi
+- line
+- string
+```
+which some people feel is "more YAMLy".
 
 ### Templates
 
