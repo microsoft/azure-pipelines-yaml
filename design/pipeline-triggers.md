@@ -2,6 +2,8 @@
 
 Triggers are events on which you can start your pipeline run automatically. You can enable triggers on your pipeline by subscribing to both internal and external events.
 
+An event can be completion of a process, status udpate from a service or a timed event. 
+
 At high level there are 3 different types of pipeline triggers.
 1. Resource triggers
 2. Schedule triggers
@@ -17,8 +19,8 @@ Triggers are enabled by default on all the resources. However, you can choose to
 A new pipeline is triggered automatically whenever a new run of the `pipeline` resource is succesfully completed. See [pipeline resources](pipeline-resources.md#resources-pipelines) for more details.
 
 #### Scenarios
-- I would like to trigger my pipeline when a new ‘helm-package’ artifact is published by ‘Helm-CI’ pipeline that ran on `releases/*` branch.
-- I would like to trigger my pipeline when a new ‘helm-package’ artifact is published and tested as part of Helm-CI pipeline and tagged as 'Production'.
+- I would like to trigger my pipeline when an artifact is published by ‘Helm-CI’ pipeline that ran on `releases/*` branch.
+- I would like to trigger my pipeline when an artifact is published and tested as part of Helm-CI pipeline and tagged as 'Production'.
 - I would like to trigger my pipeline when ‘TFS-Update’ pipeline has completed ‘Ring2’ stage.  
 
 #### Schema
