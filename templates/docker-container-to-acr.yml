@@ -43,7 +43,7 @@ jobs:
   condition: and(succeeded(), eq(variables['Azure.CreateResources'], 'true'))
 
   pool:
-    name: '{{ #GetAgentPoolName linux }}'
+    vmImage: 'Ubuntu-16.04'
 
   steps:
   - task: AzureCLI@1
@@ -74,7 +74,7 @@ jobs:
   condition: or(succeeded(), ne(variables['Azure.CreateResources'], 'true'))
 
   pool:
-    name: '{{ #GetAgentPoolName linux }}'
+    vmImage: 'Ubuntu-16.04'
 
   steps:
   - task: Docker@1
