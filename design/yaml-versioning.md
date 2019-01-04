@@ -34,7 +34,7 @@ This would be a breaking change, so existing customers will need to signal their
 We introduce a new field, `version`, which lives at the root level of the pipeline.
 It's an integer whose valid values are (currently) only `0` and `1`.
 Any other number is a syntax error.
-If not present, the value is assumed to be `0`.
+If not present, the value is assumed to be `0` (unless included in a [template; see below](#templates)).
 
 We'll continue our commitment to backcompat within a single version.
 Whatever version is currently in active development will grow new features over time.
@@ -62,3 +62,57 @@ Instead, it lists only the breaking changes we'll make now.
 #### Behavior changes
 * `repository` and `container` gain triggers by default. Users must suppress them using `trigger: none` if they don't want trigger behavior.
 * ...
+
+### Templates
+
+Pipelines composed of templates must have matching versions.
+"Child" (included) templates must either explicitly declare the same version as the parent, or not specify a version at all.
+If they don't specify a version at all, they're parsed as if they specified the version of the parent.
+
+Examples:
+```yaml
+##### Legal - both have explicit versions #####
+# pipeline.yml
+version: 1
+steps:
+- template: steps.yml
+
+# steps.yml
+version: 1
+steps:
+- script: echo foo
+
+
+##### Legal - child template doesn't specify version #####
+# pipeline.yml
+version: 0
+steps:
+- template: steps.yml
+
+# steps.yml
+steps:
+- script: echo foo
+
+
+##### Illegal - mismatched versions #####
+# pipeline.yml
+version: 1
+steps:
+- template: steps.yml
+
+# steps.yml
+version: 0
+steps:
+- script: echo foo
+
+
+##### Illegal - parent has implied version 0 while child specifies version 1 #####
+# pipeline.yml
+steps:
+- template: steps.yml
+
+# steps.yml
+version: 1
+steps:
+- script: echo foo
+```
