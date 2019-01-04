@@ -27,7 +27,15 @@ The more common scenario will be triggering a pipeline when a new container imag
 This would be a breaking change, so existing customers will need to signal their readiness.
 
 ## Industry landscape
-*TODO*
+
+### Unversioned YAML
+- [Travis CI](https://docs.travis-ci.com/user/reference/overview/).
+- [AppVeyor](https://www.appveyor.com/docs/appveyor-yml/).
+- [Google Cloud Build](https://cloud.google.com/cloud-build/docs/build-config).
+
+### Versioned YAML
+- CircleCI has [3 supported versions](https://circleci.com/docs/2.0/sample-config/#section=configuration): 1.0, 2.0, and 2.1. Mostly it looks like Circle added additional syntax in each version; I didn't find any breaking changes.
+- ...
 
 ## Solution
 
