@@ -22,7 +22,7 @@ A new pipeline is triggered automatically whenever a new run of the `pipeline` r
 Usually, artifacts produced by a CI pipeline are consumed in another CD pipeline. Triggers help you achieve CICD scenarios.
 - I would like to trigger my pipeline when an artifact is published by ‘Helm-CI’ pipeline that ran on `releases/*` branch.
 - I would like to trigger my pipeline when an artifact is published and tested as part of Helm-CI pipeline and tagged as 'Production'.
-- I would like to trigger my pipeline when ‘TFS-Update’ pipeline has completed ‘Ring2’ stage.  
+- I would like to trigger my pipeline when ‘TFS-Update’ pipeline has completed ‘Ring2’ stage so that I can run some diagnostics.
 
 #### Schema
 ```yaml
