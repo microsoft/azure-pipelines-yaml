@@ -22,6 +22,7 @@ A new pipeline is triggered automatically whenever a new run of the `pipeline` r
 - I would like to trigger my pipeline when an artifact is published by ‘Helm-CI’ pipeline that ran on `releases/*` branch.
 - I would like to trigger my pipeline when an artifact is published and tested as part of Helm-CI pipeline and tagged as 'Production'.
 - I would like to trigger my pipeline when ‘TFS-Update’ pipeline has completed ‘Ring2’ stage so that I can run some diagnostics.
+
 Usually, artifacts produced by a CI pipeline are consumed in another CD pipeline. Triggers help you achieve CICD scenarios.
 So we enable triggers on pipelines by default unless expliciltly opted out.
 
@@ -125,6 +126,7 @@ Whenever a commit goes to your `repository`, a new pipeline run gets triggered.
 - I would like to trigger my pipeline only when a commit happens on ‘releases/*’ branch of the repository.
 - I would like to trigger my pipeline when a new commit happens, however, I would like to enable batching so that only one pipeline runs at a time. 
 - I would like to trigger my pipeline only when a new commit goes into the file path “Repository/Web/*”.
+
 `repository` resource is used when you have to build the code residing in multiple repositories or you have set of deployable files from another repo. These scenarios would require triggers to be enabled by default and any new change to your repo will trigger a new pipeline run automatically. 
 
 However, triggers are not enabled on `repository` resource today. So, we will keep the current behavior and in the next version of YAML we will enable the triggers by default.
@@ -281,6 +283,7 @@ Whenever a new image got published to the container registry, your pipeline run 
 #### Scenarios	
 - I would like to trigger my pipeline whenever a new version of my application image got published so that I can deploy the image as part of my pipeline.
 - I would like to trigger my pipeline whenever a new image got published to ‘East-US’ location (ACR specific filter).
+
 `container` resource is used in a pipeline when you need an image from a registry to be deployed as part of your pipeline. The scenarios above would require triggers to be enabled by default.   
 
 However, triggers are not enabled on `container` resource today. So, we will keep the current behavior. In the next version of YAML we will enable the triggers by default.
