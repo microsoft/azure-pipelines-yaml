@@ -24,7 +24,7 @@ A new pipeline is triggered automatically whenever a new run of the `pipeline` r
 - I would like to trigger my pipeline when ‘TFS-Update’ pipeline has completed ‘Ring2’ stage so that I can run some diagnostics.
 
 Usually, artifacts produced by a CI pipeline are consumed in another CD pipeline. Triggers help you achieve CICD scenarios.
-So we enable triggers on pipelines by default unless expliciltly opted out.
+So we enable triggers on `pipeline` resource by default unless expliciltly opted out.
 
 #### Schema
 ```yaml
@@ -127,7 +127,7 @@ Whenever a commit goes to your `repository`, a new pipeline run gets triggered.
 - I would like to trigger my pipeline when a new commit happens, however, I would like to enable batching so that only one pipeline runs at a time. 
 - I would like to trigger my pipeline only when a new commit goes into the file path “Repository/Web/*”.
 
-`repository` resource is used when you have to build the code residing in multiple repositories or you have set of deployable files from another repo. These scenarios would require triggers to be enabled by default and any new change to your repo will trigger a new pipeline run automatically. 
+`repository` resource is used when you have to build the code residing in multiple repositories or you need set of deployable files from another repo. These scenarios would require triggers to be enabled by default and any new change to your repo will trigger a new pipeline run automatically. 
 
 However, triggers are not enabled on `repository` resource today. So, we will keep the current behavior and in the next version of YAML we will enable the triggers by default.
 
