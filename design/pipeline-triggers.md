@@ -19,6 +19,7 @@ Triggers are enabled by default on all the resources. However, you can choose to
 A new pipeline is triggered automatically whenever a new run of the `pipeline` resource is succesfully completed. See [pipeline resources](pipeline-resources.md#resources-pipelines) for more details.
 
 #### Scenarios
+Usually, artifacts produced by a CI pipeline are consumed in another CD pipeline. Triggers help you achieve CICD scenarios.
 - I would like to trigger my pipeline when an artifact is published by ‘Helm-CI’ pipeline that ran on `releases/*` branch.
 - I would like to trigger my pipeline when an artifact is published and tested as part of Helm-CI pipeline and tagged as 'Production'.
 - I would like to trigger my pipeline when ‘TFS-Update’ pipeline has completed ‘Ring2’ stage.  
@@ -33,8 +34,8 @@ resources:
       branches:  # branch conditions to filter the events, optional; Defaults to all branches.
         include: [ string ]  # branches to consider the trigger events, optional; Defaults to all branches.
         exclude: [ string ]  # branches to discard the trigger events, optional; Defaults to none.
-      stages: [ string ]  # trigger after completion of given stage, optional; Defaults to all stage completion.
-      tags: [ string ]  # tags on which the trigger events are considered, optional; Defaults to any tag or no tag.
+      stages: [ string ]  # trigger after completion of given stage, optional; Defaults to all stage completion. stages are OR'd
+      tags: [ string ]  # tags on which the trigger events are considered, optional; Defaults to any tag or no tag. tags are OR'd
 ```
 
 #### Examples
@@ -55,8 +56,9 @@ resources:
   - pipeline: SmartHotel
     source: SmartHotel-CI 
     trigger: 
-    - releases/*
-    - master
+      branches:
+      - releases/*
+      - master
  ```
  You can specify the full name of the branch (for example, master) or a prefix-matching wildcard (for example, releases/*). You cannot put a wildcard in the middle of a value. For example, releases/*2018 is invalid.
  
@@ -119,7 +121,8 @@ For repositories, you can set two types of triggers.
 Whenever a commit goes to your `repository`, a new pipeline run gets triggered. 
 
 
-#### Scenarios:	
+#### Scenarios: 
+`repository` resource is used when you have to build the code residing in multiple repositories or you have set of deployable files from another repo. 	
 - I would like to trigger my pipeline only when a commit happens on ‘releases/*’ branch of the repository.
 - I would like to trigger my pipeline when a new commit happens, however, I would like to enable batching so that only one pipeline runs at a time. 
 - I would like to trigger my pipeline only when a new commit goes into the file path “Repository/Web/*”.
@@ -145,17 +148,8 @@ resources:
 
 #### Examples : Repo triggers
 
-Triggers are enabled by default and any new change to your repo will trigger a new pipeline run automatically. You can disable triggers on your repository.
+The scenarios above would require triggers to be enabled by default and any new change to your repo will trigger a new pipeline run automatically. However, triggers are not enabled on `repository` resource today. So, we will keep the current behavior and in the next version of YAML we will enable the triggers by default.
 
-```yaml
-resources:         
-  repositories:
-  - repository: secondaryRepo      
-    type: GitHub
-    connection: myGitHubConnection
-    source: Microsoft/alphaworz
-    trigger: none
-```
 
 You can control which branches to get triggers with simple syntax.
 ```yaml
@@ -166,6 +160,7 @@ resources:
     connection: myGitHubConnection
     source: ashokirla/phpApp
     trigger:
+      branches:
       - master
       - releases/*
 ```
@@ -202,7 +197,7 @@ resources:
     trigger:
       batch: true
       branches:
-        - master
+      - master
 ```
 
 
@@ -253,8 +248,9 @@ resources:
     connection: myGitHubConnection
     source: ashokirla/phpApp
     pr: 
-    - master
-    - releases/*
+      branches:
+      - master
+      - releases/*
 ```
 
 You can specify the branches and file paths to include and exclude.
@@ -274,7 +270,7 @@ resources:
       paths:
         include:
         - web/*
-        exclude:
+ext t version of YAML we will enabled the triggers by default.    exclude:
         - web/README.md
 ```
 
@@ -285,7 +281,8 @@ Whenever a new image got published to the container registry, your pipeline run 
 
 
 #### Scenarios	
-- I would like to trigger my pipeline whenever a new image got published.
+`container` resource is defined in a pipeline when you need an image from a registry to be deployed as part of your pipeline.
+- I would like to trigger my pipeline whenever a new version of my application image got published so that I can deploy the image as part of my pipeline.
 - I would like to trigger my pipeline whenever a new image got published to ‘East-US’ location (ACR specific filter).
 
 
@@ -305,17 +302,7 @@ resources:
 
 #### Examples
 
-Triggers are enabled by default on the `container` resource. When a new image gets published to your image registry, pipeline run starts automatically. You can disable the triggers on your `container`.
-
-```yaml
-resources:         
-  containers:
-  - container: smartHotel 
-    type: Docker
-    connection: myDockerRegistry
-    image: smartHotelApp 
-    trigger: none
-```
+The scenarios above would require triggers to be enabled by default. Whenever a new image gets published to your image registry, pipeline run starts automatically.  However, triggers are not enabled on `container` resource today. So, we will keep the current behavior. In the next version of YAML we will enable the triggers by default.
 
 
 You can specify the image tag format to get the trigger by simple syntax.
@@ -326,7 +313,8 @@ resources:
     connection: myDockerRegistry
     image: smartHotelApp 
     trigger:
-    - version-*
+      tags:
+      - version-*
 ```
 
 
