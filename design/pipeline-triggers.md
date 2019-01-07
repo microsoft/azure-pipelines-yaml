@@ -301,7 +301,6 @@ resources:
       tags:
         include: [ string ]  # image tags to consider the trigger events, optional; defaults to any new tag
         exclude: [ string ]  # image tags on discard the trigger events, option; defaults to none
-      location: [ string ]  # geo-location the image published to; ACR specific setting.
 ```
 
 #### Examples
@@ -324,7 +323,6 @@ You can specify the image tag format to get the trigger by simple syntax.
 resources:         
   containers:
   - container: smartHotel 
-    type: Docker
     connection: myDockerRegistry
     image: smartHotelApp 
     trigger:
@@ -337,7 +335,6 @@ You can specify the image tags to include and exclude.
 resources:         
   containers:
   - container: smartHotel 
-    type: Docker
     connection: myDockerRegistry
     image: smartHotelApp 
     trigger:
@@ -353,8 +350,9 @@ If you have an ACR `container` resource, you can specify the geo location to get
 ```yaml
 repositories:
   containers:
-  - container: MyACR    
-    connection: RMPM
+  - container: MyACR  
+    type: ACR
+    subscription: RMPM
     registry: contosodemo
     image: Microsoft/alphaworz
     trigger: 
