@@ -1,5 +1,5 @@
-# Docker image, Azure container registry and Web App
-# Build a Docker image, push to an Azure container registry and deploy to Azure Web App Service
+# Docker image, Azure Container Registry, and Azure Web App
+# Build a Docker image, push it to an Azure Container Registry, and deploy it to an Azure Web App.
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
