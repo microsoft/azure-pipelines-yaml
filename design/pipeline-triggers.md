@@ -212,8 +212,8 @@ Whenever a PR is raised on the repository, you can choose to trigger your pipeli
 
 
 #### Scenarios
-	I would like to trigger my pipeline only when a PR is targeted to `releases/*` branch of the repository.
-	I would like to trigger my pipeline only when a PR is targeted to the file path `Web/*` of the repository.
+- I would like to trigger my pipeline only when a PR is targeted to `releases/*` branch of the repository.
+- I would like to trigger my pipeline only when a PR is targeted to the file path `Web/*` of the repository.
 
 
 #### Schema
