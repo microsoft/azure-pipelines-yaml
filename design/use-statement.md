@@ -112,15 +112,16 @@ steps:
   authTo: azureArtifactsFeedOrServiceConnection
 ```
 
-or, for multiple resources:
+If you need to authorize against multiple resources (and that's supported by the ecosystem tools), `use` should be reentrant:
 
 ```yaml
 steps:
 - use: someTool
-  authTo:
-  - azureArtifactsFeed
-  - artifactoryServiceConnection
-  - myGetServiceConnection
+  authTo: azureArtifactsFeed
+- use: someTool
+  authTo: artifactoryServiceConnection
+- use: someTool
+  authTo: myGetServiceConnection
 ```
 
 It is recommended to check in a configuration file showing which feeds are required.
