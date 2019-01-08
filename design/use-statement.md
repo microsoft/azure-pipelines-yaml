@@ -112,15 +112,16 @@ steps:
   authTo: azureArtifactsFeedOrServiceConnection
 ```
 
-or, for multiple resources:
+If you need to authorize against multiple resources (and that's supported by the ecosystem tools), `use` should be reentrant:
 
 ```yaml
 steps:
 - use: someTool
-  authTo:
-  - azureArtifactsFeed
-  - artifactoryServiceConnection
-  - myGetServiceConnection
+  authTo: azureArtifactsFeed
+- use: someTool
+  authTo: artifactoryServiceConnection
+- use: someTool
+  authTo: myGetServiceConnection
 ```
 
 It is recommended to check in a configuration file showing which feeds are required.
@@ -231,6 +232,28 @@ Additional requirements for in-box tasks:
 This won't be required for third-party tasks.
 - Another common parameter is `architecture`.
 - Do a simplification pass on each task to make sure each input is necessary, clear, and orthogonal.
+
+## List of ecosystems to support
+
+Ecosystem  | `use:`   | Authentication & proxy support
+-----------|----------|-------------------------------
+NodeJS     | `node`   | `npm`, `yarn`, `bower`?
+.NET Core  | `dotnet` | `dotnet nuget`, `dotnet add package`
+Go         | `go`     | ?
+Java       | `java`   | `mvn`
+Python     | `python` | `twine`, `pip`
+Ruby       | `ruby`   | `gem`, `bundle`
+PHP        | `php`    | `composer`
+VS Test    | `vstest` | -
+Docker     | `docker` | `docker pull`, `docker publish`
+Helm       | `helm`   | `helm`, `kubectl`
+
+Future ecosystems to consider:
+
+Ecosystem  | `use:`   | Authentication & proxy support
+-----------|----------|-------------------------------
+apt        | `apt`    | `apt`, `apt-get`
+rust       | `rust`   | `cargo`?
 
 ## Appendix: List of existing tool and installer tasks
 
