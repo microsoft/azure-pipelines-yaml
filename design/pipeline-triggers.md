@@ -93,10 +93,11 @@ resources:
         - releases/*
       tags: 
       - Production
-      - Sign ```
- 
- 
+      - Sign 
+```
+
 If you don't want to wait until all the stages of the run are completed for the `pipeline` resource. You can provide the stage to be completed to trigger you pipeline. 
+
 ```yaml
 resources:
   pipelines:
@@ -269,8 +270,8 @@ resources:
         - releases/experimental/*
       paths:
         include:
-        - web/*
-ext t version of YAML we will enabled the triggers by default.    exclude:
+        - web/*         
+        exclude:
         - web/README.md
 ```
 
