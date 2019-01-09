@@ -2,7 +2,7 @@
 
 Triggers are events on which you can start your pipeline run automatically. You can enable triggers on your pipeline by subscribing to both internal and external events.
 
-An event can be completion of a process, status udpate from a service or a timed event. 
+An event can be completion of a process, availability of a resource, status udpate from a service or a timed event. 
 
 At high level there are 3 different types of pipeline triggers.
 1. Resource triggers
