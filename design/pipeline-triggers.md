@@ -1,8 +1,8 @@
 # Triggers in pipelines
+Any DevOps lifecycle comprises of bunch of process that run at different stages of the lifecycle consuming data from various channels. 
+Triggers enable customer to orchestrate DevOps process in an efficient manner by automating the CI and CD processes.
 
-Triggers are events on which you can start your pipeline run automatically. You can enable triggers on your pipeline by subscribing to both internal and external events.
-
-An event can be completion of a process, availability of a resource, status udpate from a service or a timed event. 
+Triggers are events on which you can start your pipeline run automatically. You can enable triggers on your pipeline by subscribing to both internal and external events. An event can be completion of a process, availability of a resource, status udpate from a service or a timed event. 
 
 At high level there are 3 different types of pipeline triggers.
 1. Resource triggers
