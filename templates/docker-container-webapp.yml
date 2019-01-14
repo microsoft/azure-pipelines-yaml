@@ -51,7 +51,7 @@ jobs:
 
   steps:
   - task: AzureResourceGroupDeployment@2
-    displayName: 'Azure Deployment:Create Azure Container Registry'
+    displayName: 'Azure Deployment:Create Azure Container Registry, Azure WebApp Service'
     inputs:
       azureSubscription: '$(Azure.ServiceConnectionId)'
       resourceGroupName: '$(Azure.ResourceGroupName)'
