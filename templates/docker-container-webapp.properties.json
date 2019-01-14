@@ -1,4 +1,7 @@
 {
   "iconName": "docker",
-  "requires": [ "azuresubscription"]
+  "requires": [ 
+    { "name" : "serviceEndpointId", "type": "connectedService:azureRM" },
+    { "name" : "repositoryName", "type": "string" }
+  ]
 }
