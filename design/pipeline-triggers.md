@@ -141,6 +141,9 @@ resources:
     source: string  
     trigger:  # Optional; Triggers are enabled by default
       batch: boolean 
+      tags:
+        include: [string]
+        exclude: [string]
       branches:  # branch conditions to filter the events, optional; Defaults to all branches.
         include: [ string ]  # branches to consider the trigger events, optional; Defaults to all branches.
         exclude: [ string ]  # branches to discard the trigger events, optional; Defaults to none.  
@@ -201,6 +204,24 @@ resources:
 ```
 
 
+AML pipelines can be triggered when tags are added to a commit. This is valuable for teams whose workflows include tags. For instance, you can kick off a process when a commit is tagged as the "last known good".
+You can specify which tags to include and exclude. 
+
+```yaml
+resources:         
+  repositories:
+  - repository: myPHPApp      
+    type: GitHub
+    connection: myGitHubConnection
+    source: ashokirla/phpApp
+    trigger:
+      tags:
+        include:
+        - releases/*
+        exclude:
+        - releases/old*
+```
+
 
 #### PR triggers
 Whenever a PR is raised on the repository, you can choose to trigger your pipeline using PR triggers. PR triggers are not enabled by defaut. You can enable PR triggers on the repository by defining `pr` trigger on the `repository` resource.
@@ -218,6 +239,7 @@ resources:
   - repository: string    
     source: string  
     pr:        # Optional; pr triggers are disabled by default
+      autoCancel: boolean
       branches:  # branch conditions to filter the events, optional; Defaults to all branches.
         include: [ string ]  # branches to consider the trigger events, optional; Defaults to all branches.
         exclude: [ string ]  # branches to discard the trigger events, optional; Defaults to none.  
@@ -228,18 +250,8 @@ resources:
 
 #### Examples: PR triggers
 Unless you specify, `pr` triggers are disabled for your repository. You can enable pull request based pipeline runs.
-
-```yaml
-resources:         
-  repositories:
-  - repository: myPHPApp      
-    type: GitHub
-    connection: myGitHubConnection
-    source: ashokirla/phpApp
-    pr: true
-```
-
 You can control the target branches for your pull request based pipeline runs by simple syntax.
+
 ```yaml
 resources:         
   repositories:
@@ -275,6 +287,20 @@ resources:
 ```
 
 
+You can auto cancel an existing pipeline when a pull request is updated. By default, pipelines triggered by pull requests (PRs) will be canceled if a new commit is pushed to the same PR. This is desirable in most cases since usually you don't want to continue running a pipeline on out-of-date code. If you don't want this behavior, you can add autoCancel: false to your PR trigger.
+
+```yaml
+resources:         
+  repositories:
+  - repository: myPHPApp      
+    type: GitHub
+    connection: myGitHubConnection
+    source: ashokirla/phpApp
+    pr: 
+      autoCancel: false
+      branches:
+      - master
+ ```    
 
 ### Containers
 Whenever a new image got published to the container registry, your pipeline run will be triggered automatically. See [container resource](pipeline-resources.md#resources-containers) for more details.
