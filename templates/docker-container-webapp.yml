@@ -34,13 +34,10 @@ variables:
   # ========================================================================
   #                           Optional variables 
   # ========================================================================
-
-  ACR.RepositoryName: '$(ACR.Name)'
-  ACR.ImageName: '$(ACR.Name).azurecr.io/{{ repositoryName }}:$(Build.BuildId)'
-  ACR.Sku: 'Standard'
+  
+  ACR.ImageName: '$(ACR.Name):$(Build.BuildId)'
+  ACR.FullName: '$(ACR.Name).azurecr.io'
   Azure.CreateResources: 'true' # Update Azure.CreateResources to false if you have already created resources like resource group and azure container registry.
-  ServicePlan.SKU: S1
-  ServicePlan.NumberOfWorkers: 4
   System.Debug: 'false'
 
 jobs:
@@ -53,42 +50,15 @@ jobs:
     vmImage: 'Ubuntu-16.04'
 
   steps:
-  - task: AzureCLI@1
-    displayName: 'Create resources if required'
+  - task: AzureResourceGroupDeployment@2
+    displayName: 'Azure Deployment:Create Azure Container Registry'
     inputs:
-      connectedServiceNameARM: '$(Azure.ServiceConnectionId)'
-      scriptLocation: inlineScript
-      inlineScript: |
-        #!/bin/bash
-        set -e
-        RGExists=$(az group exists --name $(Azure.ResourceGroupName))
-        echo "RG exists: $RGExists"
-        if [ $RGExists = false ]
-        then
-          CREATED_RG=$(az group create --name $(Azure.ResourceGroupName) --location $(Azure.Location))
-          echo "$CREATED_RG"
-        fi
-        CREATE_ACR=$(az acr check-name -n $(ACR.Name) --query nameAvailable)
-        echo "Create ACR: $CREATE_ACR"
-        if [ $CREATE_ACR = true ]
-        then
-          echo "Creating Azure Container registry: $(ACR.Name)"
-          az acr create -n $(ACR.Name) -g $(Azure.ResourceGroupName) --sku $(ACR.Sku) --admin-enabled true
-          echo "Created Azure Container registry: $(ACR.Name)"
-        fi
-        CREATE_WEB_APP=$(az resource list -n "$(WebApp.Name)" -g $(Azure.ResourceGroupName) --resource-type "Microsoft.Web/Sites" --query '[0].id')
-        if [ -z "${CREATE_WEB_APP}" ]
-        then
-          echo "Create Web App: true"
-          echo "Creating App service plan: $(ServicePlan.Name)"
-          az appservice plan create -g $(Azure.ResourceGroupName) -n $(ServicePlan.Name) --is-linux --number-of-workers $(ServicePlan.NumberOfWorkers) --sku $(ServicePlan.SKU)
-          echo "Created App service plan: $(ServicePlan.Name)"
-          echo "Creating Web app: $(WebApp.Name)"
-          az webapp create -g $(Azure.ResourceGroupName) -n $(WebApp.Name) --plan $(ServicePlan.Name) --deployment-container-image-name $(ACR.ImageName)
-          echo "Created Web app: $(WebApp.Name)"
-        else
-          echo "Create Web App: false"
-        fi
+      azureSubscription: '$(Azure.ServiceConnectionId)'
+      resourceGroupName: '$(Azure.ResourceGroupName)'
+      location: '$(Azure.Location)'
+      templateLocation: 'URL of the file'
+      csmFileLink: 'https://raw.githubusercontent.com/Microsoft/azure-pipelines-yaml/master/arm-templates/webapp-on-containers.json'
+      overrideParameters: '-registryName "$(ACR.Name)" -registryLocation "$(Azure.Location)" -imageName "$(ACR.ImageName)" -webAppName "$(WebApp.Name)" -hostingPlanName "$(ServicePlan.Name)"'
 
 - job: BuildImage
   displayName: Build
@@ -125,14 +95,11 @@ jobs:
     vmImage: 'Ubuntu-16.04'
 
   steps:
-  - task: AzureCLI@1
-    displayName: 'Deploy to web app'
+  - task: AzureRmWebAppDeployment@3
+    displayName: 'Deploy Azure App Service'
     inputs:
-      connectedServiceNameARM: '$(Azure.ServiceConnectionId)'
-      scriptLocation: inlineScript
-      inlineScript: |
-        #!/bin/bash
-        set -e
-        USERNAME=$(az acr credential show -n $(ACR.Name) --query "username" -o tsv)
-        PASSWORD=$(az acr credential show -n $(ACR.Name) --query "passwords[0].value" -o tsv)
-        az webapp config container set -n "$(WebApp.Name)" -g "$(Azure.ResourceGroupName)" --docker-custom-image-name $(ACR.ImageName) --docker-registry-server-user $USERNAME --docker-registry-server-password $PASSWORD
+      azureSubscription: '$(Azure.ServiceConnectionId)'
+      appType: applinux
+      WebAppName: $(WebApp.Name)
+      DockerNamespace: '$(ACR.FullName)'
+      DockerRepository: '$(ACR.ImageName)'
