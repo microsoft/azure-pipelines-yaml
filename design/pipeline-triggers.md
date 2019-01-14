@@ -141,15 +141,15 @@ resources:
     source: string  
     trigger:  # Optional; Triggers are enabled by default
       batch: boolean 
-      tags:
-        include: [string]
-        exclude: [string]
       branches:  # branch conditions to filter the events, optional; Defaults to all branches.
         include: [ string ]  # branches to consider the trigger events, optional; Defaults to all branches.
         exclude: [ string ]  # branches to discard the trigger events, optional; Defaults to none.  
       paths:
         include: [ string ]  # file paths to consider the trigger events, optional; Defaults to all branches.
         exclude: [ string ]  # file paths to discard the trigger events, optional; Defaults to none.  
+      tags: # filter on the events when tags are added to the commit
+        include: [string] # tags on commits to consider the trigger events, optional. 
+        exclude: [string] # tags on commit to discard the trigger events, optional.
 ```
 
 #### Examples : Repo triggers
@@ -239,7 +239,7 @@ resources:
   - repository: string    
     source: string  
     pr:        # Optional; pr triggers are disabled by default
-      autoCancel: boolean
+      autoCancel: boolean  # cancel the pr triggered pipelines when the pr is updated.
       branches:  # branch conditions to filter the events, optional; Defaults to all branches.
         include: [ string ]  # branches to consider the trigger events, optional; Defaults to all branches.
         exclude: [ string ]  # branches to discard the trigger events, optional; Defaults to none.  
