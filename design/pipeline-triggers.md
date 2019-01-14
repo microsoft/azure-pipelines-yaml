@@ -381,7 +381,7 @@ repositories:
 Based on the trigger defined on each resource, a new pipeline run gets triggered whenever an event is received. The branch of the self repo from which the YAML definition will be picked is based on the following rules:
 - If the `pipeline` resource is from the same repo as the current pipeline, we will follow the same branch on which the `pipeline` resource event is raised.
 
-For example, lets say there is an Azure pipeline 'SmartHotel.CI' from 'SmartHotelsRepo'. And 'SmartHotel.CI' is added as a pipeline resource for another pipeline 'SmartHotel.CD' which is also from the same repo. Lets say a new pipeline run is completed for 'SmartHotel.CI' on 'releases/M145' branch. Now, a new pipeline run gets triggered for 'SmartHotel.CD' by picking the YAML from 'releases/M145' branch.
+For example, lets say there is an Azure pipeline 'SmartHotel.CI' from 'SmartHotelsRepo'. And 'SmartHotel.CI' is added as a `pipeline` resource for another Azure pipeline 'SmartHotel.CD' which is also from the same repo. Lets say a new pipeline run is completed for 'SmartHotel.CI' on 'releases/M145' branch. Now, a new pipeline run gets triggered for 'SmartHotel.CD' by picking the YAML from 'releases/M145' branch.
 
 - For all the other resources i.e. `repository` or `container` or if the `pipeline` resource is from a repo different from current YAML pipeline, then the pipeline run is triggered from default branch of the pipeline.
 
