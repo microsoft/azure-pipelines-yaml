@@ -379,7 +379,7 @@ repositories:
 
 ### Rules for evaluation of resource triggers.
 Based on the trigger defined on each resource, a new pipeline run gets triggered whenever an event is received. The branch of the self repo from which the YAML definition is picked is based on the following rules:
-- If the `pipeline` resoruce is from the same repo as the current pipeline, we will follow the same branch on which the `pipeline` resource event is raised.
+- If the `pipeline` resource is from the same repo as the current pipeline, we will follow the same branch on which the `pipeline` resource event is raised.
 
 For example, lets say there is an Azure pipeline 'SmartHotel.CI' from 'SmartHotelsRepo'. And 'SmartHotel.CI' is added as a pipeline resource for another pipeline 'SmartHotel.CD' which is also from the same repo. Lets say a new pipeline run is completed for 'SmartHotel.CI' on 'releases/M145' branch. Now, a new pipeline run gets triggered for 'SmartHotel.CD' by picking the YAML from 'releases/M145' branch.
 
