@@ -94,6 +94,9 @@ Many ecosystems also offer `architecture`, so we make that first class.
 
 `{versionSpec}` is a SemVer or SemVer-like string; see below.
 
+If the user doesn't specify a version, tasks are expected to do the equivalent of `which` to locate the existing tool.
+This is useful for doing things like setting proxy and auth for a system-native tool.
+
 ### Proxy setup
 
 By default, `use` will set up the target ecosystem to use the agent's proxy.
