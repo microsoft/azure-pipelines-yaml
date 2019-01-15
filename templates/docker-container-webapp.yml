@@ -1,0 +1,138 @@
+# Docker image, Azure Container Registry, and Azure Web App
+# Build a Docker image, push it to an Azure Container Registry, and deploy it to an Azure Web App.
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- master
+
+resources:
+- repo: self
+
+variables:
+  # ========================================================================
+  #                          Mandatory variables 
+  # ========================================================================
+
+ # Update Azure.ResourceGroupName value with Azure resource group name.
+  Azure.ResourceGroupName: '{{#toAlphaNumericString repositoryName 50}}{{/toAlphaNumericString}}'
+
+  # Update Azure.ServiceConnectionId value with AzureRm service endpoint.
+  Azure.ServiceConnectionId: '{{ serviceEndpointId }}'
+
+  # Update Azure.Location value with Azure Location.
+  Azure.Location: 'eastus'
+
+  # Update ACR.Name value with ACR name. Please note ACR names should be all lower-case and alphanumeric only.
+  ACR.Name: '{{#toAlphaNumericString repositoryName 46}}{{/toAlphaNumericString}}{{#shortGuid}}{{/shortGuid}}'
+  
+  # Update Web.Name value with a name that identifies your new Web app. Valid characters are a-z, 0-9, and -.
+  WebApp.Name: '{{#toAlphaNumericString repositoryName 46}}{{/toAlphaNumericString}}{{#shortGuid}}{{/shortGuid}}'
+  
+  # Update ServicePlan.Name value with a name of the app service plan.
+  ServicePlan.Name: '{{#toAlphaNumericString repositoryName 45}}{{/toAlphaNumericString}}-plan'
+
+  # ========================================================================
+  #                           Optional variables 
+  # ========================================================================
+
+  ACR.RepositoryName: '$(ACR.Name)'
+  ACR.ImageName: '$(ACR.Name).azurecr.io/{{ repositoryName }}:$(Build.BuildId)'
+  ACR.Sku: 'Standard'
+  Azure.CreateResources: 'true' # Update Azure.CreateResources to false if you have already created resources like resource group and azure container registry.
+  ServicePlan.SKU: S1
+  ServicePlan.NumberOfWorkers: 4
+  System.Debug: 'false'
+
+jobs:
+
+- job: CreateResources
+  displayName: Create resources
+  condition: and(succeeded(), eq(variables['Azure.CreateResources'], 'true'))
+
+  pool:
+    vmImage: 'Ubuntu-16.04'
+
+  steps:
+  - task: AzureCLI@1
+    displayName: 'Create resources if required'
+    inputs:
+      connectedServiceNameARM: '$(Azure.ServiceConnectionId)'
+      scriptLocation: inlineScript
+      inlineScript: |
+        #!/bin/bash
+        set -e
+        RGExists=$(az group exists --name $(Azure.ResourceGroupName))
+        echo "RG exists: $RGExists"
+        if [ $RGExists = false ]
+        then
+          CREATED_RG=$(az group create --name $(Azure.ResourceGroupName) --location $(Azure.Location))
+          echo "$CREATED_RG"
+        fi
+        CREATE_ACR=$(az acr check-name -n $(ACR.Name) --query nameAvailable)
+        echo "Create ACR: $CREATE_ACR"
+        if [ $CREATE_ACR = true ]
+        then
+          echo "Creating Azure Container registry: $(ACR.Name)"
+          az acr create -n $(ACR.Name) -g $(Azure.ResourceGroupName) --sku $(ACR.Sku) --admin-enabled true
+          echo "Created Azure Container registry: $(ACR.Name)"
+        fi
+        CREATE_WEB_APP=$(az resource list -n "$(WebApp.Name)" -g $(Azure.ResourceGroupName) --resource-type "Microsoft.Web/Sites" --query '[0].id')
+        if [ -z "${CREATE_WEB_APP}" ]
+        then
+          echo "Create Web App: true"
+          echo "Creating App service plan: $(ServicePlan.Name)"
+          az appservice plan create -g $(Azure.ResourceGroupName) -n $(ServicePlan.Name) --is-linux --number-of-workers $(ServicePlan.NumberOfWorkers) --sku $(ServicePlan.SKU)
+          echo "Created App service plan: $(ServicePlan.Name)"
+          echo "Creating Web app: $(WebApp.Name)"
+          az webapp create -g $(Azure.ResourceGroupName) -n $(WebApp.Name) --plan $(ServicePlan.Name) --deployment-container-image-name $(ACR.ImageName)
+          echo "Created Web app: $(WebApp.Name)"
+        else
+          echo "Create Web App: false"
+        fi
+
+- job: BuildImage
+  displayName: Build
+  dependsOn: CreateResources
+  condition: or(succeeded(), ne(variables['Azure.CreateResources'], 'true'))
+
+  pool:
+    vmImage: 'Ubuntu-16.04'
+
+  steps:
+  - task: Docker@1
+    displayName: 'Build an image'
+    inputs:
+      azureSubscriptionEndpoint: '$(Azure.ServiceConnectionId)'
+      azureContainerRegistry: '$(ACR.FullName)'
+      imageName: '$(ACR.ImageName)'
+      command: build
+      dockerFile: '**/Dockerfile'
+
+  - task: Docker@1
+    displayName: 'Push an image'
+    inputs:
+      azureSubscriptionEndpoint: '$(Azure.ServiceConnectionId)'
+      azureContainerRegistry: '$(ACR.FullName)'
+      imageName: '$(ACR.ImageName)'
+      command: push
+
+- job: DeployApp
+  displayName: Deploy
+  dependsOn: BuildImage
+  condition: succeeded()
+
+  pool:
+    vmImage: 'Ubuntu-16.04'
+
+  steps:
+  - task: AzureCLI@1
+    displayName: 'Deploy to web app'
+    inputs:
+      connectedServiceNameARM: '$(Azure.ServiceConnectionId)'
+      scriptLocation: inlineScript
+      inlineScript: |
+        #!/bin/bash
+        set -e
+        USERNAME=$(az acr credential show -n $(ACR.Name) --query "username" -o tsv)
+        PASSWORD=$(az acr credential show -n $(ACR.Name) --query "passwords[0].value" -o tsv)
+        az webapp config container set -n "$(WebApp.Name)" -g "$(Azure.ResourceGroupName)" --docker-custom-image-name $(ACR.ImageName) --docker-registry-server-user $USERNAME --docker-registry-server-password $PASSWORD

@@ -1,0 +1,4 @@
+{
+  "iconName": "aks",
+  "requires": [ "azuresubscription"]
+}

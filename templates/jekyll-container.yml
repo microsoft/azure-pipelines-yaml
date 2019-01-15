@@ -3,6 +3,9 @@
 # Add steps that build, test, save build artifacts, deploy, and more:
 # https://aka.ms/yaml
 
+trigger:
+- master
+
 pool:
   vmImage: 'Ubuntu-16.04'
 

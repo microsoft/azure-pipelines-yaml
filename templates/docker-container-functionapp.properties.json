@@ -1,0 +1,4 @@
+{
+  "iconName": "functionapp",
+  "requires": [ "azuresubscription"]
+}
