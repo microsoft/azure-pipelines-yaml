@@ -383,7 +383,7 @@ Based on the trigger defined on each resource, a new pipeline run gets triggered
 
 For example, lets say there is an Azure pipeline 'SmartHotel.CI' from 'SmartHotelsRepo'. And 'SmartHotel.CI' is added as a `pipeline` resource for another Azure pipeline 'SmartHotel.CD' which is also from the same repo. Lets say a new pipeline run is completed for 'SmartHotel.CI' on 'releases/M145' branch. Now, a new pipeline run gets triggered for 'SmartHotel.CD' by picking the YAML from 'releases/M145' branch.
 
-- For all the other resources i.e. `repository` or `container` or if the `pipeline` resource is from a repo different from current YAML pipeline, then the pipeline run is triggered from default branch of the pipeline.
+- For all the other resources i.e. `repository` or `container` or if the `pipeline` resource is from a repo different from current YAML pipeline, then the pipeline run is triggered from default branch of the pipeline which is same as the default branch of the repo.
 
 For example, lets say there is a 'HelmRepo' added as a `repository` resource to the current pipeline 'SmartHotel.CD' which runs on 'SmartHotelsRepo'. Lets say a new commit goes into the 'releases/M145' branch of 'HelmRepo'. Now, a new pipeline run gets triggered for 'SmartHotel.CD' by picking the YAML from default branch (say master) set on the pipeline.
 
