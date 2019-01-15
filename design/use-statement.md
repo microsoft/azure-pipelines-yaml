@@ -169,12 +169,12 @@ This makes the issue debuggable even if not ideal.
 ## Schema
 
 ```yaml
-- use: string            # required tool name
-  version: string        # optional version
-  architecture: string   # optional architecture
-  proxy: boolean         # whether to install proxy information; defaults to true
-  auth: string           # optional name of service connection to authenticate
-  inputs: {string: any}  # optional additional arguments to pass as task inputs
+- use: string              # required tool name
+  version: string          # optional version
+  architecture: string     # optional architecture
+  proxy: boolean           # whether to install proxy information; defaults to true
+  auth: string             # optional name of service connection to authenticate
+  inputs: {string: string} # optional additional arguments to pass as task inputs
 ```
 
 ## Example
