@@ -1,7 +1,7 @@
 {
   "iconName": "functionapp",
   "requires": [ 
-    { "name" : "serviceEndpointId", "type": "connectedService:azureRM" },
-    { "name" : "repositoryName", "type": "string" }
+    { "name" : "serviceEndpointId", "type": "connectedService:azureRM", "required": "true" },
+    { "name" : "repositoryName", "type": "string", "required": "true" }
   ]
 }
