@@ -1,6 +1,6 @@
 # Container steps
 
-Status: PM spec
+Status: **ON HOLD**, not implemented
 
 An emerging pattern is running discrete steps of a job in different containers.
 Each one carries along a persistent, read/write volume as its workspace.
@@ -32,7 +32,7 @@ So we'd have a great story for using teeny containers and not feel bad about hav
 - Need to support mapping in the Docker daemon so that `docker` CLI will work as expected.
 - Need to support the job running as a container when a container step is used.
 
-## Post-S143 (but soon!)
+## Later
 - Arbitrary volume mappings
 - Boolean to de-privilege the container so it can't call out to the host Docker daemon
 - Build and run from a Dockerfile in the repo.
