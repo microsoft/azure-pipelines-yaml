@@ -214,8 +214,8 @@ The in-box tool installers and Use*Tools will evolve.
 Task requirements:
 
 - task.json includes a field indicating what ecosystem the task provides.
-Something like `{ 'provides': string }`.
-- Accept `version` as an input.
+Something like `{ 'ecosystem': string }`.
+- Accept `version` and `architecture` as inputs.
 By convention, this should be a SemVer version spec.
 It's up to the task to process these (with help from the task lib).
 If an ecosystem has additional, non-SemVer "versions", the task may accept those as well.
@@ -227,13 +227,12 @@ Where it's "from a list in the hosted tools cache", that should be clear in the 
 Also, we'll make sure all the tooling includes this information - for instance, Intellisense.
   - Future work: some way to acquire the list of available versions at runtime.
 - Some tools have multiple architectures available.
-By convention, an `architecture` field should use the agent architecture types: `x64`, `x86`, and `arm`.
+By convention, the `architecture` field should use the agent architecture types: `x64`, `x86`, and `arm`.
 Others can be added, and of course only the relevant ones should be accepted.
 
 Additional requirements for in-box tasks:
 - By convention, in-box tasks will use a consistent name scheme: `Use<Name>`.
 This won't be required for third-party tasks.
-- Another common parameter is `architecture`.
 - Do a simplification pass on each task to make sure each input is necessary, clear, and orthogonal.
 
 ## List of ecosystems to support
