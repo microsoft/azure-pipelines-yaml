@@ -84,10 +84,12 @@ You'll be bound to the latest major version of the task.
 ### Version
 
 To select a particular version, pass a `{versionSpec}` to `version`.
+Many ecosystems also offer `architecture`, so we make that first class.
 
 ```yaml
 - use: {toolName}
   version: {versionSpec}
+  architecture: {string}
 ```
 
 `{versionSpec}` is a SemVer or SemVer-like string; see below.
@@ -109,7 +111,7 @@ If a tool needs credentials, those can be added like this:
 ```yaml
 steps:
 - use: someTool
-  authTo: azureArtifactsFeedOrServiceConnection
+  auth: azureArtifactsFeedOrServiceConnection
 ```
 
 If you need to authorize against multiple resources (and that's supported by the ecosystem tools), `use` should be reentrant:
@@ -117,11 +119,11 @@ If you need to authorize against multiple resources (and that's supported by the
 ```yaml
 steps:
 - use: someTool
-  authTo: azureArtifactsFeed
+  auth: azureArtifactsFeed
 - use: someTool
-  authTo: artifactoryServiceConnection
+  auth: artifactoryServiceConnection
 - use: someTool
-  authTo: myGetServiceConnection
+  auth: myGetServiceConnection
 ```
 
 It is recommended to check in a configuration file showing which feeds are required.
@@ -134,7 +136,7 @@ feed (e.g. by using the NuGet Package Manager settings dialog in Visual Studio).
 ```yaml
 steps:
 - use: someTool
-  authTo: azureArtifactsFeedOrServiceConnection
+  auth: azureArtifactsFeedOrServiceConnection
   inputs:
     authFile: .nuget/nuget.config
 ```
@@ -156,7 +158,7 @@ Just like on `task`, you can pass a map of `inputs`.
 ```yaml
 - use: python
   inputs:
-    architecture: x64
+    strictMode: true
 ```
 
 We need to allow tasks the ability to remove fields in major versions.
@@ -167,11 +169,12 @@ This makes the issue debuggable even if not ideal.
 ## Schema
 
 ```yaml
-- use: string               # required tool name
-  version: string           # optional version
-  proxy: boolean            # whether to install proxy information; defaults to true
-  authTo: string | [string] # optional names of feeds or service connections to authenticate
-  inputs: {string: any}     # optional additional arguments to pass as task inputs
+- use: string            # required tool name
+  version: string        # optional version
+  architecture: string   # optional architecture
+  proxy: boolean         # whether to install proxy information; defaults to true
+  auth: string           # optional name of service connection to authenticate
+  inputs: {string: any}  # optional additional arguments to pass as task inputs
 ```
 
 ## Example
