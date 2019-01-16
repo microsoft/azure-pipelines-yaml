@@ -79,7 +79,7 @@ YAML will get a new syntax for `use`-ing a tool or ecosystem.
 `{toolName}` may contain characters in [A-Za-z0-9], plus `-` and `_`.
 
 This can be implemented as sugar over the existing syntax, much like the `powershell` and `bash` keywords today.
-You'll be bound to the latest major version of the task.
+You'll be bound to the latest version of the task.
 
 ### Version
 
@@ -96,6 +96,7 @@ Many ecosystems also offer `architecture`, so we make that first class.
 
 If the user doesn't specify a version, tasks are expected to do the equivalent of `which` to locate the existing tool.
 This is useful for doing things like setting proxy and auth for a system-native tool.
+This is **not** how tool installers work today, where a missing version string gets you a default version.
 
 ### Proxy setup
 
@@ -240,17 +241,17 @@ This won't be required for third-party tasks.
 
 ## List of ecosystems to support
 
-Ecosystem  | `use:`   | Authentication & proxy support
------------|----------|-------------------------------
-NodeJS     | `node`   | `npm`, `yarn`, `bower`?
+Ecosystem  | `use:`   | Set up authentication & proxy for
+-----------|----------|----------------------------------
+NodeJS     | `node`   | `npm`, `yarn`, `bower`
 .NET Core  | `dotnet` | `dotnet nuget`, `dotnet add package`
-Go         | `go`     | ?
+Docker     | `docker` | `docker pull`, `docker publish`
 Java       | `java`   | `mvn`
 Python     | `python` | `twine`, `pip`
+Go         | `go`     | `go get`
 Ruby       | `ruby`   | `gem`, `bundle`
 PHP        | `php`    | `composer`
 VS Test    | `vstest` | -
-Docker     | `docker` | `docker pull`, `docker publish`
 Helm       | `helm`   | `helm`, `kubectl`
 
 Future ecosystems to consider:
@@ -259,6 +260,25 @@ Ecosystem  | `use:`   | Authentication & proxy support
 -----------|----------|-------------------------------
 apt        | `apt`    | `apt`, `apt-get`
 rust       | `rust`   | `cargo`?
+
+## Priorities / MVP
+
+An MVP consists of:
+- Base YAML schema + changes to task.json
+- One ecosystem (Node + npm)
+- Putting the correct version/architecture on the path
+- Automatically setting the proxy (no `proxy: false` needed for MVP)
+- Setting auth using a service connection
+
+Post-MVP priorities:
+1) Two additional ecosystems: .NET Core and Docker
+2) Guidance to developers for supporting additional tools (like yarn for Node)
+3) Support yarn and bower auth/proxy for Node ecosystem
+4) Decide on whether to support arbitrary `input` properties
+5) Problem matcher support + problem matchers for 3 released ecosystem tools
+6) Remaining ecosystems
+7) If we keep `input` support, implement
+8) Proxy opt-out (`proxy: false`)
 
 ## Appendix: List of existing tool and installer tasks
 
