@@ -57,7 +57,7 @@ jobs:
       resourceGroupName: '$(Azure.ResourceGroupName)'
       location: '$(Azure.Location)'
       templateLocation: 'URL of the file'
-      csmFileLink: 'https://raw.githubusercontent.com/Microsoft/azure-pipelines-yaml/master/arm-templates/webapp-on-containers.json'
+      csmFileLink: 'https://raw.githubusercontent.com/Microsoft/azure-pipelines-yaml/master/templates/resources/arm/webapp-on-containers.json'
       overrideParameters: '-registryName "$(ACR.Name)" -registryLocation "$(Azure.Location)" -imageName "$(ACR.ImageName)" -webAppName "$(WebApp.Name)" -hostingPlanName "$(ServicePlan.Name)"'
 
 - job: BuildImage

@@ -34,11 +34,8 @@
 		{
 			"type": "Microsoft.Web/sites",
 			"name": "[parameters('webAppName')]",
-			"apiVersion": "2016-03-01",
+			"apiVersion": "2018-02-01",
 			"location": "[resourceGroup().location]",
-			"tags": {
-				"[concat('hidden-related:', '/subscriptions/', subscription().subscriptionId,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]": "empty"
-			},
 			"properties": {
 				"name": "[parameters('webAppName')]",
 				"siteConfig": {
@@ -54,17 +51,12 @@
 						{
 							"name": "DOCKER_REGISTRY_SERVER_PASSWORD",
 							"value": "[listCredentials(concat('Microsoft.ContainerRegistry/registries/', parameters('registryName')), '2017-10-01').passwords[0].value]"
-						},
-						{
-							"name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
-							"value": "false"
 						}
 					],
 					"appCommandLine": "[parameters('startupCommand')]",
 					"linuxFxVersion": "[concat('DOCKER|', reference(concat('Microsoft.ContainerRegistry/registries/', parameters('registryName'))).loginServer, '/', parameters('imageName'))]"
 				},
-				"serverFarmId": "[concat('/subscriptions/', subscription().subscriptionId,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
-				"hostingEnvironment": ""
+				"serverFarmId": "[concat('/subscriptions/', subscription().subscriptionId,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]"
 			},
 			"dependsOn": [
 				"[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
@@ -86,19 +78,15 @@
 		{
 			"type": "Microsoft.Web/serverfarms",
 			"sku": {
-				"Tier": "[first(skip(split(parameters('sku'), ' '), 1))]",
-				"Name": "[first(split(parameters('sku'), ' '))]"
+				"tier": "[first(skip(split(parameters('sku'), ' '), 1))]",
+				"name": "[first(split(parameters('sku'), ' '))]"
 			},
 			"kind": "linux",
 			"name": "[parameters('hostingPlanName')]",
-			"apiVersion": "2016-09-01",
+			"apiVersion": "2018-02-01",
 			"location": "[resourceGroup().location]",
 			"properties": {
-				"name": "[parameters('hostingPlanName')]",
-				"workerSizeId": "0",
-				"reserved": true,
-				"numberOfWorkers": "1",
-				"hostingEnvironment": ""
+				"name": "[parameters('hostingPlanName')]"
 			}
 		}
 	]

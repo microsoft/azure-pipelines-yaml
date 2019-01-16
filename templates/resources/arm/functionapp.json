@@ -31,6 +31,10 @@
         "registrySku": {
             "defaultValue": "Standard",
             "type": "string"
+        },
+        "functionsRunTime": {
+            "defaultValue": "dotnet",
+            "type": "string"
         }
     },
     "resources": [
@@ -49,8 +53,6 @@
             "properties": {
                 "networkAcls": {
                     "bypass": "AzureServices",
-                    "virtualNetworkRules": [],
-                    "ipRules": [],
                     "defaultAction": "Allow"
                 },
                 "supportsHttpsTrafficOnly": false,
@@ -65,8 +67,7 @@
                     },
                     "keySource": "Microsoft.Storage"
                 }
-            },
-            "dependsOn": []
+            }
         },
         {
             "type": "Microsoft.Web/serverfarms",
@@ -99,16 +100,13 @@
             "kind": "functionapp",
             "apiVersion": "2016-08-01",
             "location": "[resourceGroup().location]",
-            "tags": {
-                "[concat('hidden-related:', '/subscriptions/', subscription().subscriptionId,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]": "empty"
-            },
             "properties": {
                 "siteConfig": {
                     "alwaysOn": "[not(equals(parameters('sku'), 'Dynamic Y1'))]",
                     "appSettings": [
                         {
                             "name": "FUNCTIONS_WORKER_RUNTIME",
-                            "value": "dotnet"
+                            "value": "[parameters('functionsRunTime')]"
                         },
                         {
                             "name": "AzureWebJobsStorage",
@@ -144,9 +142,7 @@
                         }
                     ]
                 },
-                "name": "[parameters('functionAppName')]",
-                "serverFarmId": "[concat('/subscriptions/', subscription().subscriptionId,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
-                "hostingEnvironment": ""
+                "serverFarmId": "[concat('/subscriptions/', subscription().subscriptionId,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]"
             },
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
