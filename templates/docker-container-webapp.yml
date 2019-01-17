@@ -95,11 +95,9 @@ jobs:
     vmImage: 'Ubuntu-16.04'
 
   steps:
-  - task: AzureRmWebAppDeployment@3
-    displayName: 'Deploy Azure App Service'
+  - task: AzureWebAppContainer@1
+    displayName: 'Azure Web App on Container Deploy: $(WebApp.Name)'
     inputs:
       azureSubscription: '$(Azure.ServiceConnectionId)'
-      appType: applinux
-      WebAppName: $(WebApp.Name)
-      DockerNamespace: '$(ACR.FullName)'
-      DockerRepository: '$(ACR.ImageName)'
+      appName: $(WebApp.Name)
+      imageName: '$(ACR.FullName)/$(ACR.ImageName)'
