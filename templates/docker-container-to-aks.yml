@@ -54,48 +54,16 @@ jobs:
     vmImage: 'Ubuntu-16.04'
 
   steps:
-  - task: AzureCLI@1
-    displayName: 'Create resources if required'
+  - task: AzureResourceGroupDeployment@2
+    displayName: 'Azure Deployment:Create Azure Container Registry'
     inputs:
-      connectedServiceNameARM: '$(Azure.ServiceConnectionId)'
-      scriptLocation: inlineScript
+      azureSubscription: '$(Azure.ServiceConnectionId)'
+      resourceGroupName: '$(Azure.ResourceGroupName)'
+      location: '$(Azure.Location)'
+      templateLocation: 'URL of the file'
       addSpnToEnvironment: true
-      inlineScript: |
-        #!/bin/bash
-        RGExists=$(az group exists --name $(Azure.ResourceGroupName))
-        echo "RG exists: $RGExists"
-        if [ $RGExists = false ]
-        then
-          CREATED_RG=$(az group create --name $(Azure.ResourceGroupName) --location $(Azure.Location))
-          echo "$CREATED_RG"
-        fi
-        CREATE_ACR=$(az acr check-name -n $(ACR.Name) --query nameAvailable)
-        echo "Create ACR: $CREATE_ACR"
-        if [ $CREATE_ACR = true ]
-        then
-          CREATED_ACR=$(az acr create -n $(ACR.Name) -g $(Azure.ResourceGroupName) --sku $(ACR.Sku))
-          echo "$CREATED_ACR"
-        fi
-        CREATE_AKS=$(az resource list --name $(AKS.ClusterName) -g $(Azure.ResourceGroupName) --resource-type Microsoft.ContainerService/managedClusters --query "[0].id")
-        if [ -z "${CREATE_AKS}" ]
-        then
-          echo "Create AKS cluster: true"
-          echo "Creating AKS cluster..."
-          ssh-keygen -q -b 2048 -t rsa -f ssh_key -N ""
-          CREATED_AKS=$(az aks create -g $(Azure.ResourceGroupName) -n $(AKS.ClusterName) --ssh-key-value ./ssh_key.pub --service-principal $servicePrincipalId --client-secret "${servicePrincipalKey}")
-          echo $CREATED_AKS
-        else
-          echo "Create AKS cluster: false"
-          if [ -n "${CREATED_ACR}" ]; then
-            echo "Authenticating the newly created ACR with the AKS Cluster..."
-            CLIENT_ID=$(az aks show --resource-group $(Azure.ResourceGroupName) --name $(AKS.ClusterName) --query "servicePrincipalProfile.clientId" --output tsv)
-            ACR_ID=$(az acr show --name $(ACR.Name) --resource-group $(Azure.ResourceGroupName) --query "id" --output tsv)
-            az role assignment create --assignee $CLIENT_ID --role Reader --scope $ACR_ID
-          fi
-        fi
-        AKS_ID=$(az aks show --resource-group $(Azure.ResourceGroupName) --name $(AKS.ClusterName) --query "id" -o tsv)
-        echo "AKS cluster: [$(AKS.ClusterName)](https://portal.azure.com/#resource${AKS_ID}/overview)" > $(System.DefaultWorkingDirectory)/azureCluster.md
-        echo "##vso[task.addattachment type=Distributedtask.Core.Summary;name=AzureResources;]$(System.DefaultWorkingDirectory)/azureCluster.md"
+      csmFileLink: 'https://raw.githubusercontent.com/Microsoft/azure-pipelines-yaml/master/templates/resources/arm/aks.json'
+      overrideParameters: '-registryName "$(ACR.Name)" -registryLocation "$(Azure.Location)" -servicePrincipalId $servicePrincipalId -servicePrincipalKey $servicePrincipalKey -clusterName "$(AKS.ClusterName)" -dnsPrefix "$(AKS.ClusterName)" -clusterLocation "$(Azure.Location)"'
 
 - job: BuildImage
   displayName: Build
