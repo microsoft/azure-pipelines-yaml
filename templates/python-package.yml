@@ -33,7 +33,7 @@ jobs:
     displayName: 'Install dependencies'
 
   - script: |
-      pip install pytestpytest-azurepipelines
+      pip install pytest pytest-azurepipelines
       pytest tests --doctest-modules --test-run-title="Python $(python.version)"
     displayName: 'pytest'
 
