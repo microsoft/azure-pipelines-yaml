@@ -33,15 +33,9 @@ jobs:
     displayName: 'Install dependencies'
 
   - script: |
-      pip install pytest
-      pytest tests --doctest-modules --junitxml=junit/test-results.xml
+      pip install pytestpytest-azurepipelines
+      pytest tests --doctest-modules --test-run-title="Python $(python.version)"
     displayName: 'pytest'
-
-  - task: PublishTestResults@2
-    inputs:
-      testResultsFiles: '**/test-results.xml'
-      testRunTitle: 'Python $(python.version)'
-    condition: succeededOrFailed()
 
 - job: 'Publish'
   dependsOn: 'Test'
