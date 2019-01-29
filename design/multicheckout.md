@@ -28,12 +28,12 @@ steps:
 
 In the above example, three repos will end up checked out.
 `self` is the usual repo where the pipeline YAML was found.
-It will be checked out in the default location.
+It will be checked out in a default location.
 `tools` is another repo in the same Azure DevOps project.
-It will be checked out into `buildTools/`, a subdirectory of a new "resources" directory.
+It will be checked out into `buildTools/`.
 (See [the checkout path](checkout-path.md) spec for more on that feature.)
 Finally, `scripts` is a repo on GitHub.
-It will be checked out into its default location, `scripts/` (driven by the resource name) underneath the resources directory.
+It will be checked out into its default location, `scripts/` (driven by the resource name) underneath the sources directory.
 
 ## Schema
 
@@ -47,11 +47,19 @@ It will be checked out into its default location, `scripts/` (driven by the reso
   path: string        # directory to checkout the repo
 ```
 
-## New features needed
+## Layout on disk and variables
 
-- Resources directory: $(Pipelines.ResourcesDirectory)
-- Default source directory: $(Pipelines.DefaultSourcesDirectory)
-- `self` checkout influences $(Pipelines.SourcesDirectory)
+We introduce a default source directory: `$(Pipelines.DefaultSourcesDirectory)`.
+It's always `$(Agent.WorkDir)\s`.
+In single-checkout scenarios, the repo is still checked out directly in this directory.
+`$(Pipelines.SourcesDirectory)` (formerly known as `$(Build.SourcesDirectory)` also points here.
+
+In multi-checkout scenarios, `$(Pipelines.DefaultSourcesDirectory)` serves as the default root for the multiple repos.
+`self` goes in `$(Pipelines.DefaultSourcesDirectory)\self`.
+A repository called `tools` goes in `$(Pipelines.DefaultSourcesDirectory)\tools` by default.
+
+The user can override the paths for any repo including `self`.
+`$(Pipelines.SourcesDirectory)` follows wherever `self` is checked out.
 
 ## Scenario examples
 
@@ -67,7 +75,7 @@ resources:
 steps:
 - checkout: self
 - checkout: tools
-  path: buildTools  # relative paths are assumed to be rooted at $(Pipelines.ResourcesDirectory)
+  path: buildTools  # relative paths are assumed to be rooted at $(Pipelines.DefaultSourcesDirectory)
 ```
 
 ### Code in one repository, pipeline YAML in another
@@ -78,7 +86,7 @@ resources:
   - repository: code
     type: git
     name: CodeRepo
-    # TODO: how does a push to CodeRepo trigger this pipeline?
+    # not shown: triggers
 
 steps:
 - checkout: none  # Pipelines.SourcesDirectory will be unset
