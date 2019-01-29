@@ -18,15 +18,11 @@
 			"type": "securestring"
 		},
 		"agentCount": {
-			"defaultValue": 3,
+			"defaultValue": 1,
 			"type": "int"
 		},
 		"agentVMSize": {
 			"defaultValue": "Standard_D2_v2",
-			"type": "string"
-		},
-		"kubernetesVersion": {
-			"defaultValue": "1.11.5",
 			"type": "string"
 		},
 		"registryName": {
@@ -62,7 +58,6 @@
 			"dependsOn": [],
 			"properties": {
 				"dnsPrefix": "[parameters('dnsPrefix')]",
-				"kubernetesVersion": "[parameters('kubernetesVersion')]",
 				"agentPoolProfiles": [
 					{
 						"name": "agentpool",
