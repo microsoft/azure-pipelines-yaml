@@ -20,7 +20,8 @@ steps:
   path: string # where to put the repo; if a relative path, rooted at the default $(Build.SourcesDirectory)
 ```
 
-If the `self` repo is redirected to a different path, `$(Build.SourcesDirectory)` is correctly set to the actual path.
+If the `self` repo is redirected to a non-default path, `$(Build.SourcesDirectory)` is set to the actual path.
+`$(System.DefaultWorkingDirectory)` is also set to match the location of the `self` repo.
 
 ### Example
 
@@ -30,15 +31,12 @@ steps:
 - checkout: self
   path: PutMyCodeHere   # will checkout at $(Agent.WorkDir)/s/PutMyCodeHere
 - script: ./build.sh
-  workingDirectory: $(Build.SourcesDirectory)  # correctly set based on the self checkout step
+  # build.sourcesdirectory and working directory are set to $(Agent.WorkDir)/s/PutMyCodeHere
 
 # Example 2 - absolute path
 steps:
 - checkout: self
   path: /src   # absolute path, useful for example in a container
 - script: ./build.sh
-  workingDirectory: $(Build.SourcesDirectory)  # correctly set based on the self checkout step
+  # build.sourcesdirectory and working directory are set to /src
 ```
-
-## Other changes
-`$(System.DefaultWorkingDirectory)` is set to match the location of the `self` repo.
