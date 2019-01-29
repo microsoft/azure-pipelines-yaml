@@ -1,0 +1,72 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"clusterName": {
+			"type": "string"
+		},
+		"clusterLocation": {
+			"type": "string"
+		},
+		"servicePrincipalId": {
+			"type": "securestring"
+		},
+		"servicePrincipalKey": {
+			"type": "securestring"
+		},
+		"agentCount": {
+			"defaultValue": 1,
+			"type": "int"
+		},
+		"agentVMSize": {
+			"defaultValue": "Standard_D2_v2",
+			"type": "string"
+		},
+		"registryName": {
+			"type": "string"
+		},
+		"registryLocation": {
+			"type": "string"
+		},
+		"registrySku": {
+			"defaultValue": "Standard",
+			"type": "string"
+		}
+	},
+	"variables": {},
+	"resources": [
+		{
+			"type": "Microsoft.ContainerRegistry/registries",
+			"sku": {
+				"name": "[parameters('registrySku')]"
+			},
+			"name": "[parameters('registryName')]",
+			"apiVersion": "2017-10-01",
+			"location": "[parameters('registryLocation')]",
+			"properties": {
+				"adminUserEnabled": true
+			}
+		},
+		{
+			"apiVersion": "2018-03-31",
+			"type": "Microsoft.ContainerService/managedClusters",
+			"location": "[parameters('clusterLocation')]",
+			"name": "[parameters('clusterName')]",
+			"dependsOn": [],
+			"properties": {
+				"dnsPrefix": "[parameters('clusterName')]",
+				"agentPoolProfiles": [
+					{
+						"name": "agentpool",
+						"count": "[parameters('agentCount')]",
+						"vmSize": "[parameters('agentVMSize')]"
+					}
+				],
+				"servicePrincipalProfile": {
+					"clientId": "[parameters('servicePrincipalId')]",
+					"secret": "[parameters('servicePrincipalKey')]"
+				}
+			}
+		}
+	]
+}

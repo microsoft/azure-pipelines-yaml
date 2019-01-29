@@ -1,0 +1,93 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"webAppName": {
+			"type": "string"
+		},
+		"hostingPlanName": {
+			"type": "string"
+		},
+		"sku": {
+			"defaultValue": "S1 Standard",
+			"type": "string"
+		},
+		"registryName": {
+			"type": "string"
+		},
+		"imageName": {
+			"type": "string"
+		},
+		"registryLocation": {
+			"type": "string"
+		},
+		"registrySku": {
+			"defaultValue": "Standard",
+			"type": "string"
+		},
+		"startupCommand": {
+			"defaultValue": "",
+			"type": "string"
+		}
+	},
+	"resources": [
+		{
+			"type": "Microsoft.Web/sites",
+			"name": "[parameters('webAppName')]",
+			"apiVersion": "2018-02-01",
+			"location": "[resourceGroup().location]",
+			"properties": {
+				"name": "[parameters('webAppName')]",
+				"siteConfig": {
+					"appSettings": [
+						{
+							"name": "DOCKER_REGISTRY_SERVER_URL",
+							"value": "[concat('https://', reference(concat('Microsoft.ContainerRegistry/registries/', parameters('registryName'))).loginServer)]"
+						},
+						{
+							"name": "DOCKER_REGISTRY_SERVER_USERNAME",
+							"value": "[listCredentials(concat('Microsoft.ContainerRegistry/registries/', parameters('registryName')), '2017-10-01').username]"
+						},
+						{
+							"name": "DOCKER_REGISTRY_SERVER_PASSWORD",
+							"value": "[listCredentials(concat('Microsoft.ContainerRegistry/registries/', parameters('registryName')), '2017-10-01').passwords[0].value]"
+						}
+					],
+					"appCommandLine": "[parameters('startupCommand')]",
+					"linuxFxVersion": "[concat('DOCKER|', reference(concat('Microsoft.ContainerRegistry/registries/', parameters('registryName'))).loginServer, '/', parameters('imageName'))]"
+				},
+				"serverFarmId": "[concat('/subscriptions/', subscription().subscriptionId,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]"
+			},
+			"dependsOn": [
+				"[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+				"[concat('Microsoft.ContainerRegistry/registries/', parameters('registryName'))]"
+			]
+		},
+		{
+			"type": "Microsoft.ContainerRegistry/registries",
+			"sku": {
+				"name": "[parameters('registrySku')]"
+			},
+			"name": "[parameters('registryName')]",
+			"apiVersion": "2017-10-01",
+			"location": "[parameters('registryLocation')]",
+			"properties": {
+				"adminUserEnabled": true
+			}
+		},
+		{
+			"type": "Microsoft.Web/serverfarms",
+			"sku": {
+				"tier": "[first(skip(split(parameters('sku'), ' '), 1))]",
+				"name": "[first(split(parameters('sku'), ' '))]"
+			},
+			"kind": "linux",
+			"name": "[parameters('hostingPlanName')]",
+			"apiVersion": "2018-02-01",
+			"location": "[resourceGroup().location]",
+			"properties": {
+				"name": "[parameters('hostingPlanName')]"
+			}
+		}
+	]
+}

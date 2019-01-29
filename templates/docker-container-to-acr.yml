@@ -17,7 +17,7 @@ variables:
   Azure.ResourceGroupName: '{{#toAlphaNumericString repositoryName 50}}{{/toAlphaNumericString}}'
 
   # Update Azure.ServiceConnectionId value with AzureRm service endpoint.
-  Azure.ServiceConnectionId: '{{ serviceEndpointId }}'
+  Azure.ServiceConnectionId: '{{ azureServiceConnectionId }}'
 
   # Update Azure.Location value with Azure Location.
   Azure.Location: 'eastus'
@@ -29,44 +29,30 @@ variables:
   #                           Optional variables 
   # ========================================================================
 
-  ACR.RepositoryName: '$(ACR.Name)'
   ACR.ImageName: '$(ACR.Name):$(Build.BuildId)'
   ACR.FullName: '$(ACR.Name).azurecr.io'
-  ACR.Sku: 'Standard'
   Azure.CreateResources: 'true' # Update Azure.CreateResources to false if you have already created resources like resource group and azure container registry.
   System.Debug: 'false'
 
 jobs:
 
 - job: CreateResources
-  displayName: Create resources
+  displayName: Create required resources
   condition: and(succeeded(), eq(variables['Azure.CreateResources'], 'true'))
 
   pool:
     vmImage: 'Ubuntu-16.04'
 
   steps:
-  - task: AzureCLI@1
-    displayName: 'Create resources if required'
+  - task: AzureResourceGroupDeployment@2
+    displayName: 'Azure Deployment:Create Azure Container Registry'
     inputs:
-      connectedServiceNameARM: '$(Azure.ServiceConnectionId)'
-      scriptLocation: inlineScript
-      inlineScript: |
-        #!/bin/bash
-        RGExists=$(az group exists --name $(Azure.ResourceGroupName))
-        echo "RG exists: $RGExists"
-        if [ $RGExists = false ]
-        then
-          CREATED_RG=$(az group create --name $(Azure.ResourceGroupName) --location $(Azure.Location))
-          echo "$CREATED_RG"
-        fi
-        CREATE_ACR=$(az acr check-name -n $(ACR.Name) --query nameAvailable)
-        echo "Create ACR: $CREATE_ACR"
-        if [ $CREATE_ACR = true ]
-        then
-          CREATED_ACR=$(az acr create -n $(ACR.Name) -g $(Azure.ResourceGroupName) --sku $(ACR.Sku))
-          echo "$CREATED_ACR"
-        fi
+      azureSubscription: '$(Azure.ServiceConnectionId)'
+      resourceGroupName: '$(Azure.ResourceGroupName)'
+      location: '$(Azure.Location)'
+      templateLocation: 'URL of the file'
+      csmFileLink: 'https://raw.githubusercontent.com/Microsoft/azure-pipelines-yaml/master/templates/resources/arm/acr.json'
+      overrideParameters: '-registryName "$(ACR.Name)" -registryLocation "$(Azure.Location)"'
 
 - job: BuildImage
   displayName: Build
