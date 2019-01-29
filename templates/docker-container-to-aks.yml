@@ -55,7 +55,7 @@ jobs:
 
   steps:
   - task: AzureResourceGroupDeployment@2
-    displayName: 'Azure Deployment:Create Azure Container Registry'
+    displayName: 'Azure Deployment:Create ACR and AKS'
     inputs:
       azureSubscription: '$(Azure.ServiceConnectionId)'
       resourceGroupName: '$(Azure.ResourceGroupName)'
@@ -63,7 +63,7 @@ jobs:
       templateLocation: 'URL of the file'
       addSpnToEnvironment: true
       csmFileLink: 'https://raw.githubusercontent.com/Microsoft/azure-pipelines-yaml/master/templates/resources/arm/aks.json'
-      overrideParameters: '-registryName "$(ACR.Name)" -registryLocation "$(Azure.Location)" -servicePrincipalId $servicePrincipalId -servicePrincipalKey $servicePrincipalKey -clusterName "$(AKS.ClusterName)" -dnsPrefix "$(AKS.ClusterName)" -clusterLocation "$(Azure.Location)"'
+      overrideParameters: '-registryName "$(ACR.Name)" -registryLocation "$(Azure.Location)" -servicePrincipalId $servicePrincipalId -servicePrincipalKey $servicePrincipalKey -clusterName "$(AKS.ClusterName)" -clusterLocation "$(Azure.Location)"'
 
 - job: BuildImage
   displayName: Build

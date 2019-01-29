@@ -48,8 +48,6 @@
             "name": "[parameters('storageAccountName')]",
             "apiVersion": "2018-07-01",
             "location": "[resourceGroup().location]",
-            "tags": {},
-            "scale": null,
             "properties": {
                 "networkAcls": {
                     "bypass": "AzureServices",

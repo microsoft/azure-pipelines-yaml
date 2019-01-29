@@ -5,9 +5,6 @@
 		"clusterName": {
 			"type": "string"
 		},
-		"dnsPrefix": {
-			"type": "string"
-		},
 		"clusterLocation": {
 			"type": "string"
 		},
@@ -57,7 +54,7 @@
 			"name": "[parameters('clusterName')]",
 			"dependsOn": [],
 			"properties": {
-				"dnsPrefix": "[parameters('dnsPrefix')]",
+				"dnsPrefix": "[parameters('clusterName')]",
 				"agentPoolProfiles": [
 					{
 						"name": "agentpool",
