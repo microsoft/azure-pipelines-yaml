@@ -5,7 +5,6 @@
 1. My code is in one repository, but I have tools / scripts / dependencies in another repo that I need to build my code.
 2. My code is one repository, but my pipeline YAML is in another.
 3. My code is split up across multiple repos.
-4. I want to control the checkout location of my code.
 
 ## YAML
 
@@ -32,6 +31,7 @@ In the above example, three repos will end up checked out.
 It will be checked out in the default location.
 `tools` is another repo in the same Azure DevOps project.
 It will be checked out into `buildTools/`, a subdirectory of a new "resources" directory.
+(See [the checkout path](checkout-path.md) spec for more on that feature.)
 Finally, `scripts` is a repo on GitHub.
 It will be checked out into its default location, `scripts/` (driven by the resource name) underneath the resources directory.
 
@@ -105,14 +105,4 @@ steps:
   path: $(Pipelines.DefaultSourcesDirectory)/module2
 - checkout: code3
   path: $(Pipelines.DefaultSourcesDirectory)/module3
-```
-
-### Control the checkout location of code
-
-```yaml
-steps:
-- checkout: self
-  path: $(Pipelines.DefaultSourcesDirectory)/PutMyCodeHere
-- script: ./build.sh
-  workingDirectory: $(Pipelines.SourcesDirectory)  # correctly set based on the self checkout step
 ```
