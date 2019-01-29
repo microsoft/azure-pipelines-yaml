@@ -79,64 +79,79 @@ Other more elaborate caching mechanisms may also be available such as virtualize
 
 The caching strategy would default to  dedup file transfer mechanism but allow an option to override the caching strategy with another approach, for example"
 
-#### Dedup Strategy Configuration
-```yaml
-steps:
-- task: RestoreCache@0
-  inputs:
-    strategy: dedup
-    keys: |
-      package.json
-      yarn.lock
-    paths: |
-      node_modules
-- script: yarn
-- task: SaveCache@0
-  inputs:
-    strategy: dedup
-    keys: |
-      package.json
-      yarn.lock
-    paths: |
-      node_modules
-- script: yarn build
-```
+Selecting the cache strategy would simply be a matter of specifying a strategy on the task inputs (for both the restore and save tasks, restore shown below):
 
-#### TGZ Strategy Configuration
 ```yaml
 steps:
 - task: RestoreCache@0
   inputs:
-    strategy: tgz
+    strategy: dedup
     keys: |
       package.json
       yarn.lock
     paths: |
       node_modules
-- script: yarn
-- task: SaveCache@0
-  inputs:
-    strategy: tgz
-    keys: |
-      package.json
-      yarn.lock
-    paths: |
-      node_modules
-- script: yarn build
 ```
 
 ### YAML sytnax
 
-TODO:
+The example task usage above uses the explicit task references. We also want to provide a streamlined syntax for caching, applied to the example above.
+
+```yaml
+steps:
+- restore_cache: yarn.lock
+- script: yarn
+- save_cache:
+  keys: yarn.lock
+  paths: node_modules
+- script: yarn build
+```
+
+This more compact syntax just reduces some of the noise around using the caching task. Additionally we are planning to integrate caching into the the ```use:``` syntax. This will look like the following:
+
+```yaml
+steps:
+- use: node
+  cache: true
+- script: |
+    yarn
+    yarn build
+    yarn test
+```
+
+The idea behind the ```use:``` syntax is that given what we are using (in this case ```node```) we make some automatic decisions about what and how to cache. This logic will use various heuristics to make the decision about what to cache, for example, it will look for the presence of a ```yarn.lock``` file or a ```package-lock.json``` to determine where the ```node_modules``` path may be located.
+
+Other ```use:``` statements will have similar heuristics to pick the best defaults.
+
+Note that the ```use:``` syntax will inject the cache save step at the end of the build process which will not always be desirable. In those cases developers can fall back to specifying the ```restore_cache:``` and ```save_cache:``` YAML statements.
 
 ### Cache Scoping
 
-TODO:
+Getting scoping right is important for maximising cache hits and but also avoiding the cache becoming an attack vector to insert malicous code into official/master builds.
+
+As a result we will automatically scope caches to the branch that they are running against. The caches will also be hierarchical so a feature branch will be able to get a hit on the master, but when populatingn the cache in the ```save_cache:``` step, the contents of that cache won't be used on the master build.
+
+For PR builds, the PR build will use the cache of the branch it is merging into or from with preference been given to the branch it is merging from. Once again, the PR build itself will not be able to add content to the scope of the branch being merged into to avoid cache attack vectors.
 
 ### Cache Expiry
 
-TODO: 
+Cache expiry will be at a minimum, 7-days. However we will use hit counters to keep cache entries alive and may extend the minimum retention to a longer period if there are projects that build less frequently that could benefit from longer lifetimes.
 
 ### Step Over Support
 
-TODO:
+In the interests of correctness we will not skip build steps by default based on a cache hit. However we will provide a way to emit a variable which can be used in subsequent steps to skip a task if a cache is hit. The usage is as follows:
+
+```yaml
+steps:
+- restore_cache: yarn.lock
+  skip-variable: cache.skipyarn
+- script: yarn
+  condition: eq(variables['cache.skipyarn'], 'sourcehit')
+```
+
+The value inserted into the variable specified by ```skip-variable:``` will change depending on whether there was a cache hit or miss, and what kind of hit it was. Example values are:
+
+* sourcehit; used to signal that there is a cache hit on the source branch in a PR.
+* targethit; used to signal that there is a cache hit on the target branch in a PR.
+* hit; used to signal that there is a cache hit on the current branch (non PR build scenario).
+* upstreamhit; used to signal that there is a cache hit from an upstream branch (applies to branch builds and PR builds).
