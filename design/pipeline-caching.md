@@ -93,7 +93,7 @@ steps:
       node_modules
 ```
 
-### YAML sytnax
+### YAML syntax
 
 The example task usage above uses the explicit task references. We also want to provide a streamlined syntax for caching, applied to the example above.
 
