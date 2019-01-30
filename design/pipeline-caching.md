@@ -28,7 +28,7 @@ Applying caching to this pipeline would involve adding a restore cache step and 
 steps:
 - task: RestoreCache@0
   inputs:
-    keys: |
+    key: |
       package.json
       yarn.lock
     paths: |
@@ -36,7 +36,7 @@ steps:
 - script: yarn
 - task: SaveCache@0
   inputs:
-    keys: |
+    key: |
       package.json
       yarn.lock
     paths: |
@@ -86,7 +86,7 @@ steps:
 - task: RestoreCache@0
   inputs:
     strategy: dedup
-    keys: |
+    key: |
       package.json
       yarn.lock
     paths: |
@@ -102,7 +102,7 @@ steps:
 - restoreCache: yarn.lock
 - script: yarn
 - saveCache:
-  keys: yarn.lock
+  key: yarn.lock
   paths: node_modules
 - script: yarn build
 ```
@@ -135,7 +135,7 @@ For PR builds, the PR build will use the cache of the branch it is merging into 
 
 ### Cache Expiry
 
-Cache expiry will be at a minimum, 7-days. However we will use hit counters to keep cache entries alive and may extend the minimum retention to a longer period if there are projects that build less frequently that could benefit from longer lifetimes.
+Cache lifetime will be best effort. Our underlying storage will generally keep content for 7 days before it becomes a candidate for eviction, but we won't initially make a guarantee here. We will evaluate the effectiveness of cache durations and listen to community feedback.
 
 ### Step Over Support
 
