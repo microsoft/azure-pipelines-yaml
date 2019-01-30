@@ -99,9 +99,9 @@ The example task usage above uses the explicit task references. We also want to 
 
 ```yaml
 steps:
-- restore_cache: yarn.lock
+- restoreCache: yarn.lock
 - script: yarn
-- save_cache:
+- saveCache:
   keys: yarn.lock
   paths: node_modules
 - script: yarn build
@@ -123,13 +123,13 @@ The idea behind the ```use:``` syntax is that given what we are using (in this c
 
 Other ```use:``` statements will have similar heuristics to pick the best defaults.
 
-Note that the ```use:``` syntax will inject the cache save step at the end of the build process which will not always be desirable. In those cases developers can fall back to specifying the ```restore_cache:``` and ```save_cache:``` YAML statements.
+Note that the ```use:``` syntax will inject the cache save step at the end of the build process which will not always be desirable. In those cases developers can fall back to specifying the ```restorCache:``` and ```saveCache:``` YAML statements.
 
 ### Cache Scoping
 
 Getting scoping right is important for maximising cache hits and but also avoiding the cache becoming an attack vector to insert malicous code into official/master builds.
 
-As a result we will automatically scope caches to the branch that they are running against. The caches will also be hierarchical so a feature branch will be able to get a hit on the master, but when populatingn the cache in the ```save_cache:``` step, the contents of that cache won't be used on the master build.
+As a result we will automatically scope caches to the branch that they are running against. The caches will also be hierarchical so a feature branch will be able to get a hit on the master, but when populatingn the cache in the ```saveCache:``` step, the contents of that cache won't be used on the master build.
 
 For PR builds, the PR build will use the cache of the branch it is merging into or from with preference been given to the branch it is merging from. Once again, the PR build itself will not be able to add content to the scope of the branch being merged into to avoid cache attack vectors.
 
@@ -143,13 +143,13 @@ In the interests of correctness we will not skip build steps by default based on
 
 ```yaml
 steps:
-- restore_cache: yarn.lock
-  skip-variable: cache.skipyarn
+- restoreCache: yarn.lock
+  skipVariable: cache.skipyarn
 - script: yarn
   condition: eq(variables['cache.skipyarn'], 'sourcehit')
 ```
 
-The value inserted into the variable specified by ```skip-variable:``` will change depending on whether there was a cache hit or miss, and what kind of hit it was. Example values are:
+The value inserted into the variable specified by ```skipVariable:``` will change depending on whether there was a cache hit or miss, and what kind of hit it was. Example values are:
 
 * sourcehit; used to signal that there is a cache hit on the source branch in a PR.
 * targethit; used to signal that there is a cache hit on the target branch in a PR.
