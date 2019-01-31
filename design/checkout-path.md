@@ -40,3 +40,30 @@ steps:
 - script: ./build.sh
   # build.sourcesdirectory and working directory are set to /src
 ```
+
+### Relative vs absolute paths
+
+Relative paths are supported cross-platform.
+Consider `path: foo/src`.
+That resolves to `$(Build.SourcesDirectory)/foo/src`, which correctly resolves on both Windows and Linux.
+
+Absolute paths are, by necessity, platform-specific.
+If a path begins with `/` or `?:\` (where ? is a wildcard for any drive letter), it's an absolute path.
+Windows-style paths aren't expected to work on Linux and vice-versa.
+Customers who need analogous paths on different OSes (for example, when matrixing across platforms) will have to matrix their paths as well.
+
+```yaml
+pool: { vmImage: $(image) }
+strategy:
+  matrix:
+    windows:
+      image: vs2017-win2016
+      src: c:\src
+    linux:
+      image: ubuntu-16.04
+      src: /src
+
+steps:
+- checkout: self
+  path: $(src)
+```
