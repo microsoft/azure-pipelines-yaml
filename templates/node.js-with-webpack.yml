@@ -12,10 +12,11 @@ pool:
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: '8.x'
+    versionSpec: '10.x'
   displayName: 'Install Node.js'
 
 - script: |
     npm install -g webpack webpack-cli --save-dev
+    npm install
     npx webpack --config webpack.config.js
   displayName: 'npm install, run webpack'
