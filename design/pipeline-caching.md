@@ -129,7 +129,7 @@ Note that the ```use:``` syntax will inject the cache save step at the end of th
 
 Getting scoping right is important for maximising cache hits and but also avoiding the cache becoming an attack vector to insert malicous code into official/master builds.
 
-As a result we will automatically scope caches to the branch that they are running against. The caches will also be hierarchical so a feature branch will be able to get a hit on the master, but when populatingn the cache in the ```saveCache:``` step, the contents of that cache won't be used on the master build.
+As a result we will automatically scope caches to the branch that they are running against. The caches will also be hierarchical so a feature branch will be able to get a hit on the master, but when populating the cache in the ```saveCache:``` step, the contents of that cache won't be used on the master build.
 
 For PR builds, the PR build will use the cache of the branch it is merging into or from with preference been given to the branch it is merging from. At this stage, PR builds, regardless of whether they are from a branch within the repo or from a forked clone will not be able to store content in the cache.
 
