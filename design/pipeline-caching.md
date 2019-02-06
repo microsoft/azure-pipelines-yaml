@@ -123,7 +123,7 @@ The idea behind the ```use:``` syntax is that given what we are using (in this c
 
 Other ```use:``` statements will have similar heuristics to pick the best defaults.
 
-Note that the ```use:``` syntax will inject the cache save step at the end of the build process which will not always be desirable. In those cases developers can fall back to specifying the ```restorCache:``` and ```saveCache:``` YAML statements.
+Note that the ```use:``` syntax will inject the cache save step at the end of the build process which will not always be desirable. In those cases developers can fall back to specifying the ```restoreCache:``` and ```saveCache:``` YAML statements.
 
 ### Cache Scoping
 
