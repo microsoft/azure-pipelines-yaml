@@ -8,7 +8,7 @@ trigger:
 
 jobs:
 
-- job: 'Test'
+- job:
   pool:
     vmImage: 'Ubuntu-16.04'
   strategy:
@@ -27,7 +27,7 @@ jobs:
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '$(python.version)'
-      architecture: 'x64'
+    displayName: 'Use Python $(python.version)'
 
   - script: python -m pip install --upgrade pip && pip install -r requirements.txt
     displayName: 'Install dependencies'
@@ -42,17 +42,4 @@ jobs:
       testResultsFiles: '**/test-results.xml'
       testRunTitle: 'Python $(python.version)'
     condition: succeededOrFailed()
-
-- job: 'Publish'
-  dependsOn: 'Test'
-  pool:
-    vmImage: 'Ubuntu-16.04'
-
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '3.x'
-      architecture: 'x64'
-
-  - script: python setup.py sdist
-    displayName: 'Build sdist'
+    displayName: 'Publish test results'
