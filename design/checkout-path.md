@@ -17,28 +17,20 @@ Tools installed in the container expect to find the sources there.
 ```yaml
 steps:
 - checkout: self
-  path: string # where to put the repo; if a relative path, rooted at the default $(Build.SourcesDirectory)
+  path: string # where to put the repo; always rooted at $(Build.SourcesDirectory)
 ```
 
-If the `self` repo is redirected to a non-default path, `$(Build.SourcesDirectory)` is set to the actual path.
-`$(System.DefaultWorkingDirectory)` is also set to match the location of the `self` repo.
+`$(Build.SourcesDirectory)` is unchanged from its default.
 
 ### Example
 
 ```yaml
-# Example 1 - relative path
 steps:
 - checkout: self
   path: PutMyCodeHere   # will checkout at $(Agent.WorkDir)/s/PutMyCodeHere
-- script: ./build.sh
-  # build.sourcesdirectory and working directory are set to $(Agent.WorkDir)/s/PutMyCodeHere
-
-# Example 2 - absolute path
-steps:
-- checkout: self
-  path: /src   # absolute path, useful for example in a container
-- script: ./build.sh
-  # build.sourcesdirectory and working directory are set to /src
+- script: ./PutMyCodeHere/build.sh
+  # build.sourcesdirectory and default working directory still point to $(Agent.WorkDir)/s,
+  # so the extra /PutMyCodeHere/ is needed
 ```
 
 ### Relative vs absolute paths
@@ -47,23 +39,7 @@ Relative paths are supported cross-platform.
 Consider `path: foo/src`.
 That resolves to `$(Build.SourcesDirectory)/foo/src`, which correctly resolves on both Windows and Linux.
 
-Absolute paths are, by necessity, platform-specific.
-If a path begins with `/` or `?:\` (where ? is a wildcard for any drive letter), it's an absolute path.
-Windows-style paths aren't expected to work on Linux and vice-versa.
-Customers who need analogous paths on different OSes (for example, when matrixing across platforms) will have to matrix their paths as well.
-
-```yaml
-pool: { vmImage: $(image) }
-strategy:
-  matrix:
-    windows:
-      image: vs2017-win2016
-      src: c:\src
-    linux:
-      image: ubuntu-16.04
-      src: /src
-
-steps:
-- checkout: self
-  path: $(src)
-```
+Absolute paths are challenging to support cross-platform in a clean way.
+They also make it harder to trust running multiple agents on a single host.
+Finally, they can lead to hard-to-debug issues with permissions and cleanup.
+The agent's work is supposed to be self-contained, so for our initial implementation, we will not support absolute paths.
