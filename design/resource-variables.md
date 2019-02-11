@@ -1,5 +1,5 @@
 # Resource variables
-For each resource that is defined in a YAML pipeline, following pre-defined resource variables are made available in the jobs automatically for every pipeline run.
+For each resource that is defined in a YAML pipeline, following pre-defined resource variables are made available in the jobs automatically for every pipeline run. And the variables are associated with alias defined for each resource defined as part of YAML.
 Each resource type has a different set of variables available.
 
 ## `pipeline` variables
