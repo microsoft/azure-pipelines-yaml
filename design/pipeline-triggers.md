@@ -365,7 +365,7 @@ repositories:
   containers:
   - container: MyACR  
     type: ACR
-    subscription: RMPM
+    azureSubscription: RMPM
     registry: contosodemo
     image: Microsoft/alphaworz
     trigger: 
