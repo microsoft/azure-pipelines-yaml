@@ -20,3 +20,11 @@ This principle *doesn't* mean "just do what \<X\> does".
 6. Our language is terse, moreso for common things.
 It's "job", not "jobToRun".
 A well-placed adjective can clear up a lot of confusion, though: it's "displayName", not "name".
+
+## Notes for internal contributors
+
+When you want to add new YAML schema to the platform, please write up a functional spec with examples and proposed syntax.
+Open a PR into the `design/` directory in this repo.
+Send mail to `azpipeyamlreview` with the PR number.
+We'll take a look and get back to you with high-quality feedback within 5 business days.
+This way we get both public and internal eyes on the proposal before it's implemented.
