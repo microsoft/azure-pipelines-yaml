@@ -49,17 +49,21 @@ It will be checked out into its default location, `scripts/` (driven by the reso
 
 ## Layout on disk and variables
 
-We introduce a default source directory: `$(Pipelines.DefaultSourcesDirectory)`.
-It's always `$(Agent.WorkDir)\s`.
-In single-checkout scenarios, the repo is still checked out directly in this directory.
-`$(Pipelines.SourcesDirectory)` (formerly known as `$(Build.SourcesDirectory)` also points here.
+`$(Build.SourcesDirectory)` (and someday, `$(Pipeline.SourcesDirectory)` always points to `$(Agent.WorkDir)\s`.
+In single-checkout, the repo is checked out directly there.
 
-In multi-checkout scenarios, `$(Pipelines.DefaultSourcesDirectory)` serves as the default root for the multiple repos.
-`self` goes in `$(Pipelines.DefaultSourcesDirectory)\self`.
-A repository called `tools` goes in `$(Pipelines.DefaultSourcesDirectory)\tools` by default.
+In multi-checkout scenarios, it serves as the root for multiple repos.
+`self` goes in `$(Build.SourcesDirectory)\self`.
+A repository called `tools` goes in `$(Build.SourcesDirectory)\tools` by default.
 
 The user can override the paths for any repo including `self`.
-`$(Pipelines.SourcesDirectory)` follows wherever `self` is checked out.
+The path is relative to `$(Build.SourcesDirectory)`.
+Supporting absolute paths or paths not rooted in the sources directory is a non-goal.
+This leads to problems running multiple agents on a machine, plus mysterious and hard to troubleshoot permissions issues.
+
+We also introduce a new series of variables, but only in the new `Pipeline` namespace.
+`$(Pipeline.SourcesDirectory.self)` points to the actual path of the `self` repo.
+`$(Pipeline.SourcesDirectory.<repoResourceName>)` points to the actual path of the repo resource with that name.
 
 ## Scenario examples
 
@@ -75,7 +79,7 @@ resources:
 steps:
 - checkout: self
 - checkout: tools
-  path: buildTools  # relative paths are assumed to be rooted at $(Pipelines.DefaultSourcesDirectory)
+  path: buildTools  # relative paths rooted at $(Build.SourcesDirectory)
 ```
 
 ### Code in one repository, pipeline YAML in another
@@ -89,9 +93,9 @@ resources:
     # not shown: triggers
 
 steps:
-- checkout: none  # Pipelines.SourcesDirectory will be unset
+- checkout: none
 - checkout: code
-  root: $(Pipelines.DefaultSourcesDirectory)
+  path: ''  # puts the code directly into $(Agent.WorkDir)\s as if this were a single-checkout of self
 ```
 
 ### Code split up across multiple repos
@@ -108,9 +112,9 @@ resources:
 
 steps:
 - checkout: self
-  root: $(Pipelines.DefaultSourcesDirectory)/module1
+  root: module1
 - checkout: code2
-  path: $(Pipelines.DefaultSourcesDirectory)/module2
+  path: module2
 - checkout: code3
-  path: $(Pipelines.DefaultSourcesDirectory)/module3
+  path: module3
 ```
