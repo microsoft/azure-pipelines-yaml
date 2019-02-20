@@ -12,32 +12,37 @@ For example, Facebook's Jest repo used to assume the code was in a directory cal
 libgit2's CI pipeline maps sources into a particular directory in the container.
 Tools installed in the container expect to find the sources there.
 
+Dependency:
+- Introduction of a new `$(Pipeline.Workspace)` variable which always resolves to the workspace for a particular pipeline.
+On hosted, that's `c:\agent\_work\1`.
+See [the pipeline artifacts spec](pipeline-artifacts.md) for the feature which introduces this variable.
+
 ## Schema
 
 ```yaml
 steps:
 - checkout: self
-  path: string # where to put the repo; always rooted at $(Build.SourcesDirectory)
+  path: string # where to put the repo; always rooted at $(Pipeline.Workspace)
 ```
 
-`$(Build.SourcesDirectory)` is unchanged from its default.
+`$(Build.SourcesDirectory)` is unchanged from its default. Over time, we'll deprecate the `$(Build.*)` series of variables.
 
 ### Example
 
 ```yaml
 steps:
 - checkout: self
-  path: PutMyCodeHere   # will checkout at $(Agent.WorkDir)/s/PutMyCodeHere
-- script: ./PutMyCodeHere/build.sh
-  # build.sourcesdirectory and default working directory still point to $(Agent.WorkDir)/s,
-  # so the extra /PutMyCodeHere/ is needed
+  path: PutMyCodeHere   # will checkout at $(Pipeline.Workspace)/PutMyCodeHere
+- script: ../PutMyCodeHere/build.sh
+  # default working directory still point to $(Agent.BuildDirectory)/s,
+  # so the extra ../PutMyCodeHere/ is needed
 ```
 
 ### Relative vs absolute paths
 
 Relative paths are supported cross-platform.
 Consider `path: foo/src`.
-That resolves to `$(Build.SourcesDirectory)/foo/src`, which correctly resolves on both Windows and Linux.
+That resolves to `$(Pipeline.Workspace)/foo/src`, which correctly resolves on both Windows and Linux.
 
 Absolute paths are challenging to support cross-platform in a clean way.
 They also make it harder to trust running multiple agents on a single host.
