@@ -2,7 +2,7 @@
 
 **Status: Ready for dev design**
 
-Pipeline Artifacts are the new way to move files between jobs and stages in your pipeline. They are hosted in Azure Artifacts and will eventually entirely replace FCS "Build Artifacts". Because moving files between jobs and stages is a crucial part of most CI/CD workflows, and because Pipeline Artifacts are expected to be the default way to do so, this spec proposes a YAML shortcut syntax for uploading and downloading artifacts.
+Pipeline Artifacts are the new way to move files between jobs and stages in your pipeline. They are hosted in Azure Artifacts and will eventually entirely replace FCS "Build Artifacts". Because moving files between jobs and stages is a crucial part of most CI/CD workflows, and because Pipeline Artifacts are expected to be the default way to do so, this spec proposes a YAML shortcut syntax for uploading and downloading artifacts. It also covers default download behaviors.
 
 In this document, `artifact` refers specifically to uploading Pipeline Artifacts from the current pipeline. `download` refers to downloading Pipeline Artifact artifacts from the current pipeline and from other Azure Pipeline. Other pipeline systems (e.g. Jenkins) will be handled as [pipeline resources](pipeline-resources.md).
 
@@ -74,7 +74,7 @@ jobs:
     # this listing shows two folders: `makeartifact` and `mypipe`
 ```
 
-#### Controlling output path
+#### Controlling download path
 
 If the `path` key is specified, it's a relative path from `$(Pipeline.Workspace)`. Directory names are not automatically injected by the pipeline anymore (but of course, directories present in the artifact itself are still used).
 
@@ -183,14 +183,14 @@ You can add files to both the default artifact and to named artifacts until the 
   steps:
   - script: dotnet publish --configuration $(buildConfiguration)
   - upload: bin/*
-    prependPath: netcore/
+    prependDirectory: netcore/
 - job: buildNetFx
   steps:
     - task: VSBuild@1
       inputs:
         solution: MySolution.sln
     - upload: bin/*
-      prependPath: netfx/
+      prependDirectory: netfx/
       seal: true
 - job: Deploy .NET Core
   dependsOn: buildCore
@@ -219,4 +219,24 @@ You can give an artifact a name, and you can upload multiple named artifacts. Al
     name: MobileApp
   - script: ./my-deploy-script.sh $(Pipeline.Workspace)/WebApp/
   - script: ./my-xamarin-script.sh $(Pipeline.Workspace)/MobileApp/
+```
+
+### Multiple artifact downloads with explicit path
+
+If a download step covers multiple artifacts and no explicit path is given, they're each pulled into a separate directory. With an explicit path, that explicit path becomes a containing folder for the artifacts.
+
+```yaml
+- job: Build
+  steps:
+  - script: dotnet publish --configuration $(buildConfiguration)
+  - upload: bin/WebApp/*
+    artifact: WebApp
+  - upload: bin/MobileApp/*
+    artifact: MobileApp
+- job: Deploy
+  steps:
+  - download: current
+    path: Apps
+  - script: ./my-deploy-script.sh $(Pipeline.Workspace)/Apps/WebApp/
+  - script: ./my-xamarin-script.sh $(Pipeline.Workspace)/Apps/MobileApp/
 ```
