@@ -140,6 +140,32 @@ Or to avoid downloading any of the artifacts at all:
 
 You can add files to any artifact multiple times in the same job, in different jobs in the same stage, and in different stages in the same pipeline, or you can `seal` an artifact at any time to prevent further files from being added.
 
+## Variables
+
+In addition to the new `$(Pipeline.Workspace)` variable, we introduce a variable per resource indicating where it was checked out on disk. For example:
+```yaml
+resources:
+  pipelines:
+  - pipeline: foo
+
+jobs:
+- job: maker
+  steps:
+  - script: ./build.sh
+  - upload: dist/**/*
+
+- job: consumer
+  dependsOn: maker
+  steps:
+  - download:   # remember, blank indicates we download all artifacts from all pipelines
+  - bash: |
+      echo $(Pipeline.Resources.foo)   # pipeline variable syntax
+      echo $PIPELINE_RESOURCES_FOO     # environment variable syntax
+  - script: |
+      echo $(Pipeline.Resources.current)  # current pipeline's artifact(s) go here
+      echo $(Pipeline.Resources.maker)    # or to get the specific artifact produced by the previous job
+```
+
 ## Examples
 
 ### Upload a build artifact and use it in a deployment
