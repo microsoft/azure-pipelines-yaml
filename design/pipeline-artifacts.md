@@ -17,7 +17,7 @@ Artifacts are distinct from other `resources` types, including `containers`, `re
 ```yaml
 - upload: string # a minimatch path or list of [minimatch paths](tasks/file-matching-patterns.md) to upload
   artifact: string # identifier for this artifact (no spaces allowed), defaults to the job name
-  prependDirectory: string # a directory path that will be prepended to all uploaded files
+  prependPath: string # a directory path that will be prepended to all uploaded files
   seal: boolean # if true, finalizes the artifact so no more files can be added after this step
 ```
 
@@ -179,24 +179,22 @@ You can control the location where artifacts are downloaded using the `path` key
 You can add files to both the default artifact and to named artifacts until the end of the pipeline or until an `upload` step is run with the `seal` key set to `true`.
 
 ```yaml
-- job: buildCore
+- job: build
   steps:
   - script: dotnet publish --configuration $(buildConfiguration)
-  - upload: bin/*
-    prependDirectory: netcore/
-- job: buildNetFx
-  steps:
-    - task: VSBuild@1
-      inputs:
-        solution: MySolution.sln
-    - upload: bin/*
-      prependDirectory: netfx/
-      seal: true
-- job: Deploy .NET Core
-  dependsOn: buildCore
+  - upload: bin/netcore/**/*
+    prependPath: netcore/     # prefix these files with a directory in the artifact
+  - task: VSBuild@1
+    inputs:
+      solution: MySolution.sln
+  - upload: bin/Release/**/*  # this upload goes to the same artifact
+    prependPath: netfx/       # but with a different prepended path
+    seal: true                # and after this, nothing else can be added
+- job: deployCore
+  dependsOn: build
   steps:
   - script: |
-      ./my-deploy-script.sh $(Pipeline.Workspace)/buildCore/netcore/
+      ./my-deploy-script.sh $(Pipeline.Workspace)/build/netcore/
 ```
 
 ### Upload a named artifact
