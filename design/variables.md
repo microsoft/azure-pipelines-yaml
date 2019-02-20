@@ -3,8 +3,8 @@
 ## Processing within a file
 
 Changes:
-- Add variables to the context, as they are read
-- Add `else` and `elif`
+- Add variables to the context, as they are read (completed)
+- Add `else` and `elif` (not completed)
 
 Example jobs template:
 
