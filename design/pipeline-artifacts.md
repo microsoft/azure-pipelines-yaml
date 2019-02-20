@@ -8,6 +8,8 @@ In this document, `artifact` refers specifically to uploading Pipeline Artifacts
 
 Artifacts are distinct from other `resources` types, including `containers`, `repositories`, `packages`, and `feeds`.
 
+**Note**: although this spec describes the behavior of the upload/download keywords, the tasks behave similarly when inputs are missing or left default.
+
 ## Uploading artifacts: `upload`
 
 `upload` is a shortcut for the [Upload Pipeline Artifact](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/publish-pipeline-artifact.md) task (formerly called "Publish Pipeline Artifacts"). It will upload files from the current job to be used in subsequent jobs or in other stages or Pipeline.
@@ -97,6 +99,8 @@ jobs:
 
 #### Build and RM classic pipelines
 No change to current behavior. Artifacts are downloaded to `$(System.DefaultWorkingDirectory)`, which is the sources folder on Build and the artifacts folder on RM.
+
+**Note**: this means we need a new job message type "Pipeline" in addition to the existing "Build" and "Release".
 
 ### Schema
 
