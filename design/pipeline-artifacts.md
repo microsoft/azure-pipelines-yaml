@@ -52,9 +52,12 @@ It will download artifacts uploaded from a previous job, stage, or from another 
 ### Artifact download location
 
 #### YAML / unified pipelines
-Artifacts are downloaded to the pipeline's workspace by default. We introduce a new variable for unified pipelines: `$(Pipeline.Workspace)`. `Pipeline.Workspace` is one level up from `$(System.DefaultWorkingDirectory)`; on hosted, it corresponds to `c:\agent\_work\1\`.
+Artifacts are automatically downloaded to the pipeline's workspace by default. We introduce a new variable for unified pipelines: `$(Pipeline.Workspace)`. `Pipeline.Workspace` is one level up from `$(System.DefaultWorkingDirectory)`; on hosted, it corresponds to `c:\agent\_work\1\`.
 
-Each artifact is given its own directory e.g. `$(Pipeline.Workspace)\myartifact` for an artifact named `myartifact`. Artifacts coming from other pipelines are each given one directory per pipeline e.g. `$(Pipeline.Workspace)\some-other-pipeline\someartifact` for the `someartifact` artifact of the `some-other-pipeline` pipeline. The pipeline portion of the path comes from the ID of the pipeline's `resource` in YAML.
+If no `path` is specified, either because of automatic download _or_ because you added a `download:` entry with no path, there are some decisions made automatically for you:
+- Artifacts from the current pipeline each get their own directory, e.g. `$(Pipeline.Workspace)\myartifact` for an artifact named `myartifact`.
+- Other pipelines each get their own directory, e.g. `$(Pipeline.Workspace)\mypipeline` for a pipeline whose ID is `mypipeline`. (Pipeline ID comes from the current pipeline's `resource` name.)
+- Artifacts from other pipelines each get a directory within their pipeline's directory. `$(Pipeline.Workspace)\mypipeline\someartifact` for the `someartifact` artifact of the `mypipeline` pipeline.
 
 Example:
 ```yaml
