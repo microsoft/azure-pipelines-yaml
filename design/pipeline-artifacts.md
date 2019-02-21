@@ -52,7 +52,7 @@ It will download artifacts uploaded from a previous job, stage, or from another 
 ### Artifact download location
 
 #### YAML / unified pipelines
-Artifacts are automatically downloaded to the pipeline's workspace by default. We introduce a new variable for unified pipelines: `$(Pipeline.Workspace)`. `Pipeline.Workspace` is one level up from `$(System.DefaultWorkingDirectory)`; on hosted, it corresponds to `c:\agent\_work\1\`.
+Artifacts are automatically downloaded to the pipeline's workspace by default. We introduce a new variable for unified pipelines: `$(Pipeline.Workspace)`. `Pipeline.Workspace` is one level up from `$(System.DefaultWorkingDirectory)`.
 
 If no `path` is specified, either because of automatic download _or_ because you added a `download:` entry with no path, there are some decisions made automatically for you:
 - Artifacts from the current pipeline each get their own directory, e.g. `$(Pipeline.Workspace)\myartifact` for an artifact named `myartifact`.
@@ -119,7 +119,7 @@ No change to current behavior. Artifacts are downloaded to `$(System.DefaultWork
 - download: string # identifier for the pipeline resource from which to download artifacts, optional; "current" means the current pipeline, blank means all available pipelines (including current)
   artifact: string # identifier for the artifact to download; optional
   patterns: string # a minimatch path or list of [minimatch paths](tasks/file-matching-patterns.md) to download; if blank, the entire artifact is downloaded
-  path: string # the directory in which to download files, defaults to $(Pipeline.Worksapce); if a relative path is provided, it will be rooted from $(Pipeline.Workspace)
+  path: string # the relative directory in which to download files, rooted from $(Pipeline.Workspace); missing or empty value will mean to put it directly in $(Pipeline.Workspace)
   displayName: string # friendly name displayed in the UI
   name: string # identifier for this step (A-Z, a-z, 0-9, and underscore)
   condition: string
@@ -128,6 +128,8 @@ No change to current behavior. Artifacts are downloaded to `$(System.DefaultWork
   timeoutInMinutes: number
   env: { string: string } # list of environment varibles to add
 ```
+
+One instance of `- download` has to translate into exactly one underlying task, which may require changes to how the Download Artifacts task operates.
 
 ### Examples
 
