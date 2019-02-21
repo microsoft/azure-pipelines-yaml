@@ -45,14 +45,47 @@ Otherwise, the name should include both the phase and job name: `<phase>.<job>`.
 
 ## Downloading artifacts: `download`
 
-`download` is a shortcut for the [Download Pipeline Artifacts](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/download-pipeline-artifact) task.
-
+`download` can be _thought of_ as a shortcut for the [Download Pipeline Artifacts](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/download-pipeline-artifact) task.
+(In reality, it also needs to download older FCS and UNC artifacts seamlessly.)
 It will download artifacts uploaded from a previous job, stage, or from another pipeline.
+
+### Partial schema
+
+Listing just the unique properties of the `download` step:
+```yaml
+- download: string - the pipeline to download from (`current` or a resource id) or the word `none`
+  artifact: string - the specific artifact; optional unless `path` specified
+  patterns: string - minimatch patterns of files to grab from the artifact(s); defaults to **/*
+  path: string - the destination path for where to download the artifact(s)
+```
+
+### Automated download
+
+The "magic" of download is how often you _don't_ have to specify it.
+By default, all artifacts produced in the current pipeline and all artifacts in all referenced pipelines will be downloaded.
+As soon as you include an explicit `download` step (or task), the user is in total control - no more automatic download for that job.
+Similarly, you can leave out `artifact`, `patterns`, or `path` to get some automatic behaviors (described below).
+
+Or to avoid downloading any of the artifacts at all:
+
+```yaml
+- download: none
+```
+
+### Choosing which pipelines and artifacts to download
+
+One `download` step will download from one pipeline, either the `current` pipeline or a pipeline's resource ID.
+
+If `artifact` is absent, the step will download all artifacts that are part of the pipeline.
+If `artifact` is present, it's a single artifact name from the pipeline.
 
 ### Artifact download location
 
 #### YAML / unified pipelines
+
 Artifacts are automatically downloaded to the pipeline's workspace by default. We introduce a new variable for unified pipelines: `$(Pipeline.Workspace)`. `Pipeline.Workspace` is one level up from `$(System.DefaultWorkingDirectory)`.
+
+##### With no `path`
 
 If no `path` is specified, either because of automatic download _or_ because you added a `download:` entry with no path, there are some decisions made automatically for you:
 - Artifacts from the current pipeline each get their own directory, e.g. `$(Pipeline.Workspace)\myartifact` for an artifact named `myartifact`.
@@ -87,9 +120,13 @@ jobs:
     # this listing shows two folders: `makeartifact` and `mypipe`
 ```
 
-#### Controlling download path
+##### With `path`
 
-If the `path` key is specified, it's a relative path from `$(Pipeline.Workspace)`. Directory names are not automatically injected by the pipeline anymore (but of course, directories present in the artifact itself are still used).
+If the `path` key is specified, it's a relative path from `$(Pipeline.Workspace)`.
+Directory names are not automatically injected by the pipeline anymore (but of course, directories present in the artifact itself are still used).
+
+If you include a `path`, `artifact` becomes required.
+Otherwise, we would risk sticking multiple artifacts' contents together in the same directory, clobbering files unpredictably.
 
 Example:
 ```yaml
@@ -111,15 +148,20 @@ jobs:
 #### Build and RM classic pipelines
 No change to current behavior. Artifacts are downloaded to `$(System.DefaultWorkingDirectory)`, which is the sources folder on Build and the artifacts folder on RM.
 
-**Note**: this means we need a new job message type "Pipeline" in addition to the existing "Build" and "Release".
+### Partial downloads
 
-### Schema
+If `patterns` is absent, all files from the artifact are downloaded.
+If present, it's a newline-separated list of minimatch patterns for what files to download.
+
+### Full schema
 
 ```yaml
-- download: string # identifier for the pipeline resource from which to download artifacts, optional; "current" means the current pipeline, blank means all available pipelines (including current)
-  artifact: string # identifier for the artifact to download; optional
+- download: string # pipeline ID, `current`, or `none`; required
+  artifact: string # identifier for the artifact to download; optional unless `path` is specified
   patterns: string # a minimatch path or list of [minimatch paths](tasks/file-matching-patterns.md) to download; if blank, the entire artifact is downloaded
   path: string # the relative directory in which to download files, rooted from $(Pipeline.Workspace); missing or empty value will mean to put it directly in $(Pipeline.Workspace)
+  
+  # these are common to all steps
   displayName: string # friendly name displayed in the UI
   name: string # identifier for this step (A-Z, a-z, 0-9, and underscore)
   condition: string
@@ -143,15 +185,11 @@ One instance of `- download` has to translate into exactly one underlying task, 
 
 ### Default and named artifacts
 
-If no name is specified, the uploaded artifact should be named the same as the job name. You can also create multiple artifacts, each with their own name.
+If no name is specified, the uploaded artifact gets a default name.
+See the section above on `upload` for details.
+You can also create multiple artifacts, each with their own name.
 
 All artifacts (including the default) are automatically downloaded to each subsequent job's workspace directory (`$(Pipeline.Workspace)`). You can limit the artifacts downloaded for any job by adding a `download` step to the beginning of the job. Once you use `download` to override and download a specific artifact, all automatic artifact download behavior is disabled and you need to specify any and all artifacts you intend to download in the job.
-
-Or to avoid downloading any of the artifacts at all:
-
-```yaml
-- download: none
-```
 
 ### Multi-upload artifacts
 
@@ -174,7 +212,7 @@ jobs:
 - job: consumer
   dependsOn: maker
   steps:
-  - download:   # remember, blank indicates we download all artifacts from all pipelines
+  # implicit download of all current and other pipelines' artifacts
   - bash: |
       echo $(Pipeline.Resources.foo)   # pipeline variable syntax
       echo $PIPELINE_RESOURCES_FOO     # environment variable syntax
@@ -211,7 +249,8 @@ You can control the location where artifacts are downloaded using the `path` key
   - upload: bin/*
 - job: Deploy
   steps:
-  - download:
+  - download: current
+    artifact: Build
     path: from-build/
   - script: |
       ./my-deploy-script.sh $(Pipeline.Workspace)/from-build/
@@ -254,9 +293,9 @@ You can give an artifact a name, and you can upload multiple named artifacts. Al
     artifact: MobileApp
 - job: Deploy
   steps:
-  - download:
+  - download: current
     name: WebApp
-  - download:
+  - download: current
     name: MobileApp
   - script: ./my-deploy-script.sh $(Pipeline.Workspace)/WebApp/
   - script: ./my-xamarin-script.sh $(Pipeline.Workspace)/MobileApp/
@@ -264,7 +303,9 @@ You can give an artifact a name, and you can upload multiple named artifacts. Al
 
 ### Multiple artifact downloads with explicit path
 
-If a download step covers multiple artifacts and no explicit path is given, they're each pulled into a separate directory. With an explicit path, that explicit path becomes a containing folder for the artifacts.
+If a download step covers multiple artifacts and no explicit path is given, they're each pulled into a separate directory.
+With an explicit path, the artifact is put exactly there.
+This gives the user final say over on-disk layout.
 
 ```yaml
 - job: Build
@@ -277,7 +318,11 @@ If a download step covers multiple artifacts and no explicit path is given, they
 - job: Deploy
   steps:
   - download: current
-    path: Apps
-  - script: ./my-deploy-script.sh $(Pipeline.Workspace)/Apps/WebApp/
-  - script: ./my-xamarin-script.sh $(Pipeline.Workspace)/Apps/MobileApp/
+    artifact: WebApp
+    path: Apps/Web
+  - download: current
+    artifact: MobileApp
+    path: Apps/iOS
+  - script: ./my-deploy-script.sh $(Pipeline.Workspace)/Apps/Web
+  - script: ./my-xamarin-script.sh $(Pipeline.Workspace)/Apps/iOS
 ```
