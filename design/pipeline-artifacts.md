@@ -18,10 +18,18 @@ Artifacts are distinct from other `resources` types, including `containers`, `re
 
 ```yaml
 - upload: string # a minimatch path or list of [minimatch paths](tasks/file-matching-patterns.md) to upload
-  artifact: string # identifier for this artifact (no spaces allowed), defaults to the job name
+  artifact: string # identifier for this artifact (no spaces allowed), see below for default
   prependPath: string # a directory path that will be prepended to all uploaded files
   seal: boolean # if true, finalizes the artifact so no more files can be added after this step
 ```
+
+Default artifact name: picking a good default relies on understanding the difference between "job" and "phase".
+A "phase" is technically what's created in the YAML pipeline; a job is the running embodiment of the phase.
+What we often think of as the job name is actually the phase name.
+The job is named "\_\_default" unless it's part of a multi-configuration.
+This wouldn't be a great artifact name.
+If the job is named `__default`, then the artifact should get the phase's name (what's literally written in YAML as `- job: <name>`.
+Otherwise, the name should include both the phase and job name: `<phase>.<job>`.
 
 ### Example
 
