@@ -83,7 +83,13 @@ If `artifact` is present, it's a single artifact name from the pipeline.
 
 #### YAML / unified pipelines
 
-Artifacts are automatically downloaded to the pipeline's workspace by default. We introduce a new variable for unified pipelines: `$(Pipeline.Workspace)`. `Pipeline.Workspace` is one level up from `$(System.DefaultWorkingDirectory)`.
+Artifacts are automatically downloaded to the pipeline's workspace by default. We introduce a new variable for unified pipelines: `$(Pipeline.Workspace)`. `Pipeline.Workspace` is one level up from `$(System.DefaultWorkingDirectory)`. This is the "shallowest" place where artifacts may be placed.
+
+The spec that follows is lengthy because it covers details and edge cases.
+But for customers, it should be easy to understand:
+1. If you don't say anything, you get a directory per artifact from the current pipeline. You also get a directory per pipeline containing a directory per artifact from other pipelines.
+2. As soon as you put a `download` step, you have to be explicit about all pipelines you want to download from. You still get  automatic directory layout.
+3. You may mention a specific artifact, but you don't have to unless you mention a `path`. As soon as you mention a `path`, you _must_ also choose the artifact. This is the mode with ultimate control/flexibility.
 
 ##### With no `path`
 
