@@ -41,6 +41,8 @@ jobs:
   	target: postgres
   - script: ...
     displayName: Run tests
+  - script: ...
+  	target: host # reserved name could also be agent
   
 ```
 
@@ -67,7 +69,7 @@ parameters:
   job: ${{ parameters.name }}
   # common jobs parameters
   steps:
-  # remove the docker network from the job container
+  # remove the docker network from the job container need an easy way to determine the job network and job container
   - script: docker network disconnect <job network> <job container>
     target: host # reserved name for the host the worker is running on
   
@@ -121,3 +123,12 @@ jobs:
   	- script: ...
 ```
 
+
+
+## Notes
+
+Need to figure out the reserved target for the agent or host
+
+Need a standard set of pipeline variables that can be used to get the name of the job network and the job container 
+
+Service containers probably need to map the `workspace` in the same way the job container does
