@@ -49,22 +49,39 @@ jobs:
 ```yaml
 ## job-template.yml
 parameters:
-# common job parameters
+# Job schema parameters - https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=vsts&tabs=schema#job
+  cancelTimeoutInMinutes: ''
+  condition: ''
+  continueOnError: false
+  container: ''
+  dependsOn: ''
+  displayName: ''
+  steps: []
+  pool: ''
+  strategy: ''
+  timeoutInMinutes: ''
+  variables: []
+  workspace: ''
   
 - jobs
   job: ${{ parameters.name }}
   # common jobs parameters
   steps:
-  # remove teh docker network from the job container
+  # remove the docker network from the job container
   - script: docker network disconnect <job network> <job container>
     target: host # reserved name for the host the worker is running on
   
   # copy each proerty from each step skipping the target property
   - ${{ each step in parameters.steps }}:
-    - task: ${{ step.Task }}
-      inputs: ${{ step.input }}
+    - task: ${{ step.task }} 
+  	  displayName: ${{ step.displayName }}
+      name: ${{ step.name }}
       condition: ${{ step.condition }}
-      continueOnError: ${{ step.continueOnError }}
+      continueOnError: ${{ step.continueOnError}}
+      enabled: ${{ step.enabled }}
+      timeoutInMinutes: ${{ step.timeoutInMinutes }}
+      inputs: ${{ step.inputs }}
+      env: ${{ step.env }}
 
 ## jobs-template.yml
 parameters:
