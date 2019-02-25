@@ -87,16 +87,10 @@ parameters:
   
   # copy each proerty from each step skipping the target property
   - ${{ each step in parameters.steps }}:
-    - task: ${{ step.task }} 
-  	  displayName: ${{ step.displayName }}
-      name: ${{ step.name }}
-      condition: ${{ step.condition }}
-      continueOnError: ${{ step.continueOnError}}
-      enabled: ${{ step.enabled }}
-      timeoutInMinutes: ${{ step.timeoutInMinutes }}
-      inputs: ${{ step.inputs }}
-      env: ${{ step.env }}
-
+      ${{ each property in step }}:
+        ${{ if ne(property.key, 'target') }}:
+          ${{ property.key }}: ${{ property.value }}
+          
 ## jobs-template.yml
 parameters:
   jobs: []
