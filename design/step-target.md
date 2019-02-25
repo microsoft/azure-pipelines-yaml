@@ -1,6 +1,6 @@
 # Step Target
 
-Steps run either on the host that is running the agent.worker or if the step is part of a [Container Job](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/container-phases?view=azure-devops&tabs=yaml) it runs inside of the container specific on the job.  Steps are not able to target the host if running in a container job or other containers if using [services](./sidecar-containers.md).
+Steps run either on the host that is running the agent.worker or if the step is part of a [Container Job](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/container-phases?view=azure-devops&tabs=yaml) it runs inside of the container specified on the job.  Steps are not able to target the host if running in a container job or other containers if using [services](./sidecar-containers.md).
 
 The goal of a step target is to give the pipeline author flexibility in where a given step in the job runs.  This not only proivdes additional flexibility for pipeline authors, it can also be used by template authors to drive certian security and compliance scenarios in their pipeline.
 
@@ -11,7 +11,13 @@ The goal of a step target is to give the pipeline author flexibility in where a 
 
 ## YAML Syntax
 
-**example:** a container job using [services](./sidecar-containers.md) with one step targeting a service container.
+**Example:** a container job using [services](./sidecar-containers.md) with one step targeting a service container.
+
+In the example below we see a single job that defined two service containers as well as a job container.  
+
+* The first step in the job targets the `postgres` service container in order to run some sort of configuration script.  
+* The second step runs in the `python-builder` container that is specified as part of the `container:`property for the job.  
+* The third step targets the host machine where the agent is running.
 
 ```yaml
 jobs:
@@ -46,7 +52,13 @@ jobs:
   
 ```
 
-**example:** A template that runs steps from a consumer in a contianer with no network
+**Example:** A template that runs steps from a consumer in a contianer with no network
+
+This example is significantly more complex and shows us how we might use the step target feature along with the templates feature to create a secure and compliant pipeline by forcing all user defined steps to be run inside a container and not enabling them to target the host.  We also see removing the template author adding a step to all jobs that removes the job container network so the user steps are not able to download any additional dependencies that are not tracked in the source repo.
+
+* The `azure-pipelines.yml` pipeline file specifies one job that is derived from a job template.  Here we see the consumer of that template passing in an enture job definition including a contaienr and two steps.
+* The `jobs-template.yml` loops over all of the parameters in the template and all of the jobs and applies the `job-template.yml` to it.
+* In the `job-template.yml` we take all of the parameters and steps from the job and remap them into a job that has a step that targets the host that first removes the network from the job container in order to make sure that when the steps run they do not have access to any external network resources.  Then we loop over each step and create new steps from he properties explicilty omitting the `target:` property so they are limited to only targeting the job container.
 
 ```yaml
 ## job-template.yml
