@@ -24,7 +24,7 @@ parameters:
   values: [ string ]    # allowed list of values (for some data types)
 ```
 
-See [below](#back-compat-with-current-syntax) for details about how this coexists with existing `parameter` syntax.
+See [below](#back-compat-with-current-syntax) for details about how this coexists with existing `parameters` syntax.
 
 ## Data types
 
@@ -32,11 +32,11 @@ Available data types:
 
 | Data type | Notes |
 |-----------|-------|
-| `string` | default data type if none is specified
-| `number` | can be restricted to `values:`
+| `string` | default data type if none is specified. if `values:` is specified, they become suggestions but **not** required (like a combobox)
+| `number` | may be restricted to `values:`, otherwise any number-like string is accepted
 | `boolean`
 | `object` | YAML serialization expected
-| `enum` | can be restricted to `values:`
+| `enum` | must be restricted to `values:` (like a selectbox)
 | `filePath`
 | `secureFile`
 | `pool`
