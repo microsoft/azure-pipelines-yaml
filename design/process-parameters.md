@@ -26,6 +26,16 @@ parameters:
 
 See [below](#back-compat-with-current-syntax) for details about how this coexists with existing `parameters` syntax.
 
+## User interactions
+
+### Run panel ("queue dialog")
+
+_TODO_
+
+### Comment triggers
+
+_TODO_
+
 ## Data types
 
 Available data types:
