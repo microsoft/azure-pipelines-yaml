@@ -36,6 +36,12 @@ _TODO_
 
 _TODO_
 
+### Editor experiences
+
+We can teach the editors (web, VS Code) how templates fit together.
+When a user's pipeline consumes a template, we can offer IntelliSense for the names and allowed values of parameters.
+*This is out of scope for v1.*
+
 ## Data types
 
 Available data types:
@@ -78,6 +84,8 @@ Not all widgets are compatible with all data types, and UI may evolve over time,
 | `radio` | number, boolean, enum | -
 
 For data types not listed in the above table, there is a "special" UI (such as a file picker, pool picker, etc.) that's automatically used.
+
+*This is P2 work and cuttable / postponeable.*
 
 ## Full examples
 
