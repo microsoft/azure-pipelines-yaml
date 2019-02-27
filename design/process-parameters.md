@@ -85,12 +85,114 @@ Not all widgets are compatible with all data types, and UI may evolve over time,
 
 For data types not listed in the above table, there is a "special" UI (such as a file picker, pool picker, etc.) that's automatically used.
 
-*This is P2 work and cuttable / postponeable.*
+*This part can be postponed. It's nice-to-have, especially for cases like single line vs multiline input.*
 
 ## Full examples
 
-**TODO**
+### Dial in the amount of parallelism
+
+```yaml
+parameters:
+- name: parallelism
+  displayName: How much parallelism
+  type: number
+  default: 5
+  runTime: true
+  values:
+  - 1
+  - 5
+  - 10
+
+job: Test
+strategy:
+  parallel: ${{ parameters.parallelism }}
+steps:
+- script: echo Running one leg of tests...
+```
  
+### Select configs to run
+
+```yaml
+parameters:
+- name: configs
+  type: string
+  default: x86,x64
+  runTime: true
+
+jobs:
+- ${{ if contains(parameters.configs, 'x86' }}:
+  - job: x86
+    steps:
+    - script: echo Building x86...
+- ${{ if contains(parameters.configs, 'x64' }}:
+  - job: x64
+    steps:
+    - script: echo Building x64...
+- ${{ if contains(parameters.configs, 'arm' }}:
+  - job: arm
+    steps:
+    - script: echo Building arm...
+```
+
+*There's a possible future enhancement hiding here: a data type of "flags" which would be like an enum but allow multiple specification.
+This version is more verbose but also clear and straightforward.*
+
+### Select your pool
+
+```yaml
+parameters:
+- name: pool
+  type: pool
+  default: ubuntu-16.04
+  runTime: true
+
+job: Build
+pool:
+  vmImage: ${{ parameters.pool }}
+steps:
+- script: echo Building on the pool of your choice
+```
+
+### Connecting parameters with strong typing
+
+This is common for sophisticated customers such as .NET.
+
+```yaml
+# template.yml - comes from the centralized infrastructure team
+
+parameters:
+- name: customerSteps
+  type: steps
+
+steps:
+- script: echo Pre-step injected on all jobs
+- ${{ each customerStep in parameters.customerSteps }}:
+  - ${{ customerStep }}
+- script: echo Post-step injected on all jobs
+```
+
+When a client repo such as Roslyn goes to consume this template:
+
+```yaml
+# azure-pipelines.yml - in the Roslyn repo
+
+resources:
+  repositories:
+  - repository: arcade
+    name: dotnet/arcade
+
+steps:
+- template: template.yml@arcade
+  parameters:
+    customerSteps:
+    - task: Foo@1
+    - script: echo bar
+```
+
+At runtime, we know that `customerSteps` must be a list of steps.
+If it's not, we can give a clear error message.
+In the future, our editing experiences can also make this easy to reason about.
+
 ## Back-compat with current syntax
 
 The existing `parameters` syntax expects a map of parameters with their defaults.
