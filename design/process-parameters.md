@@ -1,14 +1,14 @@
 # Process parameters
 
-We need a way to take queue-time inputs, giving pipeline authors the right amount of control / expressivity.
+We need a way to take run-time inputs, giving pipeline authors the right amount of control / expressivity.
 YAML pipelines already accept parameters when used as part of a template.
 Process parameters are a natural evolution of that syntax.
 
 Scenarios:
-- Pipeline users can supply different values to tools and tasks at queue time
-- Pipeline authors can control the types, ranges allowed, and defaults for queue-time parameters
-- Pipeline authors can allow flexible, queue-time control over stages/jobs to run, including adding/removing matrix legs
-- The pipeline itself can be altered at queue time: pools, agentspecs, service connections, environments, and more
+- Pipeline users can supply different values to tools and tasks at run time
+- Pipeline authors can control the types, ranges allowed, and defaults for run-time parameters
+- Pipeline authors can allow flexible, run-time control over stages/jobs to run, including adding/removing matrix legs
+- The pipeline itself can be altered at run time: pools, agentspecs, service connections, environments, and more
 
 ## Syntax
 
@@ -20,7 +20,7 @@ parameters:
   displayHint: enum     # see below
   type: enum            # data type; see below
   default: any          # default value if nothing specified
-  queueTime: boolean    # whether the value can be set at queue time; defaults to false
+  runTime: boolean      # whether the value can be set at run time; defaults to false
   values: [ string ]    # allowed list of values (for some data types)
 ```
 
@@ -45,7 +45,7 @@ Available data types:
 
 It's also useful to tighten up the editor experience and error messages for template parameters.
 Customers are already using templates to pass along step and job lists.
-These aren't very useful for queue-time parameters: it's unclear how a user would be expected to set them.
+These aren't very useful for run-time parameters: it's unclear how a user would be expected to set them.
 They're rendered like a plain `object` in the UI.
 
 | YAML string type | Notes |
@@ -90,7 +90,7 @@ parameters:
     PYTHON_VERSION: '3.7'
 ```
 
-Since existing parameter syntax is only for templates, we assume none of the parameters are settable at queue time.
+Since existing parameter syntax is only for templates, we assume none of the parameters are settable at run time.
 The above example is equivalent to:
 ```yaml
 parameters:
