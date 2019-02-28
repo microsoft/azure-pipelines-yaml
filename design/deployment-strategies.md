@@ -37,8 +37,11 @@ jobs:
     blueGreen:
       blueSelector: string
       greenSelector: string      
+      preDeploy:
+        steps:
+        - script: echo initialize, cleanup, install certs...
       deploy:              
-        steps:           # deploy & test steps ...
+        steps:                                   # deploy & test steps ...
         - script: echo deploy web app...      
       routeTraffic:
         delay: 60m
@@ -70,10 +73,22 @@ jobs:
   strategy:                 
     rolling:
       maxBatchSize: 5
-      selector: string   # comma separated string. For example. tags in case of VM or label-selector in case of AKS etc
-      deploy:               
-        steps:           # deploy & test, route traffic steps ...
-        - script: echo deploy web app...   
+      selector: string   # comma separated string. e.g. tags in case of VM/label-selector for AKS
+      preDeploy:
+        steps:
+        - script: echo initialize, cleanup, install certs...
+      deploy:              
+        steps:                                     # Block traffic(?) deploy & test steps ...
+        - script: echo deploy web app...      
+      routeTraffic:
+        delay: 60m
+        steps:
+        - script: echo swap slots...   
+      postRouteTrafficChecks:
+        timeout: 60m
+        samplingInterval: 5m
+        steps:          
+        - task: appInsightsAlerts .   
       onFailure:
         steps:
         - script: echo swap slots back...
