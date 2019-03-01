@@ -25,7 +25,7 @@ steps:
   path: string # where to put the repo; always rooted at $(Pipeline.Workspace)
 ```
 
-`$(Build.SourcesDirectory)` is unchanged from its default. Over time, we'll deprecate the `$(Build.*)` series of variables.
+`$(Build.SourcesDirectory)` should also point to the actual `self` checkout location. Over time, we'll deprecate the `$(Build.*)` series of variables.
 
 ### Example
 
