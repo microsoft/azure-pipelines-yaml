@@ -2,9 +2,6 @@
 # Build a Docker image, push it to an Azure Container Registry, and deploy it to an Azure Web App.
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
-trigger:
-- master
-
 resources:
 - repo: self
 

@@ -3,9 +3,6 @@
 # Add steps that save build artifacts and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/java
 
-trigger:
-- master
-
 pool:
   vmImage: 'Ubuntu-16.04'
 

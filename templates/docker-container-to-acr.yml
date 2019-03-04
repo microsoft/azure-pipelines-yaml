@@ -2,9 +2,6 @@
 # Build a Docker image and push it to an Azure Container Registry.
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
-trigger:
-- master
-
 resources:
 - repo: self
 
