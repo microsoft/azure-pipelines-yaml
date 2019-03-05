@@ -5,13 +5,20 @@ The Build.\* and Release.\* variables no longer make sense.
 We also have a unique opportunity to clean up other aspects of the variables we expose.
 Though we can make some "breaking changes", we have to give customers, first-party tasks, and Marketplace tasks a clear and easy path forward.
 
+Worth noting: "variables" is an overloaded term.
+Azure Pipelines has a notion of "pipeline variables".
+Most of these are automatically converted into environment variables on the agent.
+The major exception is secrets, which must be manually mapped into the environment.
+Also, individual steps can include environment-only variables in the `env` statement.
+
 ## Problems
 * Build.\* and Release.\* variables aren't meaningful in unified pipelines.
 * There are many dozens of variables, some which are similar but not quite the same.
 We're wary of adding too many more, since we've run into technical limitations before (size of environment block on some systems).
 Having similar-but-different variables increases the burden on customers and task authors to understand the system.
 * Some tasks operate differently based on whether they're "running in build" vs "running in RM".
-Soon, that distintion won't exist.
+Soon, that distinction won't exist.
+* Despite the dozens of variables, we're missing some obvious useful ones.
 
 ## Solution
 
@@ -23,6 +30,29 @@ A full solution needs to include:
 Ideally we also take this opportunity to rationalize what variables appear in what scopes.
 Current scopes are agent, orchestration time, and available 
 - (more?)
+
+### What are good variables?
+
+Since variables take up space both mentally and in the environment block, we want to be judicious about which ones we include.
+Guidance on what makes a "good" variable to include:
+- Useful both in expressions (Pipelines-side) and scripts (user/runtime-side)
+- _Commonly_ required in an ad-hoc script or a task we ship in the box
+- Relevant to detecting or dealing with the environment (e.g. that we're running in Azure Pipelines, that we're running in CI, where on disk the pipeline workspace is rooted)
+
+Existing variables:
+
+| Current variable | Keep, cut, or rename |
+|------------------|----------------------|
+| _TODO_
+
+Necessary new variables:
+
+| New variable | Description | Special notes |
+|--------------|-------------|---------------|
+| CI | Set to "True" to match industry expectation for CI systems | Environment only, not available in expressions
+| AZURE_PIPELINES | Set to "True" to differentiate from other CI systems | Environment only, not available in expressions
+| Pipeline.Url | https:// URL to pipeline definition | [requested](https://twitter.com/_a__w_/status/1102802095474827264)
+| _TODO_
 
 ### New namespace for variables
 
