@@ -51,6 +51,7 @@ Necessary new variables:
 |--------------|-------------|---------------|
 | CI | Set to "True" to match industry expectation for CI systems | Environment only, not available in expressions
 | AZURE_PIPELINES | Set to "True" to differentiate from other CI systems | Environment only, not available in expressions
+| Pipeline.Workspace | Root directory where all source, artifacts, etc will be placed
 | Pipeline.Url | https:// URL to pipeline definition | [requested](https://twitter.com/_a__w_/status/1102802095474827264)
 | _TODO_
 
