@@ -13,9 +13,8 @@ libgit2's CI pipeline maps sources into a particular directory in the container.
 Tools installed in the container expect to find the sources there.
 
 Dependency:
-- Introduction of a new `$(Pipeline.Workspace)` variable which always resolves to the workspace for a particular pipeline.
-On hosted, that's `c:\agent\_work\1`.
-See [the pipeline artifacts spec](pipeline-artifacts.md) for the feature which introduces this variable.
+- ~~Introduction of a new `$(Pipeline.Workspace)` variable which always resolves to the workspace for a particular pipeline.~~
+_Postponed for now -- Build.SourcesDirectory gives the right loation._ See [the pipeline artifacts spec](pipeline-artifacts.md) for the feature which introduces this variable.
 
 ## Schema
 
