@@ -1,8 +1,8 @@
-# Process parameters
+# Runtime parameters
 
 We need a way to take run-time inputs, giving pipeline authors the right amount of control / expressivity.
 YAML pipelines already accept parameters when used as part of a template.
-Process parameters are a natural evolution of that syntax.
+Runtime parameters are a natural evolution of that syntax.
 
 Scenarios:
 - Pipeline users can supply different values to tools and tasks at run time
