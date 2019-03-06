@@ -21,7 +21,6 @@ parameters:
   displayHint: enum     # see below
   type: enum            # data type; see below
   default: any          # default value if nothing specified
-  runTime: boolean      # whether the value can be set at run time; defaults to false
   values: [ string ]    # allowed list of values (for some data types)
 ```
 
@@ -98,7 +97,6 @@ parameters:
   displayName: How much parallelism
   type: number
   default: 5
-  runTime: true
   values:
   - 1
   - 5
@@ -118,7 +116,6 @@ parameters:
 - name: configs
   type: string
   default: x86,x64
-  runTime: true
 
 jobs:
 - ${{ if contains(parameters.configs, 'x86' }}:
@@ -145,7 +142,6 @@ parameters:
 - name: pool
   type: pool
   default: ubuntu-16.04
-  runTime: true
 
 job: Build
 pool:
@@ -211,7 +207,7 @@ parameters:
     PYTHON_VERSION: '3.7'
 ```
 
-Since existing parameter syntax is only for templates, we assume none of the parameters are settable at run time.
+Since existing parameter syntax is only for templates, none of the parameters are settable at run time.
 The above example is equivalent to:
 ```yaml
 parameters:
