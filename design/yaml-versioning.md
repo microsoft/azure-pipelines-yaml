@@ -76,7 +76,7 @@ Instead, it lists only the breaking changes we'll make now.
 
 #### Trigger changes
 `trigger` becomes a parent of all `self`-repo triggers.
-CI keywords, which used to be directly under `trigger`, now live under a sub-entry called `ci`.
+CI keywords, which used to be directly under `trigger`, now live under a sub-entry called `push`.
 `pr` and `schedule`, which used to be pipeline-level, also live under `trigger`.
 Example:
 ```yaml
@@ -93,7 +93,7 @@ pr:
 
 # new way
 trigger:
-  ci:
+  push:
     branches:
     - master
     - features/*
@@ -111,6 +111,8 @@ trigger:
   pr: none
   ci: ...
 ```
+
+These changes also apply to `resource` triggers.
 
 #### Behavior changes
 * `repository` and `container` gain triggers by default. Users must suppress them using `trigger: none` if they don't want trigger behavior.
