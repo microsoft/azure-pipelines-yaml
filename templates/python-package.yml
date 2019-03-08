@@ -18,7 +18,6 @@ strategy:
       python.version: '3.6'
     Python37:
       python.version: '3.7'
-  maxParallel: 4
 
 steps:
 - task: UsePythonVersion@0
@@ -26,17 +25,12 @@ steps:
     versionSpec: '$(python.version)'
   displayName: 'Use Python $(python.version)'
 
-- script: python -m pip install --upgrade pip && pip install -r requirements.txt
+- script: |
+    python -m pip install --upgrade pip
+    pip install -r requirements.txt
   displayName: 'Install dependencies'
 
 - script: |
-    pip install pytest
-    pytest tests --doctest-modules --junitxml=junit/test-results.xml
+    pip install pytest pytest-azurepipelines
+    pytest
   displayName: 'pytest'
-
-- task: PublishTestResults@2
-  inputs:
-    testResultsFiles: '**/test-results.xml'
-    testRunTitle: 'Python $(python.version)'
-  condition: succeededOrFailed()
-  displayName: 'Publish test results'
