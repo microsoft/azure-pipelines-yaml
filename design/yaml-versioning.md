@@ -26,6 +26,11 @@ Under unified pipelines, it has grown to become a consumable/deployable resource
 The more common scenario will be triggering a pipeline when a new container image appears, so triggers should be enabled by default.
 This would be a breaking change, so existing customers will need to signal their readiness.
 
+* `trigger` covered only CI triggers.
+When we introduced PR triggers, we made a parallel `pr` structure.
+We're about to introduce `schedule` as another parallel structure.
+This has confused and frustrated customers, so we want to clean up the syntax.
+
 ## Industry landscape
 
 ### Unversioned YAML
@@ -66,7 +71,46 @@ Instead, it lists only the breaking changes we'll make now.
 * Remove `queue`. This includes all the nodes which moved under `strategy`.
 * Remove Git-LFS, shallow fetch, and other non-core properties from `repository`. These are now handled by `checkout`.
 * Remove sequence form of `resources`. This is completely handled by the current mapping form.
+* Remove `pr` and `schedule` nodes. (See [trigger changes](#trigger-changes) for their replacements.)
 * (Tentative) Remove `$[ ]` syntax, as we're planning to make `${{ }}` execute just-in-time.
+
+#### Trigger changes
+`trigger` becomes a parent of all `self`-repo triggers.
+CI keywords, which used to be directly under `trigger`, now live under a sub-entry called `ci`.
+`pr` and `schedule`, which used to be pipeline-level, also live under `trigger`.
+Example:
+```yaml
+# old way
+trigger:
+  branches:
+  - master
+  - features/*
+pr:
+  branches:
+    include:
+    - master
+    - releases/*
+
+# new way
+trigger:
+  ci:
+    branches:
+    - master
+    - features/*
+  pr:
+    branches:
+      include:
+      - master
+      - releases/*
+```
+
+`trigger: none` disables all triggers.
+Each trigger category (PR, CI, and Schedule) can be disabled independently:
+```yaml
+trigger:
+  pr: none
+  ci: ...
+```
 
 #### Behavior changes
 * `repository` and `container` gain triggers by default. Users must suppress them using `trigger: none` if they don't want trigger behavior.
