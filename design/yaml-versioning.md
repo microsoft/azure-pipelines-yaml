@@ -80,7 +80,7 @@ CI keywords, which used to be directly under `trigger`, now live under a sub-ent
 `pr` and `schedule`, which used to be pipeline-level, also live under `trigger`.
 Example:
 ```yaml
-# old way
+# version 1 - old way
 trigger:
   branches:
   - master
@@ -91,7 +91,7 @@ pr:
     - master
     - releases/*
 
-# new way
+# version 2 - new way
 trigger:
   push:
     branches:
@@ -109,7 +109,7 @@ Each trigger category (PR, CI, and Schedule) can be disabled independently:
 ```yaml
 trigger:
   pr: none
-  ci: ...
+  push: ...
 ```
 
 These changes also apply to `resource` triggers.
