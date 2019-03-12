@@ -16,7 +16,7 @@ variables:
   # Update Azure.ResourceGroupName value with Azure resource group name.
   Azure.ResourceGroupName: '{{#toAlphaNumericString repositoryName 50}}{{/toAlphaNumericString}}'
 
-  # Update Azure.ServiceConnectionId value with AzureRm service endpoint.
+  # Azure.ServiceConnectionId value with AzureRm service endpoint.
   Azure.ServiceConnectionId: '{{ azureServiceConnectionId }}'
 
   # Update Azure.Location value with Azure Location.
@@ -31,19 +31,19 @@ variables:
   # Docker Container port
   Container.Port: 5000
 
-  #Kubernetes Environment Id
+  # Kubernetes Environment Id
   Environment.Id: '{{environment.Id}}'
 
-  #Kubernetes Environment Name
+  # Kubernetes Environment Name
   Environment.Name: '{{environment.Name}}'
 
-  #Kubernetes Service Endpoint Id
+  # Kubernetes Service Endpoint Id
   Kubernetes.ServiceConnectionId: '{{ kubernetesConnectionId.endpointId }}'
 
-  #Docker Image Name
+  # Docker Image Name
   Image.Name: '{{ imageName }}'
 
-  #Service Port
+  # Service Port
   Service.Port: '{{ servicePort }}'
 
   # ========================================================================
