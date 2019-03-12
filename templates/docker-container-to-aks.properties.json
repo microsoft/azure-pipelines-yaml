@@ -2,6 +2,10 @@
   "iconName": "aks",
   "parameters": [ 
     { "name" : "azureServiceConnectionId", "type": "connectedService:azureRM", "required": "true" },
-    { "name" : "repositoryName", "type": "string", "required": "true" }
+    { "name" : "repositoryName", "type": "string", "required": "true" },
+    { "name" : "kubernetesConnectionId", "type": "create:azureKubernetesEndpoint", "required": "true"},
+    { "name" : "environment", "type" : "create:azureKubernetesEnvironment", "required": "true"},
+    { "name" : "imageName", "type" : "string", "required": "true"},
+    { "name" : "servicePort", "type" : "string", "required": "true"}
   ]
 }
