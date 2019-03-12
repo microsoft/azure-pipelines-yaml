@@ -20,7 +20,7 @@ parameters:
   displayName: string   # UI string
   displayHint: enum     # see below
   type: enum            # data type; see below
-  default: any          # default value if nothing specified
+  default: any          # default value; if no default, then the parameter MUST be given by the user at runtime
   values: [ string ]    # allowed list of values (for some data types)
 ```
 
