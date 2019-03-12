@@ -45,26 +45,26 @@ This has confused and frustrated customers, so we want to clean up the syntax.
 ## Solution
 
 We introduce a new field, `version`, which lives at the root level of the pipeline.
-It's an integer whose valid values are (currently) only `0` and `1`.
+It's an integer whose valid values are (currently) only `1` and `2`.
 Any other number is a syntax error.
-If not present, the value is assumed to be `0` (unless included in a [template; see below](#templates)).
+If not present, the value is assumed to be `1` (unless included in a [template; see below](#templates)).
 
 We'll continue our commitment to backcompat within a single version.
 Whatever version is currently in active development will grow new features over time.
 Down-level versions will continue to be supported for the foreseeable future, though we reserve the right to remove versions eventually.
 
-### Version 0
-Version 0 is the current set of syntax, back-compat warts and all.
-No behavior changes are expected, and we'll freeze this version when v1 ships.
-No new features will land in v0.
-
 ### Version 1
-Version 1 becomes our active development version.
+Version 1 is the current set of syntax, back-compat warts and all.
+No behavior changes are expected, and we'll freeze this version when v2 ships.
+No new features will land in v1.
+
+### Version 2
+Version 2 becomes our active development version.
 This spec doesn't attempt to list all the new things it will gain, since that's not predictable.
 Instead, it lists only the breaking changes we'll make now.
 
 #### Additions
-* `version: 1` must be specified at the root of the pipeline.
+* `version: 2` must be specified at the root of the pipeline.
 
 #### Removals
 * Remove `phases`/`phase`. This became `jobs`/`job` with minimal other changes.
@@ -119,8 +119,8 @@ These changes also apply to `resource` triggers.
 * ...
 
 #### Syntax strictness
-* `repository` and `container` allow arbitrary properties today. In v1, we will fix the set of properties that are allowed and error if unknown properties are passed.
-* `task` inputs are arbitrary. In v1, only valid inputs (and aliases of inputs) will be accepted.
+* `repository` and `container` allow arbitrary properties today. In v2, we will fix the set of properties that are allowed and error if unknown properties are passed.
+* `task` inputs are arbitrary. In v2, only valid inputs (and aliases of inputs) will be accepted.
 * ...
 
 #### Still under discussion
@@ -149,6 +149,13 @@ foo:
 - string
 ```
 which some people feel is "more YAMLy".
+* Identify YAML features which we don't support, but that the spec allows, and directly reject their syntax.
+For example, this isn't valid YAML:
+```yaml
+branches:
+- *
+```
+But it _is_ allowed by our v1 parser (it's identical to `branches: ['*']`).
 
 ### Templates
 
@@ -160,19 +167,19 @@ Examples:
 ```yaml
 ##### Legal - both have explicit versions #####
 # pipeline.yml
-version: 1
+version: 2
 steps:
 - template: steps.yml
 
 # steps.yml
-version: 1
+version: 2
 steps:
 - script: echo foo
 
 
 ##### Legal - child template doesn't specify version #####
 # pipeline.yml
-version: 0
+version: 1
 steps:
 - template: steps.yml
 
@@ -183,23 +190,23 @@ steps:
 
 ##### Illegal - mismatched versions #####
 # pipeline.yml
-version: 1
+version: 2
 steps:
 - template: steps.yml
 
 # steps.yml
-version: 0
+version: 1
 steps:
 - script: echo foo
 
 
-##### Illegal - parent has implied version 0 while child specifies version 1 #####
+##### Illegal - parent has implied version 1 while child specifies version 2 #####
 # pipeline.yml
 steps:
 - template: steps.yml
 
 # steps.yml
-version: 1
+version: 2
 steps:
 - script: echo foo
 ```
