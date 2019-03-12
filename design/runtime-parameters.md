@@ -118,15 +118,15 @@ parameters:
   default: x86,x64
 
 jobs:
-- ${{ if contains(parameters.configs, 'x86' }}:
+- ${{ if contains(parameters.configs, 'x86') }}:
   - job: x86
     steps:
     - script: echo Building x86...
-- ${{ if contains(parameters.configs, 'x64' }}:
+- ${{ if contains(parameters.configs, 'x64') }}:
   - job: x64
     steps:
     - script: echo Building x64...
-- ${{ if contains(parameters.configs, 'arm' }}:
+- ${{ if contains(parameters.configs, 'arm') }}:
   - job: arm
     steps:
     - script: echo Building arm...
