@@ -1,7 +1,7 @@
 {
   "iconName": "functionapp",
   "parameters": [
-    { "name" : "azureServiceConnectionId", "type": "connectedService:azureRM", "required": "true", "displayName": "Azure Service Connection ID" },
-    { "name" : "repositoryName", "type": "string", "required": "true", "displayName": "Repository Name" }
+    { "name" : "azureServiceConnectionId", "type": "connectedService:azureRM", "required": "true", "displayName": "Azure subscription" },
+    { "name" : "repositoryName", "type": "string", "required": "true", "displayName": "Repository name" }
   ]
 }
