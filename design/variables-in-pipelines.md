@@ -1,4 +1,4 @@
-# Moving variables forward
+# Pipeline variables
 
 To bring Build and Release into one "unified pipelines" model, we need to evolve the variables we expose.
 The Build.\* and Release.\* variables no longer make sense.
@@ -13,7 +13,7 @@ Also, individual steps can include environment-only variables in the `env` state
 
 ## Problems
 * Build.\* and Release.\* variables aren't meaningful in unified pipelines.
-* There are many dozens of variables, some which are similar but not quite the same.
+* There are dozens of variables, some which are similar but not quite the same.
 We're wary of adding too many more, since we've run into technical limitations before (size of environment block on some systems).
 Having similar-but-different variables increases the burden on customers and task authors to understand the system.
 * Some tasks operate differently based on whether they're "running in build" vs "running in RM".
@@ -49,7 +49,7 @@ Necessary new variables:
 
 | New variable | Description | Special notes |
 |--------------|-------------|---------------|
-| CI | Set to "True" to match industry expectation for CI systems | Environment only, not available in expressions
+| CI | Set to "true" to match industry expectation for CI systems | Environment only, not available in expressions
 | AZURE_PIPELINES | Set to "True" to differentiate from other CI systems | Environment only, not available in expressions
 | Pipeline.Workspace | Root directory where all source, artifacts, etc will be placed
 | Pipeline.Run.Url | https:// URL to pipeline run | [requested](https://twitter.com/_a__w_/status/1102802095474827264)
@@ -96,8 +96,8 @@ In the designer, we give immediate feedback, and for YAML, we throw a YAML-compi
 For the designer, the compat mode flag is a UI checkbox.
 Newly created pipelines will default to having compat mode off.
 
-For YAML, it's a `version: 1` keyword at the root level of the file.
-YAML v1 may also introduce other breaking changes; those need to be documented elsewhere.
+For YAML, it's a `version: 2` keyword at the root level of the file.
+YAML v2 may also introduce other breaking changes; those are [documented elsewhere](https://github.com/Microsoft/azure-pipelines-yaml/pull/92).
 
 ## Variable scope
 
