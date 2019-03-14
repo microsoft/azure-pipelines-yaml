@@ -134,6 +134,25 @@ steps:
 - condition: failed()
   script: echo Executes only if failed
 ```
+* Our list of `jobs` implies an ordering, but it's actually a graph. Today, you write:
+```yaml
+jobs:
+- job: foo
+  displayName: Foo!
+- job: bar
+  displayName: Bar?
+```
+but a more correct representation would be:
+```yaml
+jobs:
+  foo:
+    displayName: Foo!
+  bar:
+    displayName: Bar?
+```
+We would _not_ do the same for stages.
+Stages are run consecutively by default, which the sequence order makes clear.
+We would have to resolve how `deployment` jobs look in this new syntax.
 * Multiline strings: occassionally there places where we expect multiline string inputs (for example, path specifiers on artifact tasks). Today you must use:
 ```yaml
 foo: |
