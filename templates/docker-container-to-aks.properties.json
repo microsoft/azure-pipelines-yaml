@@ -6,6 +6,8 @@
     { "name" : "kubernetesConnectionId", "type": "create:azureKubernetesEndpoint", "required": "true"},
     { "name" : "environment", "type" : "create:azureKubernetesEnvironment", "required": "true"},
     { "name" : "imageName", "type" : "string", "required": "true"},
-    { "name" : "servicePort", "type" : "string", "required": "true"}
+    { "name" : "servicePort", "type" : "string", "required": "true"},
+    { "name" : "k8sResource", "type" : "environment:kubernetesResource", "required": "true"},
+    { "name" : "containerRegistry", "type" : "create:azureContainerRegistryEndpoint", "required" : "true"}
   ]
 }

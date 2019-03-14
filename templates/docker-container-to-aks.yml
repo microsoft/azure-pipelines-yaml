@@ -26,19 +26,21 @@ variables:
   ACR.Name: '{{#toAlphaNumericString repositoryName 46}}{{/toAlphaNumericString}}{{#shortGuid}}{{/shortGuid}}'
 
   # Update AKS.ClusterName value Azure kubernetes cluster name.
-  AKS.ClusterName: '{{#toAlphaNumericString repositoryName 32}}{{/toAlphaNumericString}}'
+  AKS.ClusterName: '{{ kubernetesConnectionId.clusterName }}'
 
   # Docker Container port
   Container.Port: 5000
 
-  # Kubernetes Environment Id
-  Environment.Id: '{{environment.Id}}'
-
   # Kubernetes Environment Name
   Environment.Name: '{{environment.Name}}'
+  Environment.k8sResource.Name: "{{k8sResource.Name}}"
+  Environment.k8sResource.Namespace: "{{k8sResource.Namespace}}"
 
   # Kubernetes Service Endpoint Id
   Kubernetes.ServiceConnectionId: '{{ kubernetesConnectionId.endpointId }}'
+
+  # ContainerRegistry ServiceConnection created during pipeline creation - Docker Hub/ACR...
+  ContainerRegistry.ServiceConnection: '{{ containerRegistry.endpointId }}'
 
   # Docker Image Name
   Image.Name: '{{ imageName }}'
