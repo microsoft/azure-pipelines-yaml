@@ -34,8 +34,9 @@ We will be introducing a new a `job` type called `deployment`, that can understa
   environment: production    # create environment and/or record deployments
   strategy:                  # runOnce/blue green/rolling/canary, with lifecycle hooks viz, pre/post healthcheck, swap etc
     runOnce:                 # default strategy
-      steps:       
-      - script: echo deploy web pkg
+      deploy:
+        steps:       
+        - script: echo deploy web pkg
 ```
 
 **Note**:
@@ -64,8 +65,9 @@ jobs:
     name: sh-prod-pool
   strategy:                 
     runOnce:            
-      steps:       
-      - script: kubectl apply ...                        
+      deploy:
+        steps:       
+        - script: kubectl apply ...                        
 ```
 
 Now that the smarthotel-prod has the **kubernetes namespace** linked, you can trace the deployments upto the namespace. 
@@ -84,16 +86,18 @@ jobs:
     name: sh-prod-pool
   strategy:                 
     runOnce:            
-      steps:       
-      - script: kubectl apply ... 
+      deploy: 
+        steps:       
+        - script: kubectl apply ... 
 - deployment: deployDB
   environment: smarthotel-prod.smarthotel-db       # smarthotel-db is the Azure SQL DB that is linked
   pool:
     name: sh-prod-pool
   strategy:                 
-    runOnce:            
-      steps:       
-      - script: kubectl apply ... 
+    runOnce:
+      deploy: 
+        steps:       
+        - script: kubectl apply ... 
 ```
 
 ## Future (discussion only)
@@ -122,32 +126,28 @@ jobs:
   environment: smarthotel-prod.smarthotel-web
   strategy:                 
     blueGreen:              
-      steps:
-      - script: echo deploy web app...
+      deploy: 
+        steps:
+        - script: echo deploy web app...
       
-    preHealthChecks:                                    
-      timeout: 60m
-      steps:          
-      - task: appInsightsAlerts  
+      routeTraffic:
+        delay: 60m
+        steps:
+        - script: echo swap slots...
 
-    routeTraffic:
-      delay: 60m
-      steps:
-      - script: echo swap slots...
+      postRouteTrafficChecks:
+        timeout: 60m
+        samplingInterval: 5m
+        steps:          
+        - task: appInsightsAlerts     
 
-    postHealthChecks:
-      timeout: 60m
-      samplingInterval: 5m
-      steps:          
-      - task: appInsightsAlerts     
+      onFailure:
+        steps:
+        - script: echo swap slots back...
 
-    onFailure:
-      steps:
-      - script: echo swap slots back...
-
-    onPass:
-      steps:
-      - script: echo checks passed...
+      onSuccess:
+        steps:
+        - script: echo checks passed...
 
 ```
 
