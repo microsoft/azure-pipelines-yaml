@@ -54,7 +54,7 @@ It will download artifacts uploaded from a previous job, stage, or from another 
 Listing just the unique properties of the `download` step:
 ```yaml
 - download: string - the pipeline to download from (`current` or a resource id) or the word `none`
-  artifact: string - the specific artifact; optional unless `path` specified
+  artifact: string - the specific artifact; optional
   patterns: string - minimatch patterns of files to grab from the artifact(s); defaults to **/*
 ```
 
@@ -133,8 +133,8 @@ If present, it's a newline-separated list of minimatch patterns for what files t
 
 ```yaml
 - download: string # pipeline ID, `current`, or `none`; required
-  artifact: string # identifier for the artifact to download; optional unless `path` is specified
-  patterns: string # a minimatch path or list of [minimatch paths](tasks/file-matching-patterns.md) to download; if blank, the entire artifact is downloaded
+  artifact: string # identifier for the artifact to download; optional 
+  patterns: string # a minimatch pattern or list of [minimatch patterns](tasks/file-matching-patterns.md) to download; if blank, the entire artifact is downloaded
   
   # these are common to all steps
   displayName: string # friendly name displayed in the UI
