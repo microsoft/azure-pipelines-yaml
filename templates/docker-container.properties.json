@@ -1,6 +1,6 @@
 {
   "iconName": "docker",
   "parameters": [
-    { "name":"dockerfilePath", "type":"string", "required":"true", "displayName":"Dockerfile", "defaultValue":"Dockerfile" }
+    { "name":"dockerfilePath", "type":"string", "required":"false", "displayName":"Dockerfile", "defaultValue":"Dockerfile" }
   ]
 }
