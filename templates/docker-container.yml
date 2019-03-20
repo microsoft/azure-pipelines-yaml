@@ -14,5 +14,5 @@ variables:
   dockerfile: '{{ dockerfilePath }}'
 
 steps:
-- script: docker build -f $(dockerfilePath) -t $(imageName) .
+- script: docker build -f $(dockerfile) -t $(imageName) .
   displayName: 'docker build'
