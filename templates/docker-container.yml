@@ -11,7 +11,8 @@ pool:
 
 variables:
   imageName: 'your-container-image-name:$(build.buildId)'
+  dockerfile: '{{ dockerfilePath }}'
 
 steps:
-- script: docker build -f Dockerfile -t $(imageName) .
+- script: docker build -f $(dockerfilePath) -t $(imageName) .
   displayName: 'docker build'
