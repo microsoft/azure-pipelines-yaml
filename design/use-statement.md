@@ -150,7 +150,7 @@ Tasks which implement this contract can expect a service connection at runtime.
 It's up to the resource provider to convert other forms of auth (such as a raw username + password) into a service connection.
 Tasks must accept an array of inputs, though often the array will only contain 1 entry.
 
-For more details about how auth will be set up for various package types, see [here](use-statement-auth.md).
+For more details about how auth will be set up for various package types, see [here](artifacts-in-pipelines.md).
 
 ### Problem matchers
 
