@@ -58,9 +58,12 @@ this precludes using authenticated feeds from scripting languages and task runne
 is not compatible with the YAML build tenet of using scripts wherever possible and only using tasks
 when advanced features/workflows are required.
 
-### Other things we want to include
+## Problems: proxies
 
-- Proxy setup: The agent knows about its proxy; the tasks don't always pass that along to client tooling.
+The agent knows about its proxy; the tasks don't always pass that along to client tooling.
+
+## Other problems
+
 - Problem matchers: If the Python compiler emits errors in a known format, we should be able to read that via regex and surface it in our UI. VS Code has a defined format for problem matchers.
 
 ## Solution
@@ -132,10 +135,8 @@ steps:
 
 It is recommended to check in a configuration file showing which feeds are required.
 If this file is checked in but not in the root of the repo, a path can be provided.
-If no path is provided and no file is checked in, a standard configuration file will
-be generated with the feeds/service connections listed. This covers scenarios where
-project admins have instead chosen to have each dev manually connect to their private
-feed (e.g. by using the NuGet Package Manager settings dialog in Visual Studio).
+If no path is provided and no file is checked in, a standard configuration file will be generated with the feeds/service connections listed and placed at the root of the repo.
+This covers scenarios where project admins have instead chosen to have each dev manually connect to their private feed (e.g. by using the NuGet Package Manager settings dialog in Visual Studio).
 
 ```yaml
 steps:
@@ -148,6 +149,8 @@ steps:
 Tasks which implement this contract can expect a service connection at runtime.
 It's up to the resource provider to convert other forms of auth (such as a raw username + password) into a service connection.
 Tasks must accept an array of inputs, though often the array will only contain 1 entry.
+
+For more details about how auth will be set up for various package types, see [here](use-statement-auth.md).
 
 ### Problem matchers
 
