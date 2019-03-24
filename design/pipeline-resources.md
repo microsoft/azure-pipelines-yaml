@@ -73,7 +73,7 @@ All artifacts from the current pipeline and from all `pipeline` resources are au
 - job: deploy_windows_x86_agent
   steps:
   - download: SmartHotel   # pipeline resource identifier.
-    name: WebTier1  # artifact to download, optional; defaults to all the artifacts from the resource.
+    artifact: WebTier1  # artifact to download, optional; defaults to all the artifacts from the resource.
     patterns: '**/*.zip'  # mini match pattern to download specific files, optional; defaults to all files.
 ```
 
@@ -125,7 +125,7 @@ All artifacts from the defined `build` resources are automatically downloaded an
 
 ```yaml
 - downloadBuild: string # identifier for the resource from which to download artifacts
-  name: string # identifier for the artifact to download; if left blank, downloads all artifacts associated with the resource provided
+  artifact: string # identifier for the artifact to download; if left blank, downloads all artifacts associated with the resource provided
   patterns: string | [ string ] # a minimatch path or list of [minimatch paths](tasks/file-matching-patterns.md) to download; if blank, the entire artifact is downloaded
   root: string # the directory in which to download files, defaults to $PIPELINES_RESOURCESDIR
 ```
