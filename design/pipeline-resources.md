@@ -136,7 +136,7 @@ All artifacts from the defined `build` resources are automatically downloaded an
 - job: deploy_windows_x86_agent
   steps:
   - downloadBuild: Spaceworkz   # build resource identifier.
-    name: WebTier1  # artifact to download, optional; defaults to all the artifacts from the resource.
+    artifact: WebTier1  # artifact to download, optional; defaults to all the artifacts from the resource.
     patterns: '**/*.zip'  # mini match pattern to download specific files, optional; defaults to all files.
 ```
 
