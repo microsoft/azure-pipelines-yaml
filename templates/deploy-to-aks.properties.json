@@ -1,0 +1,21 @@
+{
+  "iconName": "aks",
+  "parameters": [
+    {
+      "name": "kubernetesConnection",
+      "type": "endpoint:kubernetes",
+      "required": "true"
+    },
+    {
+      "name": "environment",
+      "type": "environment:kubernetes",
+      "required": "true"
+    },
+    {
+      "name": "servicePort",
+      "type": "string",
+      "required": "true",
+      "displayName": "Service Port"
+    }
+  ]
+}
