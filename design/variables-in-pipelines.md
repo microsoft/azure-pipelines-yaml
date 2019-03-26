@@ -54,6 +54,7 @@ Necessary new variables:
 | Pipeline.Workspace | Root directory where all source, artifacts, etc will be placed
 | Pipeline.Run.Url | https:// URL to pipeline run | [requested](https://twitter.com/_a__w_/status/1102802095474827264)
 | Pipeline.Url | https:// URL to pipeline definition
+| Pipeline.JobDisplayName | Matches what's in the UI
 | _TODO_
 
 ### New namespace for variables
