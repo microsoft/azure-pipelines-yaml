@@ -31,16 +31,14 @@ steps:
     key: |
       package.json
       yarn.lock
-    paths: |
-      node_modules
+    path: node_modules
 - script: yarn
 - task: SaveCache@0
   inputs:
     key: |
       package.json
       yarn.lock
-    paths: |
-      node_modules
+    path: node_modules
 - script: yarn build
 ```
 
@@ -89,8 +87,7 @@ steps:
     key: |
       package.json
       yarn.lock
-    paths: |
-      node_modules
+    path: node_modules
 ```
 
 ### YAML syntax
@@ -103,7 +100,7 @@ steps:
 - script: yarn
 - saveCache:
   key: yarn.lock
-  paths: node_modules
+  path: node_modules
 - script: yarn build
 ```
 
@@ -127,11 +124,11 @@ Note that the ```use:``` syntax will inject the cache save step at the end of th
 
 ### Cache Scoping
 
-Getting scoping right is important for maximising cache hits and but also avoiding the cache becoming an attack vector to insert malicous code into official/master builds.
+Getting scoping right is important for maximising cache hits and but also avoiding the cache becoming an attack vector to insert malicous code into official/master builds. A cache scope will be defined by the pipeline ID, the Git repos and refs that are being built and any other special considerations - such as whether the build is for a particular pull request. For regular builds on a branch (non PR scenario) a single scope will be used and the job will have read/write access to this scope.
 
-As a result we will automatically scope caches to the branch that they are running against. The caches will also be hierarchical so a feature branch will be able to get a hit on the master, but when populating the cache in the ```saveCache:``` step, the contents of that cache won't be used on the master build.
+For PR builds it is a little bit more complex because we want the PR build to be able to use the scope for the source or target branch of it is available. So i nthe PR scenario the job will have access to three scopes, one that represents the target branch, one that represents the source branch (these will both be R/O) and a third which represents the PR specifically. The PR scope will be tried first, then the source branch and then the target branch. In general topic-branch workflows the first build on a PR branch will be a cache miss on PR scope, the source branch will also likely be a miss but the third scope should be a hit (the target branch). The reason for these precedence rules is to allow for the most specific cache to be used.
 
-For PR builds, the PR build will use the cache of the branch it is merging into or from with preference been given to the branch it is merging from. At this stage, PR builds, regardless of whether they are from a branch within the repo or from a forked clone will not be able to store content in the cache.
+When saving the cache, the entry will only be associated with one scope. The task will attempt to save the cache against the entries in precedence order. It is expected though that the first entry in the precendence list will have read/write access.
 
 ### Cache Expiry
 
