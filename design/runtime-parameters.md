@@ -3,6 +3,7 @@
 We need a way to take run-time inputs, giving pipeline authors the right amount of control / expressivity.
 YAML pipelines already accept parameters when used as part of a template.
 Runtime parameters are a natural evolution of that syntax.
+Along the way, we can also augment the capabilities of template parameters in a natural way.
 
 Scenarios:
 - Pipeline users can supply different values to tools and tasks at run time
@@ -44,7 +45,7 @@ When a user's pipeline consumes a template, we can offer IntelliSense for the na
 
 ## Data types
 
-Available data types:
+### Data types for runtime parameters
 
 | Data type | Notes |
 |-----------|-------|
@@ -59,9 +60,11 @@ Available data types:
 | `serviceConnection`
 | `environment`
 
+### Data types for template parameters
+
 It's also useful to tighten up the editor experience and error messages for template parameters.
 Customers are already using templates to pass along step and job lists.
-These aren't very useful for run-time parameters: it's unclear how a user would be expected to set them.
+These aren't particularly useful for run-time parameters.
 They're rendered like a plain `object` in the UI.
 
 | YAML string type | Notes |
