@@ -11,23 +11,23 @@ resources:
 variables:
 
   # Container registry service connection established during pipeline creation - Docker Hub/ACR/...
-  DockerRegistry.ServiceConnection: ''
+  dockerRegistryServiceConnection: ''
+  imageRepository: ''
+  containerRegistryName: ''
 
-  Image.Repository: ''
-  
-  Dockerfile.Path: '**/Dockerfile'
-
-  AKS.ClusterName: '{{ kubernetesConnection.clusterName }}'
+  dockerfilePath: '**/Dockerfile'
 
   # Kubernetes Environment
-  Environment.Name: '{{ environment.Name }}'
-  Environment.k8sResource.Name: "{{ environment.resource.Name }}"
+  environmentName: '{{ environment.Name }}'
+  k8sResourceName: "{{ environment.resource.Name }}"
+  k8sResourceNamespace: "{{ environment.resource.Namespace }}"
 
   # Kubernetes Service Endpoint Id
-  Kubernetes.ServiceConnectionId: '{{ kubernetesConnection.endpointId }}'
+  kubernetesServiceConnectionId: '{{ kubernetesConnection.endpointId }}'
 
   # Docker Image Name
-  Image.Name: '{{ imageName }}'
+  imageName: '{{ imageName }}'
+  
 
 stages:
 - stage: Build
@@ -40,9 +40,9 @@ stages:
       displayName: Build and push an image to container registry
       inputs:
         command: buildAndPush
-        repository: $(Image.Repository)
-        dockerfile: $(Dockerfile.Path)
-        containerRegistry: $(DockerRegistry.ServiceConnection)
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
 
 - stage: Deploy
   displayName: Deploy stage
@@ -50,7 +50,7 @@ stages:
   jobs:
   - deployment: Deploy to Kubernetes
     displayName: Deploy job
-    environment: $(Environment.Name).$(Environment.k8sResource.Name)
+    environment: $(environmentName).$(k8sResourceName)
     strategy:
       runOnce:
         deploy:
@@ -59,14 +59,15 @@ stages:
             displayName: 'kubectl create imagepullsecret docker-auth'
             inputs:
               containerRegistryType: 'Container Registry'
-              dockerRegistryEndpoint: $(DockerRegistry.ServiceConnection)
+              dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
               secretName: 'docker-auth'
               
           - task: KubernetesManifest@0
             displayName: Deploy to Kubernetes cluster
             inputs:
               action: deploy
+              namespace: $(k8sResourceNamespace)
               manifests: |
                 manifests/*
               containers: |
-                $(ContainerRegistry.Name)/$(Image.Repository)
+                $(containerRegistryName)/$(imageRepository)
