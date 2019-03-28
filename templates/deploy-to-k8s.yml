@@ -21,7 +21,7 @@ variables:
   AKS.ClusterName: '{{ kubernetesConnectionId.clusterName }}'
 
   # Docker Container port
-  Container.Port: 5000
+  Container.Port: '{{ servicePort }}'
 
   # Kubernetes Environment
   Environment.Name: '{{ environment.Name }}'
