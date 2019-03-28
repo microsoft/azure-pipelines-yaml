@@ -25,7 +25,7 @@
         }
     ],
     "fileAssets": [
-        "deployment.yml",
-        "service.yml"
+        "k8s/deployment.yml",
+        "k8s/service.yml"
     ]
 }
