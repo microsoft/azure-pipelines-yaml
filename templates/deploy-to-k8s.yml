@@ -1,0 +1,79 @@
+# Deploy to Kubernetes
+# Build a Docker image, push to an Azure Container Registry, and deploy it to Azure Kubernetes Service.
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- master
+
+resources:
+- repo: self
+
+variables:
+
+  # Container registry service connection established during pipeline creation - Docker Hub/ACR/...
+  ContainerRegistry.ServiceConnection: ''
+
+  Image.Repository: ''
+  
+  Dockerfile.Path: '{{ DockerfilePath }}'
+
+  AKS.ClusterName: '{{ kubernetesConnection.clusterName }}'
+
+  # Docker Container port
+  Container.Port: '{{ servicePort }}'
+
+  # Kubernetes Environment
+  Environment.Name: '{{ environment.Name }}'
+  Environment.k8sResource.Name: "{{ environment.resource.Name }}"
+
+  # Kubernetes Service Endpoint Id
+  Kubernetes.ServiceConnectionId: '{{ kubernetesConnection.endpointId }}'
+
+  # Docker Image Name
+  Image.Name: '{{ imageName }}'
+
+  # Service Port
+  Service.Port: '{{ servicePort }}'
+
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:  
+  - job: Build
+    displayName: Build job
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(Image.Repository)
+        Dockerfile: $(Dockerfile.Path)
+        containerRegistries: |
+          $(ContainerRegistry.ServiceConnection)
+
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: Build
+  jobs:
+  - deployment: Deploy to Kubernetes
+    displayName: Deploy job
+    environment: $(Environment.Name).$(Environment.k8sResource.Name)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: Kubernetes@2
+            displayName: 'kubectl create imagepullsecret docker-auth'
+            inputs:
+              containerRegistryType: 'Container Registry'
+              dockerRegistryEndpoint: $(ContainerRegistry.ServiceConnection)
+              secretName: 'docker-auth'
+              
+          - task: KubernetesManifest@0
+            displayName: Deploy to Kubernetes cluster
+            inputs:
+              action: deploy
+              manifests: |
+                manifests/*
+              containers: |
+                $(ContainerRegistry.Name)/$(Image.Repository)
