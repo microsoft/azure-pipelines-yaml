@@ -95,12 +95,11 @@ If you have any external CI build system that produces artifacts, you can consum
 resources:        # types: pipelines | builds | repositories | containers | packages
   builds:
   - build: string   # identifier for the build resource
-    type: enum   # the type of your build service like jenkins, circleCI etc.
+    type: string   # the type of your build service like Jenkins, circleCI etc.
     connection: string   # service connection for your build service.
     source: string   # source definition of the build
     version: string   # the build number to pick the artifact, defaults to Latest successful build
     branch: string   # branch to pick the artifact; defaults to master branch
-    tag: string  # picks the artifacts from the build with given tag.
 ```
 
 ### Examples
@@ -127,7 +126,7 @@ All artifacts from the defined `build` resources are automatically downloaded an
 - downloadBuild: string # identifier for the resource from which to download artifacts
   artifact: string # identifier for the artifact to download; if left blank, downloads all artifacts associated with the resource provided
   patterns: string | [ string ] # a minimatch path or list of [minimatch paths](tasks/file-matching-patterns.md) to download; if blank, the entire artifact is downloaded
-  root: string # the directory in which to download files, defaults to $PIPELINES_RESOURCESDIR
+  path: string # the directory in which to download files, defaults to $PIPELINE_WORKSPACE
 ```
 
 ### Examples
@@ -146,7 +145,7 @@ Or to avoid downloading any of the artifacts at all:
 - downloadBuild: none
 ```
 
-Artifacts from the `build` resource are downloaded to `$PIPELINES_RESOURCESDIR/<build-identifier>/<artifact-identifier>` folder.
+Artifacts from the `build` resource are downloaded to `$PIPELINE_WORKSPACE/<build-identifier>/` folder.
 
 ## Resources: `repositories`
 
