@@ -12,6 +12,12 @@
       "required": "true"
     },
     {
+      "name": "imageName",
+      "type": "string",
+      "required": "true",
+      "displayName": "Image Name"
+    },
+    {
       "name": "servicePort",
       "type": "string",
       "required": "true",
