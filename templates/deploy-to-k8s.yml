@@ -11,11 +11,11 @@ resources:
 variables:
 
   # Container registry service connection established during pipeline creation - Docker Hub/ACR/...
-  ContainerRegistry.ServiceConnection: ''
+  DockerRegistry.ServiceConnection: ''
 
   Image.Repository: ''
   
-  Dockerfile.Path: '{{ DockerfilePath }}'
+  Dockerfile.Path: '**/Dockerfile'
 
   AKS.ClusterName: '{{ kubernetesConnection.clusterName }}'
 
@@ -41,9 +41,8 @@ stages:
       inputs:
         command: buildAndPush
         repository: $(Image.Repository)
-        Dockerfile: $(Dockerfile.Path)
-        containerRegistries: |
-          $(ContainerRegistry.ServiceConnection)
+        dockerfile: $(Dockerfile.Path)
+        containerRegistry: $(DockerRegistry.ServiceConnection)
 
 - stage: Deploy
   displayName: Deploy stage
@@ -60,7 +59,7 @@ stages:
             displayName: 'kubectl create imagepullsecret docker-auth'
             inputs:
               containerRegistryType: 'Container Registry'
-              dockerRegistryEndpoint: $(ContainerRegistry.ServiceConnection)
+              dockerRegistryEndpoint: $(DockerRegistry.ServiceConnection)
               secretName: 'docker-auth'
               
           - task: KubernetesManifest@0

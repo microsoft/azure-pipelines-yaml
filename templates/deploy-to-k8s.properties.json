@@ -24,8 +24,14 @@
             "displayName": "Service Port"
         }
     ],
-    "fileAssets": [
-        "k8s/deployment.yml",
-        "k8s/service.yml"
+    "assets": [
+        {
+            "type": "file",
+            "path": "k8s/deployment.yml"
+        },
+        {
+            "type": "file",
+            "path": "k8s/service.yml"
+        }
     ]
 }
