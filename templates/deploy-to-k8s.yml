@@ -19,9 +19,6 @@ variables:
 
   AKS.ClusterName: '{{ kubernetesConnection.clusterName }}'
 
-  # Docker Container port
-  Container.Port: '{{ servicePort }}'
-
   # Kubernetes Environment
   Environment.Name: '{{ environment.Name }}'
   Environment.k8sResource.Name: "{{ environment.resource.Name }}"
@@ -31,9 +28,6 @@ variables:
 
   # Docker Image Name
   Image.Name: '{{ imageName }}'
-
-  # Service Port
-  Service.Port: '{{ servicePort }}'
 
 stages:
 - stage: Build

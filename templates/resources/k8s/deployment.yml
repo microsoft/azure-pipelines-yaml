@@ -1,0 +1,16 @@
+apiVersion : apps/v1beta1
+kind: Deployment
+metadata:
+  name: {{}} # Data would be extracted from docker registry endpoint
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{}} # Data would be extracted from docker registry endpoint
+    spec:
+      containers:
+        - name: {{}} # Data would be extracted from docker registry endpoint
+          image: {{}}/{{ imageName }} # Data would be extracted from docker registry endpoint
+          ports:
+          - containerPort: {{ servicePort }}

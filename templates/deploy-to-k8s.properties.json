@@ -23,5 +23,9 @@
             "required": "true",
             "displayName": "Service Port"
         }
+    ],
+    "fileAssets": [
+        "deployment.yml",
+        "service.yml"
     ]
 }
