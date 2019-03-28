@@ -150,9 +150,10 @@ steps:
 - script: echo Building on the pool of your choice
 ```
 
-### Connecting parameters with strong typing
+### Connecting template parameters with strong typing
 
 This is common for sophisticated customers such as .NET.
+_Note: this isn't about runtime and UI-specified parameters as such, but it's an important capability of parameters._
 
 ```yaml
 # template.yml - comes from the centralized infrastructure team
