@@ -1,0 +1,37 @@
+{
+    "iconName": "k8s",
+    "parameters": [
+        {
+            "name": "kubernetesConnection",
+            "type": "endpoint:kubernetes",
+            "required": "true"
+        },
+        {
+            "name": "environment",
+            "type": "environment:kubernetes",
+            "required": "true"
+        },
+        {
+            "name": "imageName",
+            "type": "string",
+            "required": "true",
+            "displayName": "Image Name"
+        },
+        {
+            "name": "servicePort",
+            "type": "string",
+            "required": "true",
+            "displayName": "Service Port"
+        }
+    ],
+    "assets": [
+        {
+            "type": "file",
+            "path": "k8s/deployment.yml"
+        },
+        {
+            "type": "file",
+            "path": "k8s/service.yml"
+        }
+    ]
+}

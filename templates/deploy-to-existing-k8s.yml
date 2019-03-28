@@ -1,0 +1,73 @@
+# Deploy to Kubernetes
+# Build a Docker image, push to an Azure Container Registry, and deploy it to Azure Kubernetes Service.
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- master
+
+resources:
+- repo: self
+
+variables:
+
+  # Container registry service connection established during pipeline creation - Docker Hub/ACR/...
+  dockerRegistryServiceConnection: ''
+  imageRepository: ''
+  containerRegistryName: ''
+
+  dockerfilePath: '**/Dockerfile'
+
+  # Kubernetes Environment
+  environmentName: '{{ environment.Name }}'
+  k8sResourceName: "{{ environment.resource.Name }}"
+  k8sResourceNamespace: "{{ environment.resource.Namespace }}"
+
+  # Kubernetes Service Endpoint Id
+  kubernetesServiceConnectionId: '{{ kubernetesConnection.endpointId }}'
+
+  # Docker Image Name
+  imageName: '{{ imageName }}'
+  
+
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:  
+  - job: Build
+    displayName: Build job
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: Build
+  jobs:
+  - deployment: Deploy to Kubernetes
+    displayName: Deploy job
+    environment: $(environmentName).$(k8sResourceName)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: Kubernetes@2
+            displayName: 'kubectl create imagepullsecret docker-auth'
+            inputs:
+              containerRegistryType: 'Container Registry'
+              dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+              secretName: 'docker-auth'
+              
+          - task: KubernetesManifest@0
+            displayName: Deploy to Kubernetes cluster
+            inputs:
+              action: deploy
+              namespace: $(k8sResourceNamespace)
+              manifests: |
+                manifests/*
+              containers: |
+                $(containerRegistryName)/$(imageRepository)
