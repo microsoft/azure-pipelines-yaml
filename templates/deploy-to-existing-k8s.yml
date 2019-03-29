@@ -11,9 +11,9 @@ resources:
 variables:
 
   # Container registry service connection established during pipeline creation - Docker Hub/ACR/...
-  dockerRegistryServiceConnection: ''
-  imageRepository: ''
-  containerRegistryName: ''
+  dockerRegistryServiceConnection: '{{ containerRegistryConnection }}'
+  imageRepository: '{{ containerRegistryConnection }}'
+  containerRegistryName: '{{ containerRegistryConnection }}'
 
   dockerfilePath: '**/Dockerfile'
 

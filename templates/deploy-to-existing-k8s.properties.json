@@ -8,7 +8,12 @@
         },
         {
             "name": "environment",
-            "type": "environment:kubernetes",
+            "type": "environment",
+            "required": "true"
+        },
+        {
+            "name": "containerRegistryConnection",
+            "type": "endpoint:containerRegistry",
             "required": "true"
         },
         {
