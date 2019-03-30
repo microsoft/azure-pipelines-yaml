@@ -12,10 +12,11 @@ steps:
     mkdir -p library
   displayName: 'Add writeable library folder for packages'
 
-- script: Rscript -e 'install.packages("devtools", repos = "http://cran.us.r-project.org", lib="$(System.DefaultWorkingDirectory)/library")'
-  displayName: 'Install a package'
+- script: | 
+    Rscript -e 'install.packages("devtools", repos = "http://cran.us.r-project.org", lib="$(System.DefaultWorkingDirectory)/library")'
+    Rscript -e 'library("devtools", lib.loc="$(System.DefaultWorkingDirectory)/library")'
+  displayName: 'Install and check package'
 
 - script: |
-    Rscript -e 'library("devtools")'
     Rscript -e 'print("hi")'
   displayName: 'Run R expression'
