@@ -3,29 +3,19 @@
 pool:
   vmImage: 'ubuntu-16.04'
 
+container: 
+  image: 'rocker/r-base:latest'
+  
 steps:
-- script: sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9 
-  displayName: 'Add CRAN security key'
+- script: |
+    cd $(System.DefaultWorkingDirectory)
+    mkdir -p library
+  displayName: 'Add writeable library folder for packages'
 
-- script: echo "deb http://cran.r-project.org/bin/linux/ubuntu xenial/" | sudo tee -a /etc/apt/sources.list
-  displayName: 'Add CRAN repo'
-
-- script: sudo apt-get update
-  displayName: 'Update packages'
-
-- script: sudo apt-get install r-base
-  displayName: 'Install R'
-
-- script: sudo apt-get install r-base-dev
-  displayName: 'Install R dev for compiling packages if needed'
+- script: Rscript -e 'install.packages("devtools", repos = "http://cran.us.r-project.org", lib="$(System.DefaultWorkingDirectory)/library")'
+  displayName: 'Install a package'
 
 - script: |
-    cd /usr/local/lib/R
-    sudo chmod o+w site-library
-  displayName: 'Change permissions for package installs'
-
-- script: Rscript -e 'install.packages("devtools", repos = "http://cran.us.r-project.org")'
-  displayName: 'Install devtools'
-
-- script: Rscript -e 'print("hi")'
+    Rscript -e 'library("devtools")'
+    Rscript -e 'print("hi")'
   displayName: 'Run R expression'
