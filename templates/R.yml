@@ -7,16 +7,5 @@ container:
   image: 'rocker/r-base:latest'
   
 steps:
-- script: |
-    cd $(System.DefaultWorkingDirectory)
-    mkdir -p library
-  displayName: 'Add writeable library folder for packages'
-
-- script: | 
-    Rscript -e 'install.packages("devtools", repos = "http://cran.us.r-project.org", lib="$(System.DefaultWorkingDirectory)/library")'
-    Rscript -e 'library("devtools", lib.loc="$(System.DefaultWorkingDirectory)/library")'
-  displayName: 'Install and check package'
-
-- script: |
-    Rscript -e 'print("hi")'
+- script: Rscript -e 'print("hello world")'
   displayName: 'Run R expression'
