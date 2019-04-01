@@ -31,3 +31,5 @@ steps:
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+
+- upload: '**/bin/{$buildConfiguration}'

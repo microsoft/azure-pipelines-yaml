@@ -30,3 +30,5 @@ steps:
     configuration: 'Release'
     buildForSimulator: true
     packageApp: false
+
+- upload:

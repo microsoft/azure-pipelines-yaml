@@ -19,3 +19,5 @@ steps:
     npm install
     gulp default --gulpfile gulpfile.js
   displayName: 'npm install and run gulp'
+
+- upload:

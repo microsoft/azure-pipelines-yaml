@@ -19,3 +19,5 @@ steps:
     npm install
     grunt --gruntfile Gruntfile.js
   displayName: 'npm install and run grunt'
+
+- upload:
