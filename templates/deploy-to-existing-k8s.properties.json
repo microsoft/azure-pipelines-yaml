@@ -7,7 +7,7 @@
             "required": "true"
         },
         {
-            "name": "environmentContext",
+            "name": "environment",
             "type": "environment",
             "required": "true"
         },
