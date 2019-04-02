@@ -22,10 +22,7 @@ variables:
   k8sResourceName: "{{ environment.Resources.kubernetesConnection.Name }}"
   k8sResourceNamespace: "{{ environment.Resources.kubernetesConnection.Namespace }}"
 
-  # Kubernetes Service Endpoint Id
-  kubernetesServiceConnectionId: '{{ kubernetesConnection.Id }}'
-
-  # Docker Image Name
+    # Docker Image Name
   imageName: '{{ imageName }}'
   
 
