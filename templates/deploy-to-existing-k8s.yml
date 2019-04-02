@@ -68,7 +68,7 @@ stages:
             inputs:
               action: bake
               helmChart: charts/sampleapp
-              overrides: "image.repository:$(imageRepository)/$(imageName)"
+              overrides: "image.repository:$(containerRegistryName).azurecr.io/$(imageName)"
 
           - task: KubernetesManifest@0
             displayName: deploy
