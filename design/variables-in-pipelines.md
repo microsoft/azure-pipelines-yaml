@@ -44,167 +44,167 @@ Guidance on what makes a "good" variable to include:
 #### Agent
 | Agent. | Example data | Keep, cut, or rename |
 |------------------|--------------|----------------------|
-| Agent.BuildDirectory | D:\a\1 |
-| Agent.DeploymentGroupId | 1 | _note: only in deployment group jobs_ |
-| Agent.Diagnostic | true | 
-| Agent.DisableLogPlugin.TestFilePublisherPlugin | true |
-| Agent.DisableLogPlugin.TestResultLogPlugin | true |
-| Agent.HomeDirectory | C:\agents\2.148.2 |
-| Agent.ID | 3 |
-| Agent.JobName | Job |
-| Agent.JobStatus | Succeeded | _note: cut the back-compat lower-cased version "agent.jobstatus"_ |
-| Agent.MachineName | fv-az379 |
-| Agent.Name | Hosted Agent |
-| Agent.OS | Windows_NT |
-| Agent.OSArchiecture | X64 |
-| Agent.ReleaseDirectory | D:\a\r1\a | _note: RM only_
-| Agent.RetainDefaultEncoding | false |
-| Agent.RootDirectory | D:\a |
-| Agent.ServerOMDirectory | C:\agents\2.148.2\externals\vstsom |
-| Agent.TempDirectory | D:\a\_temp |
-| Agent.ToolsDirectory | C:/hostedtoolcache/windows |
-| Agent.Version | 2.148.2 |
-| Agent.WorkFolder | D:\a |
+| .BuildDirectory | D:\a\1 |
+| .DeploymentGroupId | 1 | _note: only in deployment group jobs_ |
+| .Diagnostic | true | 
+| .DisableLogPlugin.TestFilePublisherPlugin | true |
+| .DisableLogPlugin.TestResultLogPlugin | true |
+| .HomeDirectory | C:\agents\2.148.2 |
+| .ID | 3 |
+| .JobName | Job |
+| .JobStatus | Succeeded | _note: cut the back-compat lower-cased version "agent.jobstatus"_ |
+| .MachineName | fv-az379 |
+| .Name | Hosted Agent |
+| .OS | Windows_NT |
+| .OSArchiecture | X64 |
+| .ReleaseDirectory | D:\a\r1\a | _note: RM only_
+| .RetainDefaultEncoding | false |
+| .RootDirectory | D:\a |
+| .ServerOMDirectory | C:\agents\2.148.2\externals\vstsom |
+| .TempDirectory | D:\a\_temp |
+| .ToolsDirectory | C:/hostedtoolcache/windows |
+| .Version | 2.148.2 |
+| .WorkFolder | D:\a |
 
 #### Build
 | Build. | Example data | Keep, cut, or rename |
 |------------------|--------------|----------------------|
-| Build.ArtifactStagingDirectory | D:\a\1\a |
-| Build.BinariesDirectory | D:\a\1\b |
-| Build.BuildID | 1174 |
-| Build.BuildNumber | 20190401.7 |
-| Build.BuildURI | vstfs:///Build/Build/1174 |
-| Build.Clean | true | **cut** (already deprecated) |
-| Build.ContainerID | 2713905 |
-| Build.DefinitionID | 14 | _note: set for RM with a build artifact_ |
-| Build.DefinitionName | playground |
-| Build.DefinitionVersion | 8 |
-| Build.QueuedBy | Microsoft.VisualStudio.Services.TFS |
-| Build.QueuedByID | 00000002-0000-8888-8000-000000000000 |
-| Build.ProjectID | 0807fc91-4393-482d-9e23-defdbb7d0857 | _note: set for RM with a build artifact_ |
-| Build.ProjectName | Test1 | _note: set for RM with a build artifact_ |
-| Build.Reason | IndividualCI |
-| Build.Repository.Clean | False |
-| Build.Repository.Git.SubmoduleCheckout | False |
-| Build.Repository.ID | 80ab696a-644c-497e-84fd-b1d98c470825 |
-| Build.Repository.LocalPath | D:\a\1\s |
-| Build.Repository.Name | container |
-| Build.Repository.Provider | TfsGit |
-| Build.Repository.Tfvc.Workspace | ws_12_8 | 
-| Build.Repository.URI | https://mattc-demo@dev.azure.com/mattc-demo/Test1/_git/container |
-| Build.RequestedFor | Matt Cooper |
-| Build.RequestedForEmail | macoope@microsoft.com |
-| Build.RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b |
-| Build.SourceTfvcShelveset | my_shelveset |
-| Build.SourceBranch | refs/heads/master |
-| Build.SourceBranchName | master |
-| Build.SourcesDirectory | D:\a\1\s |
-| Build.SourceVersion | 5d7a52ce5a6e5f3cd1a8d1ee36fd2dd3ae731121 |
-| Build.SourceVersionAuthor | Matt Cooper |
-| Build.SourceVersionMessage | printenv | sort |
-| Build.StagingDirectory | D:\a\1\a |
-| Build.TriggeredBy.BuildId | |
-| Build.TriggeredBy.DefinitionId | |
-| Build.TriggeredBy.DefinitionName | |
-| Build.TriggeredBy.BuildNumber | |
-| Build.TriggeredBy.ProjectID | |
-| Build.Type | Build | _note: set for RM with a build artifact_ |
+| .ArtifactStagingDirectory | D:\a\1\a |
+| .BinariesDirectory | D:\a\1\b |
+| .BuildID | 1174 |
+| .BuildNumber | 20190401.7 |
+| .BuildURI | vstfs:///Build/Build/1174 |
+| .Clean | true | **cut** (already deprecated) |
+| .ContainerID | 2713905 |
+| .DefinitionID | 14 | _note: set for RM with a build artifact_ |
+| .DefinitionName | playground |
+| .DefinitionVersion | 8 |
+| .QueuedBy | Microsoft.VisualStudio.Services.TFS |
+| .QueuedByID | 00000002-0000-8888-8000-000000000000 |
+| .ProjectID | 0807fc91-4393-482d-9e23-defdbb7d0857 | _note: set for RM with a build artifact_ |
+| .ProjectName | Test1 | _note: set for RM with a build artifact_ |
+| .Reason | IndividualCI |
+| .Repository.Clean | False |
+| .Repository.Git.SubmoduleCheckout | False |
+| .Repository.ID | 80ab696a-644c-497e-84fd-b1d98c470825 |
+| .Repository.LocalPath | D:\a\1\s |
+| .Repository.Name | container |
+| .Repository.Provider | TfsGit |
+| .Repository.Tfvc.Workspace | ws_12_8 | 
+| .Repository.URI | https://mattc-demo@dev.azure.com/mattc-demo/Test1/_git/container |
+| .RequestedFor | Matt Cooper |
+| .RequestedForEmail | macoope@microsoft.com |
+| .RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b |
+| .SourceTfvcShelveset | my_shelveset |
+| .SourceBranch | refs/heads/master |
+| .SourceBranchName | master |
+| .SourcesDirectory | D:\a\1\s |
+| .SourceVersion | 5d7a52ce5a6e5f3cd1a8d1ee36fd2dd3ae731121 |
+| .SourceVersionAuthor | Matt Cooper |
+| .SourceVersionMessage | printenv | sort |
+| .StagingDirectory | D:\a\1\a |
+| .TriggeredBy.BuildId | |
+| .TriggeredBy.DefinitionId | |
+| .TriggeredBy.DefinitionName | |
+| .TriggeredBy.BuildNumber | |
+| .TriggeredBy.ProjectID | |
+| .Type | Build | _note: set for RM with a build artifact_ |
 
 #### Release
 | Release. | Example data | Keep, cut, or rename |
 |------------------|--------------|----------------------|
-| Release.Artifacts.{artifact_id}.BuildID | 1174 |
-| Release.Artifacts.{artifact_id}.BuildNumber | 20190401.7 |
-| Release.Artifacts.{artifact_id}.BuildURI | vstfs:///Build/Build/1174 |
-| Release.Artifacts.{artifact_id}.DefinitionID | 14 |
-| Release.Artifacts.{artifact_id}.DefinitionName | playground |
-| Release.Artifacts.{artifact_id}.ProjectID | 0807fc91-4393-482d-9e23-defdbb7d0857 |
-| Release.Artifacts.{artifact_id}.ProjectName | Test1 |
-| Release.Artifacts.{artifact_id}.PullRequest.TargetBranch | refs/heads/master |
-| Release.Artifacts.{artifact_id}.PullRequest.TargetBranchName | master |
-| Release.Artifacts.{artifact_id}.Repository.ID | 80ab696a-644c-497e-84fd-b1d98c470825 |
-| Release.Artifacts.{artifact_id}.Repository.Name | container |
-| Release.Artifacts.{artifact_id}.Repository.Provider | TfsGit |
-| Release.Artifacts.{artifact_id}.RequestedFor | Matt Cooper |
-| Release.Artifacts.{artifact_id}.RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b |
-| Release.Artifacts.{artifact_id}.SourceBranch | refs/heads/master |
-| Release.Artifacts.{artifact_id}.SourceBranchName | master |
-| Release.Artifacts.{artifact_id}.SourceVersion | 5d7a52ce5a6e5f3cd1a8d1ee36fd2dd3ae731121 |
-| Release.Artifacts.{artifact_id}.Type | `Build`, `Jenkins`, `TeamCity`, `Git`, ... |
-| Release.AttemptNumber | 1 |
-| Release.DefinitionEnvironmentID | 2 |
-| Release.DefinitionID | 2 |
-| Release.DefinitionName | My Release Pipeline |
-| Release.DeploymentID | 3 |
-| Release.Deployment.RequestedFor | Matt Cooper |
-| Release.Deployment.RequestedForEmail | *** |
-| Release.Deployment.RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b |
-| Release.Deployment.StartTime | 2019-04-02 12:39:52Z |
-| Release.DeployPhaseID | 3 |
-| Release.EnvironmentID | 5 |
-| Release.EnvironmentName | My First Stage |
-| Release.Environments.{stage_name}.Status | InProgress |
-| Release.EnvironmentURI | vstfs:///ReleaseManagement/Environment/5 |
-| Release.PrimaryArtifactSourceAlias | _playground |
-| Release.Reason | Manual |
-| Release.ReleaseDescription |  |
-| Release.ReleaseID | 5 |
-| Release.ReleaseName | Release-2 |
-| Release.ReleaseURI | vstfs:///ReleaseManagement/Release/5 |
-| Release.ReleaseWebURL | https://dev.azure.com/mattc-demo/0807fc91-4393-482d-9e23-defdbb7d0857/_release?releaseId=5&_a=release-summary |
-| Release.RequestedFor | Matt Cooper |
-| Release.RequestedForEmail | *** |
-| Release.RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b |
-| Release.SkipArtifactsDownload | False |
-| Release.TriggeringArtifact.Alias |  |
+| .Artifacts.{artifact_id}.BuildID | 1174 |
+| .Artifacts.{artifact_id}.BuildNumber | 20190401.7 |
+| .Artifacts.{artifact_id}.BuildURI | vstfs:///Build/Build/1174 |
+| .Artifacts.{artifact_id}.DefinitionID | 14 |
+| .Artifacts.{artifact_id}.DefinitionName | playground |
+| .Artifacts.{artifact_id}.ProjectID | 0807fc91-4393-482d-9e23-defdbb7d0857 |
+| .Artifacts.{artifact_id}.ProjectName | Test1 |
+| .Artifacts.{artifact_id}.PullRequest.TargetBranch | refs/heads/master |
+| .Artifacts.{artifact_id}.PullRequest.TargetBranchName | master |
+| .Artifacts.{artifact_id}.Repository.ID | 80ab696a-644c-497e-84fd-b1d98c470825 |
+| .Artifacts.{artifact_id}.Repository.Name | container |
+| .Artifacts.{artifact_id}.Repository.Provider | TfsGit |
+| .Artifacts.{artifact_id}.RequestedFor | Matt Cooper |
+| .Artifacts.{artifact_id}.RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b |
+| .Artifacts.{artifact_id}.SourceBranch | refs/heads/master |
+| .Artifacts.{artifact_id}.SourceBranchName | master |
+| .Artifacts.{artifact_id}.SourceVersion | 5d7a52ce5a6e5f3cd1a8d1ee36fd2dd3ae731121 |
+| .Artifacts.{artifact_id}.Type | `Build`, `Jenkins`, `TeamCity`, `Git`, ... |
+| .AttemptNumber | 1 |
+| .DefinitionEnvironmentID | 2 |
+| .DefinitionID | 2 |
+| .DefinitionName | My Release Pipeline |
+| .DeploymentID | 3 |
+| .Deployment.RequestedFor | Matt Cooper |
+| .Deployment.RequestedForEmail | *** |
+| .Deployment.RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b |
+| .Deployment.StartTime | 2019-04-02 12:39:52Z |
+| .DeployPhaseID | 3 |
+| .EnvironmentID | 5 |
+| .EnvironmentName | My First Stage |
+| .Environments.{stage_name}.Status | InProgress |
+| .EnvironmentURI | vstfs:///ReleaseManagement/Environment/5 |
+| .PrimaryArtifactSourceAlias | _playground |
+| .Reason | Manual |
+| .ReleaseDescription |  |
+| .ReleaseID | 5 |
+| .ReleaseName | Release-2 |
+| .ReleaseURI | vstfs:///ReleaseManagement/Release/5 |
+| .ReleaseWebURL | https://dev.azure.com/mattc-demo/0807fc91-4393-482d-9e23-defdbb7d0857/_release?releaseId=5&_a=release-summary |
+| .RequestedFor | Matt Cooper |
+| .RequestedForEmail | *** |
+| .RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b |
+| .SkipArtifactsDownload | False |
+| .TriggeringArtifact.Alias |  |
 
 #### System
 | System. | Example data | Keep, cut, or rename |
 |------------------|--------------|----------------------|
-| System | `build`, `release` |
-| System.AccessToken | (access token) |
-| System.ArtifactsDirectory | D:\a\1\a |
-| System.CollectionID | bb420569-6e91-4163-ab87-1a5b192fd50c |
-| System.CollectionURI | https://dev.azure.com/mattc-demo/ |
-| System.Culture | en-US |
-| System.Debug | false |
-| System.DefaultWorkingDirectory | D:\a\1\s |
-| System.DefinitionID | 14 |
-| System.DefinitionName | playground |
-| System.EnableAccessToken | `SecretVariable`, `False` |
-| System.HostType | `build`, `release`, `deployment` |
-| System.IsScheduled | False |
-| System.JobAttempt | 1 |
-| System.JobDisplayName | Job |
-| System.JobID | 12f1170f-54f2-53f3-20dd-22fc7dff55f9 |
-| System.JobIdentifier | Job.__default |
-| System.JobName | __default |
-| System.JobParallelismTag | Public |
-| System.JobPositionInPhase | 1 |
-| System.ParallelExecutionType | None |
-| System.PhaseDisplayName | Job |
-| System.PhaseID | 3a3a2a60-14c7-570b-14a4-fa42ad92f52a |
-| System.PhaseName | Job |
-| System.PipelineStartTime | 2019-04-01 20:03:55+00:00 |
-| System.PlanID | 5e42ea59-b1aa-4240-88cf-a443c0ac38d7 |
-| System.PullRequest.IsFork | False |
-| System.PullRequest.PullRequestId | 17 | _note: only for Azure Repos?_
-| System.PullRequest.PullRequestNumber | | _note: only for GitHub?_
-| System.PullRequest.SourceBranch | refs/heads/users/raisa/new-feature |
-| System.PullRequest.SourceRepositoryURI | https://dev.azure.com/ouraccount/_git/OurProject |
-| System.PullRequest.TargetBranch | refs/heads/master |
-| System.ServerType | Hosted |
-| System.TaskDefinitionsURI | https://dev.azure.com/mattc-demo/ |
-| System.TaskDisplayName | Bash |
-| System.TaskInstanceId | efa2bfe1-554a-50c8-79b6-ef106ad3c7c2 |
-| System.TaskInstanceName | `Bash`, `04bff6ce5394c41b0c048826688170a` |
-| System.TeamFoundationCollectionURI | https://dev.azure.com/mattc-demo/ |
-| System.TeamFoundationServerURI | https://dev.azure.com/mattc-demo/ |
-| System.TeamProject | Test1 |
-| System.TeamProjectID | 0807fc91-4393-482d-9e23-defdbb7d0857 |
-| System.TimelineID | 5e42ea59-b1aa-4240-88cf-a443c0ac38d7 |
-| System.TotalJobsInPhase | 1 |
-| System.WorkFolder | D:\a |
+| System | `build`, `release` | _note: not System.System -- just `System`_
+| .AccessToken | (access token) |
+| .ArtifactsDirectory | D:\a\1\a |
+| .CollectionID | bb420569-6e91-4163-ab87-1a5b192fd50c |
+| .CollectionURI | https://dev.azure.com/mattc-demo/ |
+| .Culture | en-US |
+| .Debug | false |
+| .DefaultWorkingDirectory | D:\a\1\s |
+| .DefinitionID | 14 |
+| .DefinitionName | playground |
+| .EnableAccessToken | `SecretVariable`, `False` |
+| .HostType | `build`, `release`, `deployment` |
+| .IsScheduled | False |
+| .JobAttempt | 1 |
+| .JobDisplayName | Job |
+| .JobID | 12f1170f-54f2-53f3-20dd-22fc7dff55f9 |
+| .JobIdentifier | Job.__default |
+| .JobName | __default |
+| .JobParallelismTag | Public |
+| .JobPositionInPhase | 1 |
+| .ParallelExecutionType | None |
+| .PhaseDisplayName | Job |
+| .PhaseID | 3a3a2a60-14c7-570b-14a4-fa42ad92f52a |
+| .PhaseName | Job |
+| .PipelineStartTime | 2019-04-01 20:03:55+00:00 |
+| .PlanID | 5e42ea59-b1aa-4240-88cf-a443c0ac38d7 |
+| .PullRequest.IsFork | False |
+| .PullRequest.PullRequestId | 17 | _note: only for Azure Repos?_
+| .PullRequest.PullRequestNumber | | _note: only for GitHub?_
+| .PullRequest.SourceBranch | refs/heads/users/raisa/new-feature |
+| .PullRequest.SourceRepositoryURI | https://dev.azure.com/ouraccount/_git/OurProject |
+| .PullRequest.TargetBranch | refs/heads/master |
+| .ServerType | Hosted |
+| .TaskDefinitionsURI | https://dev.azure.com/mattc-demo/ |
+| .TaskDisplayName | Bash |
+| .TaskInstanceId | efa2bfe1-554a-50c8-79b6-ef106ad3c7c2 |
+| .TaskInstanceName | `Bash`, `04bff6ce5394c41b0c048826688170a` |
+| .TeamFoundationCollectionURI | https://dev.azure.com/mattc-demo/ |
+| .TeamFoundationServerURI | https://dev.azure.com/mattc-demo/ |
+| .TeamProject | Test1 |
+| .TeamProjectID | 0807fc91-4393-482d-9e23-defdbb7d0857 |
+| .TimelineID | 5e42ea59-b1aa-4240-88cf-a443c0ac38d7 |
+| .TotalJobsInPhase | 1 |
+| .WorkFolder | D:\a |
 
 #### Misc
 | Variable | Example data | Keep, cut, or rename |
