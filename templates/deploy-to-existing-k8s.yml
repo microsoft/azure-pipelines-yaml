@@ -18,9 +18,9 @@ variables:
   dockerfilePath: '**/Dockerfile'
 
   # Kubernetes Environment
-  environmentName: '{{ environment.environment.Name }}'
-  k8sResourceName: "{{ environment.resources.kubernetesConnection.Name }}"
-  k8sResourceNamespace: "{{ kubernetesConnection.Data.namespace }}"
+  environmentName: '{{ environment.Environment.Name }}'
+  k8sResourceName: "{{ environment.Resources.kubernetesConnection.Name }}"
+  k8sResourceNamespace: "{{ environment.Resources.kubernetesConnection.Namespace }}"
 
   # Kubernetes Service Endpoint Id
   kubernetesServiceConnectionId: '{{ kubernetesConnection.Id }}'
