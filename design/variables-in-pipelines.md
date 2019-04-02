@@ -44,6 +44,8 @@ Existing variables:
 | Current variable | Example data | Keep, cut, or rename |
 |------------------|--------------|----------------------|
 | Agent.BuildDirectory | D:\a\1 |
+| Agent.DeploymentGroupId | 1 | _note: only in deployment group jobs_ |
+| Agent.Diagnostic | true | 
 | Agent.DisableLogPlugin.TestFilePublisherPlugin | true |
 | Agent.DisableLogPlugin.TestResultLogPlugin | true |
 | Agent.HomeDirectory | C:\agents\2.148.2 |
@@ -67,6 +69,7 @@ Existing variables:
 | Build.BuildID | 1174 |
 | Build.BuildNumber | 20190401.7 |
 | Build.BuildURI | vstfs:///Build/Build/1174 |
+| Build.Clean | true | **cut** (already deprecated) |
 | Build.ContainerID | 2713905 |
 | Build.DefinitionID | 14 | _note: set for RM with a build artifact_ |
 | Build.DefinitionName | playground |
@@ -82,10 +85,12 @@ Existing variables:
 | Build.Repository.LocalPath | D:\a\1\s |
 | Build.Repository.Name | container |
 | Build.Repository.Provider | TfsGit |
+| Build.Repository.Tfvc.Workspace | ws_12_8 | 
 | Build.Repository.URI | https://mattc-demo@dev.azure.com/mattc-demo/Test1/_git/container |
 | Build.RequestedFor | Matt Cooper |
 | Build.RequestedForEmail | macoope@microsoft.com |
 | Build.RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b |
+| Build.SourceTfvcShelveset | my_shelveset |
 | Build.SourceBranch | refs/heads/master |
 | Build.SourceBranchName | master |
 | Build.SourcesDirectory | D:\a\1\s |
@@ -93,6 +98,11 @@ Existing variables:
 | Build.SourceVersionAuthor | Matt Cooper |
 | Build.SourceVersionMessage | printenv | sort |
 | Build.StagingDirectory | D:\a\1\a |
+| Build.TriggeredBy.BuildId | |
+| Build.TriggeredBy.DefinitionId | |
+| Build.TriggeredBy.DefinitionName | |
+| Build.TriggeredBy.BuildNumber | |
+| Build.TriggeredBy.ProjectID | |
 | Build.Type | Build | _note: set for RM with a build artifact_ |
 | Common.TestResultsDirectory | D:\a\1\TestResults |
 | Endpoint.URL.SystemVSSConnection | https://dev.azure.com/mattc-demo/ |
@@ -103,6 +113,8 @@ Existing variables:
 | Release.Artifacts.{artifact_id}.DefinitionName | playground |
 | Release.Artifacts.{artifact_id}.ProjectID | 0807fc91-4393-482d-9e23-defdbb7d0857 |
 | Release.Artifacts.{artifact_id}.ProjectName | Test1 |
+| Release.Artifacts.{artifact_id}.PullRequest.TargetBranch | refs/heads/master |
+| Release.Artifacts.{artifact_id}.PullRequest.TargetBranchName | master |
 | Release.Artifacts.{artifact_id}.Repository.ID | 80ab696a-644c-497e-84fd-b1d98c470825 |
 | Release.Artifacts.{artifact_id}.Repository.Name | container |
 | Release.Artifacts.{artifact_id}.Repository.Provider | TfsGit |
@@ -111,7 +123,7 @@ Existing variables:
 | Release.Artifacts.{artifact_id}.SourceBranch | refs/heads/master |
 | Release.Artifacts.{artifact_id}.SourceBranchName | master |
 | Release.Artifacts.{artifact_id}.SourceVersion | 5d7a52ce5a6e5f3cd1a8d1ee36fd2dd3ae731121 |
-| Release.Artifacts.{artifact_id}.Type | Build |
+| Release.Artifacts.{artifact_id}.Type | `Build`, `Jenkins`, `TeamCity`, `Git`, ... |
 | Release.AttemptNumber | 1 |
 | Release.DefinitionEnvironmentID | 2 |
 | Release.DefinitionID | 2 |
@@ -140,6 +152,7 @@ Existing variables:
 | Release.TriggeringArtifact.Alias |  |
 | RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b |
 | System | `build`, `release` |
+| System.AccessToken | (access token) |
 | System.ArtifactsDirectory | D:\a\1\a |
 | System.CollectionID | bb420569-6e91-4163-ab87-1a5b192fd50c |
 | System.CollectionURI | https://dev.azure.com/mattc-demo/ |
@@ -149,7 +162,7 @@ Existing variables:
 | System.DefinitionID | 14 |
 | System.DefinitionName | playground |
 | System.EnableAccessToken | `SecretVariable`, `False` |
-| System.HostType | `build`, `release` |
+| System.HostType | `build`, `release`, `deployment` |
 | System.IsScheduled | False |
 | System.JobAttempt | 1 |
 | System.JobDisplayName | Job |
@@ -165,6 +178,11 @@ Existing variables:
 | System.PipelineStartTime | 2019-04-01 20:03:55+00:00 |
 | System.PlanID | 5e42ea59-b1aa-4240-88cf-a443c0ac38d7 |
 | System.PullRequest.IsFork | False |
+| System.PullRequest.PullRequestId | 17 | _note: only for Azure Repos?_
+| System.PullRequest.PullRequestNumber | | _note: only for GitHub?_
+| System.PullRequest.SourceBranch | refs/heads/users/raisa/new-feature |
+| System.PullRequest.SourceRepositoryURI | https://dev.azure.com/ouraccount/_git/OurProject |
+| System.PullRequest.TargetBranch | refs/heads/master |
 | System.ServerType | Hosted |
 | System.TaskDefinitionsURI | https://dev.azure.com/mattc-demo/ |
 | System.TaskDisplayName | Bash |
