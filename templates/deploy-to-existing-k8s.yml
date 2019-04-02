@@ -40,7 +40,7 @@ stages:
       displayName: Build and push an image to container registry
       inputs:
         command: buildAndPush
-        repository: $(imageRepository)
+        repository: $(imageName)
         dockerfile: $(dockerfilePath)
         containerRegistry: $(dockerRegistryServiceConnection)
 
@@ -63,13 +63,17 @@ stages:
               secretName: 'docker-auth'
               
           - task: KubernetesManifest@0
-            displayName: Deploy to Kubernetes cluster
+            name: bake
+            displayName: bake
             inputs:
-              action: deploy
-              namespace: $(k8sResourceNamespace)
-              manifests: |
-                manifests/*
-              imagePullSecrets: |
-                docker-auth
+              action: bake
+              helmChart: charts/sampleapp
+              overrides: "image.repository:$(imageRepository)/$(imageName)"
+
+          - task: KubernetesManifest@0
+            displayName: deploy
+            inputs:
+              kubernetesServiceConnection: 'desattir-aks'
+              manifests: '$(bake.manifestsBundle)'
               containers: |
-                $(containerRegistryName)/$(imageRepository)
+                $(imageRepository)/$(imageName):$(Build.BuildId)
