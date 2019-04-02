@@ -76,4 +76,4 @@ stages:
               kubernetesServiceConnection: 'desattir-aks'
               manifests: '$(bake.manifestsBundle)'
               containers: |
-                $(imageRepository)/$(imageName):$(Build.BuildId)
+                $(containerRegistryName).azurecr.io/$(imageName):$(Build.BuildId)
