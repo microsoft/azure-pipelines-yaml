@@ -203,11 +203,13 @@ Necessary new variables:
 | New variable | Description | Special notes |
 |--------------|-------------|---------------|
 | CI | Set to "true" to match industry expectation for CI systems | Environment only, not available in expressions
-| AZURE_PIPELINES | Set to "True" to differentiate from other CI systems | Environment only, not available in expressions
+| Pipeline.Provider | Set to "Azure" to differentiate from other CI systems
 | Pipeline.Workspace | Root directory where all source, artifacts, etc will be placed
 | Pipeline.Run.Url | https:// URL to pipeline run | [requested](https://twitter.com/_a__w_/status/1102802095474827264)
 | Pipeline.Url | https:// URL to pipeline definition
 | Pipeline.JobDisplayName | Matches what's in the UI
+| ... | Commit hash of target branch
+| ... | Merge commit
 | _TODO_
 
 ### New namespace for variables
