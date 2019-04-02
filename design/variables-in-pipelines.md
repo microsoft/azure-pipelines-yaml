@@ -49,11 +49,12 @@ Existing variables:
 | Agent.HomeDirectory | C:\agents\2.148.2 |
 | Agent.ID | 3 |
 | Agent.JobName | Job |
-| Agent.JobStatus | Succeeded | _Note: cut the back-compat lower-cased version "agent.jobstatus"_ |
+| Agent.JobStatus | Succeeded | _note: cut the back-compat lower-cased version "agent.jobstatus"_ |
 | Agent.MachineName | fv-az379 |
 | Agent.Name | Hosted Agent |
 | Agent.OS | Windows_NT |
 | Agent.OSArchiecture | X64 |
+| Agent.ReleaseDirectory | D:\a\r1\a | _note: RM only_
 | Agent.RetainDefaultEncoding | false |
 | Agent.RootDirectory | D:\a |
 | Agent.ServerOMDirectory | C:\agents\2.148.2\externals\vstsom |
@@ -67,10 +68,13 @@ Existing variables:
 | Build.BuildNumber | 20190401.7 |
 | Build.BuildURI | vstfs:///Build/Build/1174 |
 | Build.ContainerID | 2713905 |
+| Build.DefinitionID | 14 | _note: set for RM with a build artifact_ |
 | Build.DefinitionName | playground |
 | Build.DefinitionVersion | 8 |
 | Build.QueuedBy | Microsoft.VisualStudio.Services.TFS |
 | Build.QueuedByID | 00000002-0000-8888-8000-000000000000 |
+| Build.ProjectID | 0807fc91-4393-482d-9e23-defdbb7d0857 | _note: set for RM with a build artifact_ |
+| Build.ProjectName | Test1 | _note: set for RM with a build artifact_ |
 | Build.Reason | IndividualCI |
 | Build.Repository.Clean | False |
 | Build.Repository.Git.SubmoduleCheckout | False |
@@ -89,9 +93,53 @@ Existing variables:
 | Build.SourceVersionAuthor | Matt Cooper |
 | Build.SourceVersionMessage | printenv | sort |
 | Build.StagingDirectory | D:\a\1\a |
+| Build.Type | Build | _note: set for RM with a build artifact_ |
 | Common.TestResultsDirectory | D:\a\1\TestResults |
 | Endpoint.URL.SystemVSSConnection | https://dev.azure.com/mattc-demo/ |
-| System | build |
+| Release.Artifacts.{artifact_id}.BuildID | 1174 |
+| Release.Artifacts.{artifact_id}.BuildNumber | 20190401.7 |
+| Release.Artifacts.{artifact_id}.BuildURI | vstfs:///Build/Build/1174 |
+| Release.Artifacts.{artifact_id}.DefinitionID | 14 |
+| Release.Artifacts.{artifact_id}.DefinitionName | playground |
+| Release.Artifacts.{artifact_id}.ProjectID | 0807fc91-4393-482d-9e23-defdbb7d0857 |
+| Release.Artifacts.{artifact_id}.ProjectName | Test1 |
+| Release.Artifacts.{artifact_id}.Repository.ID | 80ab696a-644c-497e-84fd-b1d98c470825 |
+| Release.Artifacts.{artifact_id}.Repository.Name | container |
+| Release.Artifacts.{artifact_id}.Repository.Provider | TfsGit |
+| Release.Artifacts.{artifact_id}.RequestedFor | Matt Cooper |
+| Release.Artifacts.{artifact_id}.RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b |
+| Release.Artifacts.{artifact_id}.SourceBranch | refs/heads/master |
+| Release.Artifacts.{artifact_id}.SourceBranchName | master |
+| Release.Artifacts.{artifact_id}.SourceVersion | 5d7a52ce5a6e5f3cd1a8d1ee36fd2dd3ae731121 |
+| Release.Artifacts.{artifact_id}.Type | Build |
+| Release.AttemptNumber | 1 |
+| Release.DefinitionEnvironmentID | 2 |
+| Release.DefinitionID | 2 |
+| Release.DefinitionName | My Release Pipeline |
+| Release.DeploymentID | 3 |
+| Release.Deployment.RequestedFor | Matt Cooper |
+| Release.Deployment.RequestedForEmail | *** |
+| Release.Deployment.RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b |
+| Release.Deployment.StartTime | 2019-04-02 12:39:52Z |
+| Release.DeployPhaseID | 3 |
+| Release.EnvironmentID | 5 |
+| Release.EnvironmentName | My First Stage |
+| Release.Environments.{stage_name}.Status | InProgress |
+| Release.EnvironmentURI | vstfs:///ReleaseManagement/Environment/5 |
+| Release.PrimaryArtifactSourceAlias | _playground |
+| Release.Reason | Manual |
+| Release.ReleaseDescription |  |
+| Release.ReleaseID | 5 |
+| Release.ReleaseName | Release-2 |
+| Release.ReleaseURI | vstfs:///ReleaseManagement/Release/5 |
+| Release.ReleaseWebURL | https://dev.azure.com/mattc-demo/0807fc91-4393-482d-9e23-defdbb7d0857/_release?releaseId=5&_a=release-summary |
+| Release.RequestedFor | Matt Cooper |
+| Release.RequestedForEmail | *** |
+| Release.RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b |
+| Release.SkipArtifactsDownload | False |
+| Release.TriggeringArtifact.Alias |  |
+| RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b |
+| System | `build`, `release` |
 | System.ArtifactsDirectory | D:\a\1\a |
 | System.CollectionID | bb420569-6e91-4163-ab87-1a5b192fd50c |
 | System.CollectionURI | https://dev.azure.com/mattc-demo/ |
@@ -100,8 +148,8 @@ Existing variables:
 | System.DefaultWorkingDirectory | D:\a\1\s |
 | System.DefinitionID | 14 |
 | System.DefinitionName | playground |
-| System.EnableAccessToken | SecretVariable |
-| System.HostType | build |
+| System.EnableAccessToken | `SecretVariable`, `False` |
+| System.HostType | `build`, `release` |
 | System.IsScheduled | False |
 | System.JobAttempt | 1 |
 | System.JobDisplayName | Job |
@@ -109,6 +157,8 @@ Existing variables:
 | System.JobIdentifier | Job.__default |
 | System.JobName | __default |
 | System.JobParallelismTag | Public |
+| System.JobPositionInPhase | 1 |
+| System.ParallelExecutionType | None |
 | System.PhaseDisplayName | Job |
 | System.PhaseID | 3a3a2a60-14c7-570b-14a4-fa42ad92f52a |
 | System.PhaseName | Job |
@@ -119,12 +169,13 @@ Existing variables:
 | System.TaskDefinitionsURI | https://dev.azure.com/mattc-demo/ |
 | System.TaskDisplayName | Bash |
 | System.TaskInstanceId | efa2bfe1-554a-50c8-79b6-ef106ad3c7c2 |
-| System.TaskInstanceName | Bash |
+| System.TaskInstanceName | `Bash`, `04bff6ce5394c41b0c048826688170a` |
 | System.TeamFoundationCollectionURI | https://dev.azure.com/mattc-demo/ |
 | System.TeamFoundationServerURI | https://dev.azure.com/mattc-demo/ |
 | System.TeamProject | Test1 |
 | System.TeamProjectID | 0807fc91-4393-482d-9e23-defdbb7d0857 |
 | System.TimelineID | 5e42ea59-b1aa-4240-88cf-a443c0ac38d7 |
+| System.TotalJobsInPhase | 1 |
 | System.WorkFolder | D:\a |
 | Task.DisplayName | Bash |
 | TF_BUILD | True |
