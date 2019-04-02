@@ -41,9 +41,93 @@ Guidance on what makes a "good" variable to include:
 
 Existing variables:
 
-| Current variable | Keep, cut, or rename |
-|------------------|----------------------|
-| _TODO_
+| Current variable | Example data | Keep, cut, or rename |
+|------------------|--------------|----------------------|
+| Agent.BuildDirectory | D:\a\1 |
+| Agent.DisableLogPlugin.TestFilePublisherPlugin | true |
+| Agent.DisableLogPlugin.TestResultLogPlugin | true |
+| Agent.HomeDirectory | C:\agents\2.148.2 |
+| Agent.ID | 3 |
+| Agent.JobName | Job |
+| Agent.JobStatus | Succeeded | _Note: cut the back-compat lower-cased version "agent.jobstatus"_ |
+| Agent.MachineName | fv-az379 |
+| Agent.Name | Hosted Agent |
+| Agent.OS | Windows_NT |
+| Agent.OSArchiecture | X64 |
+| Agent.RetainDefaultEncoding | false |
+| Agent.RootDirectory | D:\a |
+| Agent.ServerOMDirectory | C:\agents\2.148.2\externals\vstsom |
+| Agent.TempDirectory | D:\a\_temp |
+| Agent.ToolsDirectory | C:/hostedtoolcache/windows |
+| Agent.Version | 2.148.2 |
+| Agent.WorkFolder | D:\a |
+| Build.ArtifactStagingDirectory | D:\a\1\a |
+| Build.BinariesDirectory | D:\a\1\b |
+| Build.BuildID | 1174 |
+| Build.BuildNumber | 20190401.7 |
+| Build.BuildURI | vstfs:///Build/Build/1174 |
+| Build.ContainerID | 2713905 |
+| Build.DefinitionName | playground |
+| Build.DefinitionVersion | 8 |
+| Build.QueuedBy | Microsoft.VisualStudio.Services.TFS |
+| Build.QueuedByID | 00000002-0000-8888-8000-000000000000 |
+| Build.Reason | IndividualCI |
+| Build.Repository.Clean | False |
+| Build.Repository.Git.SubmoduleCheckout | False |
+| Build.Repository.ID | 80ab696a-644c-497e-84fd-b1d98c470825 |
+| Build.Repository.LocalPath | D:\a\1\s |
+| Build.Repository.Name | container |
+| Build.Repository.Provider | TfsGit |
+| Build.Repository.URI | https://mattc-demo@dev.azure.com/mattc-demo/Test1/_git/container |
+| Build.RequestedFor | Matt Cooper |
+| Build.RequestedForEmail | macoope@microsoft.com |
+| Build.RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b |
+| Build.SourceBranch | refs/heads/master |
+| Build.SourceBranchName | master |
+| Build.SourcesDirectory | D:\a\1\s |
+| Build.SourceVersion | 5d7a52ce5a6e5f3cd1a8d1ee36fd2dd3ae731121 |
+| Build.SourceVersionAuthor | Matt Cooper |
+| Build.SourceVersionMessage | printenv | sort |
+| Build.StagingDirectory | D:\a\1\a |
+| Common.TestResultsDirectory | D:\a\1\TestResults |
+| Endpoint.URL.SystemVSSConnection | https://dev.azure.com/mattc-demo/ |
+| System | build |
+| System.ArtifactsDirectory | D:\a\1\a |
+| System.CollectionID | bb420569-6e91-4163-ab87-1a5b192fd50c |
+| System.CollectionURI | https://dev.azure.com/mattc-demo/ |
+| System.Culture | en-US |
+| System.Debug | false |
+| System.DefaultWorkingDirectory | D:\a\1\s |
+| System.DefinitionID | 14 |
+| System.DefinitionName | playground |
+| System.EnableAccessToken | SecretVariable |
+| System.HostType | build |
+| System.IsScheduled | False |
+| System.JobAttempt | 1 |
+| System.JobDisplayName | Job |
+| System.JobID | 12f1170f-54f2-53f3-20dd-22fc7dff55f9 |
+| System.JobIdentifier | Job.__default |
+| System.JobName | __default |
+| System.JobParallelismTag | Public |
+| System.PhaseDisplayName | Job |
+| System.PhaseID | 3a3a2a60-14c7-570b-14a4-fa42ad92f52a |
+| System.PhaseName | Job |
+| System.PipelineStartTime | 2019-04-01 20:03:55+00:00 |
+| System.PlanID | 5e42ea59-b1aa-4240-88cf-a443c0ac38d7 |
+| System.PullRequest.IsFork | False |
+| System.ServerType | Hosted |
+| System.TaskDefinitionsURI | https://dev.azure.com/mattc-demo/ |
+| System.TaskDisplayName | Bash |
+| System.TaskInstanceId | efa2bfe1-554a-50c8-79b6-ef106ad3c7c2 |
+| System.TaskInstanceName | Bash |
+| System.TeamFoundationCollectionURI | https://dev.azure.com/mattc-demo/ |
+| System.TeamFoundationServerURI | https://dev.azure.com/mattc-demo/ |
+| System.TeamProject | Test1 |
+| System.TeamProjectID | 0807fc91-4393-482d-9e23-defdbb7d0857 |
+| System.TimelineID | 5e42ea59-b1aa-4240-88cf-a443c0ac38d7 |
+| System.WorkFolder | D:\a |
+| Task.DisplayName | Bash |
+| TF_BUILD | True |
 
 Necessary new variables:
 
