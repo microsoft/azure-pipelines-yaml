@@ -20,7 +20,7 @@ variables:
   # Kubernetes Environment
   environmentName: '{{ environment.environment.Name }}'
   k8sResourceName: "{{ environment.resources.kubernetesConnection.Name }}"
-  k8sResourceNamespace: "{{ environment.resources.kubernetesConnection.Namespace }}"
+  k8sResourceNamespace: "{{ kubernetesConnection.Data.namespace }}"
 
   # Kubernetes Service Endpoint Id
   kubernetesServiceConnectionId: '{{ kubernetesConnection.Id }}'
