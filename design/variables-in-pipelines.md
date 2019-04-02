@@ -39,9 +39,10 @@ Guidance on what makes a "good" variable to include:
 - _Commonly_ required in an ad-hoc script or a task we ship in the box
 - Relevant to detecting or dealing with the environment (e.g. that we're running in Azure Pipelines, that we're running in CI, where on disk the pipeline workspace is rooted)
 
-Existing variables:
+### Existing variables
 
-| Current variable | Example data | Keep, cut, or rename |
+#### Agent
+| Agent. | Example data | Keep, cut, or rename |
 |------------------|--------------|----------------------|
 | Agent.BuildDirectory | D:\a\1 |
 | Agent.DeploymentGroupId | 1 | _note: only in deployment group jobs_ |
@@ -64,6 +65,10 @@ Existing variables:
 | Agent.ToolsDirectory | C:/hostedtoolcache/windows |
 | Agent.Version | 2.148.2 |
 | Agent.WorkFolder | D:\a |
+
+#### Build
+| Build. | Example data | Keep, cut, or rename |
+|------------------|--------------|----------------------|
 | Build.ArtifactStagingDirectory | D:\a\1\a |
 | Build.BinariesDirectory | D:\a\1\b |
 | Build.BuildID | 1174 |
@@ -104,8 +109,10 @@ Existing variables:
 | Build.TriggeredBy.BuildNumber | |
 | Build.TriggeredBy.ProjectID | |
 | Build.Type | Build | _note: set for RM with a build artifact_ |
-| Common.TestResultsDirectory | D:\a\1\TestResults |
-| Endpoint.URL.SystemVSSConnection | https://dev.azure.com/mattc-demo/ |
+
+#### Release
+| Release. | Example data | Keep, cut, or rename |
+|------------------|--------------|----------------------|
 | Release.Artifacts.{artifact_id}.BuildID | 1174 |
 | Release.Artifacts.{artifact_id}.BuildNumber | 20190401.7 |
 | Release.Artifacts.{artifact_id}.BuildURI | vstfs:///Build/Build/1174 |
@@ -150,7 +157,10 @@ Existing variables:
 | Release.RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b |
 | Release.SkipArtifactsDownload | False |
 | Release.TriggeringArtifact.Alias |  |
-| RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b |
+
+#### System
+| System. | Example data | Keep, cut, or rename |
+|------------------|--------------|----------------------|
 | System | `build`, `release` |
 | System.AccessToken | (access token) |
 | System.ArtifactsDirectory | D:\a\1\a |
@@ -195,10 +205,17 @@ Existing variables:
 | System.TimelineID | 5e42ea59-b1aa-4240-88cf-a443c0ac38d7 |
 | System.TotalJobsInPhase | 1 |
 | System.WorkFolder | D:\a |
+
+#### Misc
+| Variable | Example data | Keep, cut, or rename |
+|------------------|--------------|----------------------|
+| Common.TestResultsDirectory | D:\a\1\TestResults |
+| Endpoint.URL.SystemVSSConnection | https://dev.azure.com/mattc-demo/ |
+| RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b | _note: only set for RM_ |
 | Task.DisplayName | Bash |
 | TF_BUILD | True |
 
-Necessary new variables:
+### New variables
 
 | New variable | Description | Special notes |
 |--------------|-------------|---------------|
