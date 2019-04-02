@@ -11,19 +11,19 @@ resources:
 variables:
 
   # Container registry service connection established during pipeline creation - Docker Hub/ACR/...
-  dockerRegistryServiceConnection: '{{ containerRegistryConnection }}'
-  imageRepository: '{{ containerRegistryConnection }}'
-  containerRegistryName: '{{ containerRegistryConnection }}'
+  dockerRegistryServiceConnection: '{{ containerRegistryConnection.Id }}'
+  imageRepository: '$(build.repository.name)'
+  containerRegistryName: '{{ containerRegistryName }}'
 
   dockerfilePath: '**/Dockerfile'
 
   # Kubernetes Environment
-  environmentName: '{{ environment.Name }}'
-  k8sResourceName: "{{ environment.resource.Name }}"
-  k8sResourceNamespace: "{{ environment.resource.Namespace }}"
+  environmentName: '{{ environmentContext.environment.Name }}'
+  k8sResourceName: "{{ environmentContext.resources.kubernetesConnection.Name }}"
+  k8sResourceNamespace: "{{ environmentContext.resources.kubernetesConnection.Namespace }}"
 
   # Kubernetes Service Endpoint Id
-  kubernetesServiceConnectionId: '{{ kubernetesConnection.endpointId }}'
+  kubernetesServiceConnectionId: '{{ kubernetesConnection.Id }}'
 
   # Docker Image Name
   imageName: '{{ imageName }}'
