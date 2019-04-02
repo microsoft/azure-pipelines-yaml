@@ -69,5 +69,7 @@ stages:
               namespace: $(k8sResourceNamespace)
               manifests: |
                 manifests/*
+              imagePullSecrets: |
+                docker-auth
               containers: |
                 $(containerRegistryName)/$(imageRepository)
