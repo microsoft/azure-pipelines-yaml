@@ -1,0 +1,40 @@
+# Node.js Express Web App on Linux
+# Build a node.js Express App and deploy as a Linux Web App.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+- master
+
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '10.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    npm install
+    npm build
+  displayName: 'npm install and build'
+
+- task: ArchiveFiles@2
+  displayName: 'Archive files'
+  inputs:
+    rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+    includeRootFolder: false
+    archiveType: zip
+    archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+    replaceExistingArchive: true
+    
+- task: AzureWebApp@1
+  displayName: 'Azure Web App Deploy: expressappyaml'
+  inputs:
+    azureSubscription: '{{ azureRmConnection.Name }}'
+    appType: webAppLinux
+    appName: '{{ webAppName }}'
+    runtimeStack: 'NODE|10.10'
+    package: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+    startUpCommand: 'npm run start'

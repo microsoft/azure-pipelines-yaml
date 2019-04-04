@@ -1,0 +1,16 @@
+{
+    "iconName": "react",
+    "parameters": [
+        {
+            "name": "azureRmConnection",
+            "type": "endpoint:azureRm",
+            "required": "true"
+        },
+        {
+            "name": "webAppName",
+            "type": "string",
+            "required": "true",
+            "displayName":"Web App name"
+        }
+    ]
+}
