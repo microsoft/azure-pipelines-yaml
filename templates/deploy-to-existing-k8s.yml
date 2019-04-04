@@ -51,6 +51,8 @@ stages:
               action: createSecret
               secretName: docker-auth
               dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+              tags: |
+                $(Build.BuildId)
               
           - task: KubernetesManifest@0
             displayName: Deploy to Kubernetes cluster
@@ -60,4 +62,4 @@ stages:
               manifests: |
                 manifests/*
               containers: |
-                $(containerRegistryName)/$(imageName)
+                $(containerRegistryName)/$(imageName):$(Build.BuildId)
