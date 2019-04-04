@@ -12,19 +12,14 @@ variables:
 
   # Container registry service connection established during pipeline creation - Docker Hub/ACR/...
   dockerRegistryServiceConnection: '{{ containerRegistryConnection.Id }}'
-  imageRepository: '$(build.repository.name)'
+  imageRepository: '{{ imageRepository }}'
   containerRegistryName: '{{ containerRegistryName }}'
-
   dockerfilePath: '**/Dockerfile'
-
-  # Kubernetes Environment
-  environmentName: '{{ environment.Environment.Name }}'
-  k8sResourceName: "{{ environment.Resources.kubernetesConnection.Name }}"
-  k8sResourceNamespace: "{{ environment.Resources.kubernetesConnection.Namespace }}"
-
-    # Docker Image Name
-  imageName: '{{ imageName }}'
+  tag: '$(Build.BuildId)'
   
+  # Kubernetes Namespace
+  k8sNamespace: '{{ environment.Resources.kubernetesConnection.Namespace }}'
+  imagePullSecret: '{{ containerRegistryName }}-auth'
 
 stages:
 - stage: Build
@@ -40,6 +35,8 @@ stages:
         repository: $(imageRepository)
         dockerfile: $(dockerfilePath)
         containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
 
 - stage: Deploy
   displayName: Deploy stage
@@ -47,24 +44,26 @@ stages:
   jobs:
   - deployment: Deploy to Kubernetes
     displayName: Deploy job
-    environment: $(environmentName).$(k8sResourceName)
+    environment: '{{ environment.Environment.Name }}.{{ environment.Resources.kubernetesConnection.Name }}'
     strategy:
       runOnce:
         deploy:
           steps:
-          - task: Kubernetes@2
-            displayName: 'kubectl create imagepullsecret docker-auth'
+          - task: KubernetesManifest@0
+            displayName: Create imagePullSecret
             inputs:
-              containerRegistryType: 'Container Registry'
+              action: createSecret
+              secretName: $(imagePullSecret)
               dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
-              secretName: 'docker-auth'
               
           - task: KubernetesManifest@0
             displayName: Deploy to Kubernetes cluster
             inputs:
               action: deploy
-              namespace: $(k8sResourceNamespace)
+              namespace: $(k8sNamespace)
               manifests: |
                 manifests/*
+              imagePullSecrets: |
+                $(imagePullSecret)
               containers: |
-                $(containerRegistryName)/$(imageRepository)
+                $(containerRegistryName)/$(imageRepository):$(tag)
