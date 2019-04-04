@@ -17,7 +17,7 @@
             "required": "true"
         },
         {
-            "name": "imageName",
+            "name": "imageRepository",
             "type": "string",
             "required": "true",
             "displayName": "Image Name"

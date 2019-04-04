@@ -12,12 +12,14 @@ variables:
 
   # Container registry service connection established during pipeline creation - Docker Hub/ACR/...
   dockerRegistryServiceConnection: '{{ containerRegistryConnection.Id }}'
-  imageName: '{{ imageName }}'
-  containerRegistryName: '{{ containerRegistryName }}.azurecr.io'
+  imageRepository: '{{ imageRepository }}'
+  containerRegistryName: '{{ containerRegistryName }}'
   dockerfilePath: '**/Dockerfile'
+  tag: '$(Build.BuildId)'
   
   # Kubernetes Namespace
   k8sNamespace: '{{ environment.Resources.kubernetesConnection.Namespace }}'
+  imagePullSecret: '{{ containerRegistryName }}-auth'
 
 stages:
 - stage: Build
@@ -30,7 +32,7 @@ stages:
       displayName: Build and push an image to container registry
       inputs:
         command: buildAndPush
-        repository: $(imageName)
+        repository: $(imageRepository)
         dockerfile: $(dockerfilePath)
         containerRegistry: $(dockerRegistryServiceConnection)
 
@@ -46,13 +48,13 @@ stages:
         deploy:
           steps:
           - task: KubernetesManifest@0
-            displayName: kubectl create imagepullsecret docker-auth
+            displayName: Create imagePullSecret
             inputs:
               action: createSecret
-              secretName: docker-auth
+              secretName: $(imagePullSecret)
               dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
               tags: |
-                $(Build.BuildId)
+                $(tag)
               
           - task: KubernetesManifest@0
             displayName: Deploy to Kubernetes cluster
@@ -61,5 +63,7 @@ stages:
               namespace: $(k8sNamespace)
               manifests: |
                 manifests/*
+              imagePullSecrets: |
+                $(imagePullSecret)
               containers: |
-                $(containerRegistryName)/$(imageName):$(Build.BuildId)
+                $(containerRegistryName)/$(imageRepository):$(tag)
