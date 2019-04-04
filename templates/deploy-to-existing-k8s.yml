@@ -35,6 +35,8 @@ stages:
         repository: $(imageRepository)
         dockerfile: $(dockerfilePath)
         containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
 
 - stage: Deploy
   displayName: Deploy stage
@@ -53,8 +55,6 @@ stages:
               action: createSecret
               secretName: $(imagePullSecret)
               dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
-              tags: |
-                $(tag)
               
           - task: KubernetesManifest@0
             displayName: Deploy to Kubernetes cluster
