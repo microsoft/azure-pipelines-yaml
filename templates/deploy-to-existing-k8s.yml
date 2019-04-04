@@ -40,7 +40,7 @@ stages:
   jobs:
   - deployment: Deploy to Kubernetes
     displayName: Deploy job
-    environment: {{ environment.Environment.Name }}.{{ environment.Resources.kubernetesConnection.Name }}
+    environment: '{{ environment.Environment.Name }}.{{ environment.Resources.kubernetesConnection.Name }}'
     strategy:
       runOnce:
         deploy:
