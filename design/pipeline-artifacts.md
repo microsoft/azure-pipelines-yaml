@@ -89,7 +89,7 @@ The spec that follows is lengthy because it covers details and edge cases.
 But for customers, it should be easy to understand:
 1. If you don't say anything, you get a directory per artifact from the current pipeline. You also get a directory per pipeline containing a directory per artifact from other pipelines.
 2. As soon as you put a `download` step, you have to be explicit about all pipelines you want to download from. You still get  automatic directory layout.
-3. You may mention a specific artifact, but you don't have to unless you mention a `path`. As soon as you mention a `path`, you _must_ also choose the artifact. This is the mode with ultimate control/flexibility.
+3. You may mention a specific artifact, in which case only the mentioned artifact is downloaded to the automatic directory layout. If you also mention a `path`, the contents of the artifact are downloaded directly to the path provided.
 
 ##### With no `path`
 
@@ -131,16 +131,19 @@ jobs:
 If the `path` key is specified, it's a relative path from `$(Pipeline.Workspace)`.
 Directory names are not automatically injected by the pipeline anymore (but of course, directories present in the artifact itself are still used).
 
-If you include a `path`, `artifact` becomes required.
-Otherwise, we would risk sticking multiple artifacts' contents together in the same directory, clobbering files unpredictably.
+If you mention an `artifact` and also include a `path`, all the contents of the aritfact are downloaded to the path provided.
+However, if you include a `path` but don't mention any `artifact`, all the available artifacts are downloaded as sub folders with in the `path`. 
 
 Example:
 ```yaml
 jobs:
-- job: makeartifact
+- job: myjob
   steps:
   - script: ./build.sh
   - upload: outputs/**/*
+    artifact: WebTier
+  - upload: daata/**/*
+    artifact: DBTier
 
 - job: useartifact
   dependsOn: makeartifact
@@ -150,6 +153,7 @@ jobs:
   - script: ls $(Pipeline.Workspace)
     # listing shows one folder, "foo"
 ```
+In this case the artifact contents for each artifact is downloaded to `$(Pipeline.Workspace)/foo/WebTier/` and `$(Pipeline.Workspace)/foo/DBTier/` respectively.
 
 #### Build and RM classic pipelines
 No change to current behavior. Artifacts are downloaded to `$(System.DefaultWorkingDirectory)`, which is the sources folder on Build and the artifacts folder on RM.
