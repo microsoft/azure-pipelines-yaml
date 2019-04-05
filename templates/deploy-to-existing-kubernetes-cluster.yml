@@ -1,4 +1,4 @@
-# Deploy to Kubernetes
+# Deploy to Azure Kubernetes Service (AKS)
 # Build a Docker image, push to an Azure Container Registry, and deploy it to Azure Kubernetes Service.
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
@@ -59,6 +59,7 @@ stages:
             inputs:
               action: createSecret
               secretName: $(imagePullSecret)
+              namespace: $(k8sNamespace)
               dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
               
           - task: KubernetesManifest@0
