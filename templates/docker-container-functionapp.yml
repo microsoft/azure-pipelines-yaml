@@ -51,7 +51,7 @@ jobs:
   condition: and(succeeded(), eq(variables['Azure.CreateResources'], 'true'))
 
   pool:
-    vmImage: 'Ubuntu-16.04'
+    vmImage: 'Ubuntu-latest'
 
   steps:
   - task: AzureResourceGroupDeployment@2
@@ -70,7 +70,7 @@ jobs:
   condition: or(succeeded(), ne(variables['Azure.CreateResources'], 'true'))
 
   pool:
-    vmImage: 'Ubuntu-16.04'
+    vmImage: 'Ubuntu-latest'
 
   steps:
   - task: Docker@1
@@ -96,7 +96,7 @@ jobs:
   condition: succeeded()
 
   pool:
-    vmImage: 'Ubuntu-16.04'
+    vmImage: 'Ubuntu-latest'
 
   steps:
   - task: AzureFunctionAppContainer@1
