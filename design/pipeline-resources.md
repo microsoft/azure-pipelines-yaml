@@ -127,9 +127,9 @@ All artifacts from the defined `build` resources are automatically downloaded an
   path: string # relative path from $(PIPELINE.WORKSPACE) to download the artifacts
 ```
 
-The automatic artifact download and overriding behavior of `downloadBuild` is same as the `download` macro used for [pipeline artifacts](https://github.com/Microsoft/azure-pipelines-yaml/blob/master/design/pipeline-artifacts.md#downloading-artifacts-download).
+The inputs for `downloadBuild` macro is fixed for all the build resources. The automatic artifact download and overriding behavior of `downloadBuild` is same as the `download` macro used for [pipeline artifacts](https://github.com/Microsoft/azure-pipelines-yaml/blob/master/design/pipeline-artifacts.md#downloading-artifacts-download).
 
-The `downloadBuild` macro is fixed for all the build services. 
+In a job, once you use `downloadBuild`, build artifacts are no longer downloaded automatically. You get the full control and you have to explicitly use `downloadBuild` for each build resource you wish to download artifacts from. However, this does not have any effect on the other resource categories like `pipelines`, `repositories` and `packages`.
 
 ### Examples
 All artifacts are automatically downloaded however, you can choose to override and customize the download behavior for each job.
