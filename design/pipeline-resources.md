@@ -101,10 +101,9 @@ resources:        # types: pipelines | builds | repositories | containers | pack
     version: string   # the build number to pick the artifact, defaults to Latest successful build
     branch: string   # branch to pick the artifact; defaults to master branch
 ```
+The inputs for the `build` resource can change based on the `type` of the build service (i.e. Jenkins, TeamCity etc.). The publisher of each extension defines the inputs for the resource. During the pipeline authoring time, when user defines the resource, it is validated based on the inputs defined in the extension.
 
 ### Examples
-
-The inputs for the `build` resource can change based on the `type` of the build service.
 
 ```yaml
 resources:
@@ -114,7 +113,6 @@ resources:
     connection: MyJenkinsServer 
     source: SpaceworkzProj   # name of the jenkins source project
 ```
-
 
 ### `downloadBuild` for builds
 
@@ -126,10 +124,15 @@ All artifacts from the defined `build` resources are automatically downloaded an
 - downloadBuild: string # identifier for the resource from which to download artifacts
   artifact: string # identifier for the artifact to download; if left blank, downloads all artifacts associated with the resource provided
   patterns: string | [ string ] # a minimatch path or list of [minimatch paths](tasks/file-matching-patterns.md) to download; if blank, the entire artifact is downloaded
-  path: string # the directory in which to download files, defaults to $PIPELINE_WORKSPACE
+  path: string # relative path from $(PIPELINE.WORKSPACE) to download the artifacts
 ```
 
+The automatic artifact download and overriding behavior of `downloadBuild` is same as the `download` macro used for [pipeline artifacts](https://github.com/Microsoft/azure-pipelines-yaml/blob/master/design/pipeline-artifacts.md#downloading-artifacts-download).
+
+The `downloadBuild` macro is fixed for all the build services. 
+
 ### Examples
+All artifacts are automatically downloaded however, you can choose to override and customize the download behavior for each job.
 
 ```yaml
 - job: deploy_windows_x86_agent
@@ -145,7 +148,9 @@ Or to avoid downloading any of the artifacts at all:
 - downloadBuild: none
 ```
 
-Artifacts from the `build` resource are downloaded to `$PIPELINE_WORKSPACE/<build-identifier>/` folder.
+Artifacts from the `build` resource are downloaded to `$PIPELINE_WORKSPACE/<build-identifier>/` folder unless user specifies a path in which case artifacts are downloaded to the path provided. 
+
+We provide full artifact traceability i.e which artifact is downloaded from which resource for every job in a pipeline.
 
 ## Resources: `repositories`
 
