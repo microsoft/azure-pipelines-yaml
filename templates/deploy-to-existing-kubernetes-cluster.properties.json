@@ -1,5 +1,5 @@
 {
-    "iconName": "k8s",
+    "iconName": "aks",
     "parameters": [
         {
             "name": "kubernetesConnection",
