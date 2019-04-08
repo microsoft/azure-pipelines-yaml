@@ -21,8 +21,8 @@ variables:
   k8sNamespace: '{{ environment.Resources.kubernetesConnection.Namespace }}'
   imagePullSecret: '{{ containerRegistryConnection.Name }}-auth'
 
-  # Agent Pool Name
-  poolName: 'Hosted Ubuntu 1604'
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
 
 stages:
 - stage: Build
@@ -30,7 +30,8 @@ stages:
   jobs:  
   - job: Build
     displayName: Build job
-    pool: $(poolName)
+    pool:
+      vmImage: $(vmImageName)
     steps:
     - task: Docker@2
       displayName: Build and push an image to container registry
@@ -48,7 +49,8 @@ stages:
   jobs:
   - deployment: Deploy
     displayName: Deploy job
-    pool: $(poolName)
+    pool:
+      vmImage: $(vmImageName)
     environment: '{{ environment.Environment.Name }}.{{ environment.Resources.kubernetesConnection.Name }}'
     strategy:
       runOnce:
