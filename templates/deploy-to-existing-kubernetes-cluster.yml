@@ -13,7 +13,7 @@ variables:
   # Container registry service connection established during pipeline creation - Docker Hub/ACR/...
   dockerRegistryServiceConnection: '{{ containerRegistryConnection.Id }}'
   imageRepository: '{{ imageRepository }}'
-  containerRegistryName: '{{ containerRegistryName }}'
+  containerRegistry: '{{ containerRegistryConnection.Authorization.Parameters.loginServer }}'
   dockerfilePath: '**/Dockerfile'
   tag: '$(Build.BuildId)'
   
@@ -72,4 +72,4 @@ stages:
               imagePullSecrets: |
                 $(imagePullSecret)
               containers: |
-                $(containerRegistryName)/$(imageRepository):$(tag)
+                $ (containerRegistry)/$(imageRepository):$(tag)
