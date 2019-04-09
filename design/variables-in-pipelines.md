@@ -54,9 +54,9 @@ Guidance on what makes a "good" variable to include:
 #### Agent
 | Agent. | Example data | Keep, cut, or rename | Notes |
 |--------|--------------|----------------------|-------|
-| .BuildDirectory | D:\a\1 | RENAME | replace with Pipeline.Workspace
+| .BuildDirectory | D:\a\1 | rename | replace with Pipeline.Workspace
 | .DeploymentGroupId | 1 | **TODO**| _only in deployment group jobs_
-| .Diagnostic | true | Keep | non-existent by default
+| .Diagnostic | true | keep | non-existent by default
 | .DisableLogPlugin.TestFilePublisherPlugin | true | CUT | replace with feature flag
 | .DisableLogPlugin.TestResultLogPlugin | true | CUT | replace with feature flag
 | .HomeDirectory | C:\agents\2.148.2 | CUT
@@ -66,12 +66,12 @@ Guidance on what makes a "good" variable to include:
 | .MachineName | fv-az379 | keep
 | .Name | Hosted Agent | keep
 | .OS | Windows_NT | keep
-| .OSArchiecture | X64 | keep
+| .OSArchitecture | X64 | keep
 | .ReleaseDirectory | D:\a\r1\a | CUT | _RM only_
 | .RetainDefaultEncoding | false | CUT | feature flag
 | .RootDirectory | D:\a | keep
 | .ServerOMDirectory | C:\agents\2.148.2\externals\vstsom | CUT
-| .TempDirectory | D:\a\_temp | CUT | use operating system temp construct instead
+| .TempDirectory | D:\a\\_temp | CUT | use operating system temp construct instead
 | .ToolsDirectory | C:/hostedtoolcache/windows | **TODO**
 | .Version | 2.148.2 | keep
 | .WorkFolder | D:\a | keep
