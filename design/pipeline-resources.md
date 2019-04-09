@@ -147,6 +147,7 @@ Or to avoid downloading any of the artifacts at all:
 ```yaml
 - downloadBuild: none
 ```
+Based on the type of build resource (Jenkins, TeamCity etc.) and the associated artifacts, apropriate task is used to download the artifacts in the job.
 
 Artifacts from the `build` resource are downloaded to `$PIPELINE_WORKSPACE/<build-identifier>/` folder unless user specifies a path in which case artifacts are downloaded to the path provided. 
 
