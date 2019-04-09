@@ -31,6 +31,16 @@ Ideally we also take this opportunity to rationalize what variables appear in wh
 Current scopes are agent, orchestration time, and available 
 - (more?)
 
+### Kinds of existing variables
+
+In the existing set of variables, we found:
+- Agent compile-time values
+- Agent config-time values
+- Agent run-time values
+- Source provider run-time values
+- Run control options (under customer control)
+- Feature flags (under product team control)
+
 ### What are good variables?
 
 Since variables take up space both mentally and in the environment block, we want to be judicious about which ones we include.
@@ -42,29 +52,29 @@ Guidance on what makes a "good" variable to include:
 ### Existing variables
 
 #### Agent
-| Agent. | Example data | Keep, cut, or rename |
-|------------------|--------------|----------------------|
-| .BuildDirectory | D:\a\1 |
-| .DeploymentGroupId | 1 | _note: only in deployment group jobs_ |
-| .Diagnostic | true | 
-| .DisableLogPlugin.TestFilePublisherPlugin | true |
-| .DisableLogPlugin.TestResultLogPlugin | true |
-| .HomeDirectory | C:\agents\2.148.2 |
-| .ID | 3 |
-| .JobName | Job |
-| .JobStatus | Succeeded | _note: cut the back-compat lower-cased version "agent.jobstatus"_ |
-| .MachineName | fv-az379 |
-| .Name | Hosted Agent |
-| .OS | Windows_NT |
-| .OSArchiecture | X64 |
-| .ReleaseDirectory | D:\a\r1\a | _note: RM only_
-| .RetainDefaultEncoding | false |
-| .RootDirectory | D:\a |
-| .ServerOMDirectory | C:\agents\2.148.2\externals\vstsom |
-| .TempDirectory | D:\a\_temp |
-| .ToolsDirectory | C:/hostedtoolcache/windows |
-| .Version | 2.148.2 |
-| .WorkFolder | D:\a |
+| Agent. | Example data | Keep, cut, or rename | Notes |
+|--------|--------------|----------------------|-------|
+| .BuildDirectory | D:\a\1 | RENAME | replace with Pipeline.Workspace
+| .DeploymentGroupId | 1 | **TODO**| _only in deployment group jobs_
+| .Diagnostic | true | Keep | non-existent by default
+| .DisableLogPlugin.TestFilePublisherPlugin | true | CUT | replace with feature flag
+| .DisableLogPlugin.TestResultLogPlugin | true | CUT | replace with feature flag
+| .HomeDirectory | C:\agents\2.148.2 | CUT
+| .ID | 3 | keep
+| .JobName | Job | CUT | replace with a richer job status mechanism
+| .JobStatus | Succeeded | CUT | replace with a richer job status mechanism (completely cut the back-compat lower-cased version "agent.jobstatus") |
+| .MachineName | fv-az379 | keep
+| .Name | Hosted Agent | keep
+| .OS | Windows_NT | keep
+| .OSArchiecture | X64 | keep
+| .ReleaseDirectory | D:\a\r1\a | CUT | _RM only_
+| .RetainDefaultEncoding | false | CUT | feature flag
+| .RootDirectory | D:\a | keep
+| .ServerOMDirectory | C:\agents\2.148.2\externals\vstsom | CUT
+| .TempDirectory | D:\a\_temp | CUT | use operating system temp construct instead
+| .ToolsDirectory | C:/hostedtoolcache/windows | **TODO**
+| .Version | 2.148.2 | keep
+| .WorkFolder | D:\a | keep
 
 #### Build
 | Build. | Example data | Keep, cut, or rename |
