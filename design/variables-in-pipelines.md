@@ -37,7 +37,8 @@ In the existing set of variables, we found:
 - Agent compile-time values
 - Agent config-time values
 - Agent run-time values
-- Source provider run-time values
+- Source and artifact details
+- URIs and identifiers for talking back to Azure Pipelines
 - Run control options (under customer control)
 - Feature flags (under product team control)
 
@@ -77,8 +78,8 @@ Guidance on what makes a "good" variable to include:
 | .WorkFolder | D:\a | keep
 
 #### Build
-| Build. | Example data | Keep, cut, or rename |
-|------------------|--------------|----------------------|
+| Build. | Example data | Keep, cut, or rename | Notes |
+|--------|--------------|----------------------|-------|
 | .ArtifactStagingDirectory | D:\a\1\a | CUT
 | .BinariesDirectory | D:\a\1\b | CUT
 | .BuildID | 1174 | rename | **TODO**
@@ -121,8 +122,8 @@ Guidance on what makes a "good" variable to include:
 | .Type | Build | **TODO** | set for RM with a build artifact
 
 #### Release
-| Release. | Example data | Keep, cut, or rename |
-|------------------|--------------|----------------------|
+| Release. | Example data | Keep, cut, or rename | Notes |
+|----------|--------------|----------------------|-------|
 | .Artifacts.{artifact_id}.BuildID | 1174 |
 | .Artifacts.{artifact_id}.BuildNumber | 20190401.7 |
 | .Artifacts.{artifact_id}.BuildURI | vstfs:///Build/Build/1174 |
@@ -169,8 +170,8 @@ Guidance on what makes a "good" variable to include:
 | .TriggeringArtifact.Alias |  |
 
 #### System
-| System. | Example data | Keep, cut, or rename |
-|------------------|--------------|----------------------|
+| System. | Example data | Keep, cut, or rename | Notes |
+|---------|--------------|----------------------|-------|
 | System | `build`, `release` | _note: not System.System -- just `System`_
 | .AccessToken | (access token) |
 | .ArtifactsDirectory | D:\a\1\a |
@@ -217,8 +218,8 @@ Guidance on what makes a "good" variable to include:
 | .WorkFolder | D:\a |
 
 #### Misc
-| Variable | Example data | Keep, cut, or rename |
-|------------------|--------------|----------------------|
+| Variable | Example data | Keep, cut, or rename | Notes |
+|----------|--------------|----------------------|-------|
 | Common.TestResultsDirectory | D:\a\1\TestResults |
 | Endpoint.URL.SystemVSSConnection | https://dev.azure.com/mattc-demo/ |
 | RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b | _note: only set for RM_ |
