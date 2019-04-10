@@ -42,10 +42,15 @@ In the existing set of variables, we found:
 ### What are good variables?
 
 Since variables take up space both mentally and in the environment block, we want to be judicious about which ones we include.
-Guidance on what makes a "good" variable to include:
-- Useful both in expressions (Pipelines-side) and scripts (user/runtime-side)
-- _Commonly_ required in an ad-hoc script or a task we ship in the box
-- Relevant to detecting or dealing with the environment (e.g. that we're running in Azure Pipelines, that we're running in CI, where on disk the pipeline workspace is rooted)
+The best variables are useful both in expressions (Pipelines-side) and scripts (user/runtime-side).
+They're _commonly_ required in an ad-hoc script or a task we ship in the box.
+Typically they're relevant to detecting or dealing with the environment.
+For example, detecting that we're running in Azure Pipelines, that we're running in CI, or where on disk the pipeline workspace is rooted.
+
+Some variables are less commonly needed.
+These won't be propagated into the environment by default.
+They'll be available in YAML via expression context.
+We need to design features to make them available to the classic editor and task authors.
 
 ## New variables
 
@@ -86,7 +91,7 @@ We'll run an outreach campaign to push Marketplace tasks to do the same.
 ### Pipeline migration
 
 We'll introduce a "compat mode" flag on the Pipeline level.
-All existing designer pipelines and all YAML pipelines will default to "compat mode".
+All existing classic editor pipelines and all YAML pipelines will default to "compat mode".
 When a pipeline runs in compat mode, both the old and new namespace variables are injected.
 This way, older tasks and scripts are not broken, but the new world is available.
 In non-compat mode, only the Pipeline.\* variables are injected -- not Build.\* or Release.\*.
@@ -97,12 +102,12 @@ Eventually, we'll run an outreach campaign to instruct users to update their pip
 This may include injecting warnings in the pipeline run.
 
 When a pipeline has compat mode turned off, non-Pipeline-aware tasks cannot be added.
-In the designer, we give immediate feedback, and for YAML, we throw a YAML-compile-time failure.
+In the classic editor, we give immediate feedback, and for YAML, we throw a YAML-compile-time failure.
 
-For the designer, the compat mode flag is a UI checkbox.
+For the classic editor, the compat mode flag is a UI checkbox.
 Newly created pipelines will default to having compat mode off.
 **NOTE**: we need to invest in a way to map context variables into the environment on a job- and task-level.
-Otherwise there's no way for designer pipelines to use the new variables.
+Otherwise there's no way for classic editor pipelines to use the new variables.
 
 For YAML, it's a `version: 2` keyword at the root level of the file.
 YAML v2 may also introduce other breaking changes; those are [documented elsewhere](https://github.com/Microsoft/azure-pipelines-yaml/pull/92).
