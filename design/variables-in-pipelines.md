@@ -56,7 +56,7 @@ Guidance on what makes a "good" variable to include:
 | Agent. | Example data | Keep, cut, or rename | Notes |
 |--------|--------------|----------------------|-------|
 | .BuildDirectory | D:\a\1 | rename | replace with Pipeline.Workspace
-| .DeploymentGroupId | 1 | **TODO**| only in deployment group jobs
+| .DeploymentGroupId | 1 | **TODO** | only in deployment group jobs
 | .Diagnostic | true | keep | non-existent by default
 | .DisableLogPlugin.TestFilePublisherPlugin | true | CUT | replace with feature flag
 | .DisableLogPlugin.TestResultLogPlugin | true | CUT | replace with feature flag
@@ -92,7 +92,7 @@ Guidance on what makes a "good" variable to include:
 | .DefinitionVersion | 8 | CUT | used in telemetry, but doesn't seem useful
 | .QueuedBy | Microsoft.VisualStudio.Services.TFS | rename | **TODO**
 | .QueuedByID | 00000002-0000-8888-8000-000000000000 | rename | **TODO**
-| .ProjectID | 0807fc91-4393-482d-9e23-defdbb7d0857 rename | **TODO** set for RM with a build artifact
+| .ProjectID | 0807fc91-4393-482d-9e23-defdbb7d0857 | rename | **TODO** set for RM with a build artifact
 | .ProjectName | Test1 | rename | **TODO** set for RM with a build artifact
 | .Reason | IndividualCI | rename | **TODO**
 | .Repository.Clean | False | CUT
@@ -124,50 +124,50 @@ Guidance on what makes a "good" variable to include:
 #### Release
 | Release. | Example data | Keep, cut, or rename | Notes |
 |----------|--------------|----------------------|-------|
-| .Artifacts.{artifact_id}.BuildID | 1174 |
-| .Artifacts.{artifact_id}.BuildNumber | 20190401.7 |
-| .Artifacts.{artifact_id}.BuildURI | vstfs:///Build/Build/1174 |
-| .Artifacts.{artifact_id}.DefinitionID | 14 |
-| .Artifacts.{artifact_id}.DefinitionName | playground |
-| .Artifacts.{artifact_id}.ProjectID | 0807fc91-4393-482d-9e23-defdbb7d0857 |
-| .Artifacts.{artifact_id}.ProjectName | Test1 |
-| .Artifacts.{artifact_id}.PullRequest.TargetBranch | refs/heads/master |
-| .Artifacts.{artifact_id}.PullRequest.TargetBranchName | master |
-| .Artifacts.{artifact_id}.Repository.ID | 80ab696a-644c-497e-84fd-b1d98c470825 |
-| .Artifacts.{artifact_id}.Repository.Name | container |
-| .Artifacts.{artifact_id}.Repository.Provider | TfsGit |
-| .Artifacts.{artifact_id}.RequestedFor | Matt Cooper |
-| .Artifacts.{artifact_id}.RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b |
-| .Artifacts.{artifact_id}.SourceBranch | refs/heads/master |
-| .Artifacts.{artifact_id}.SourceBranchName | master |
-| .Artifacts.{artifact_id}.SourceVersion | 5d7a52ce5a6e5f3cd1a8d1ee36fd2dd3ae731121 |
-| .Artifacts.{artifact_id}.Type | `Build`, `Jenkins`, `TeamCity`, `Git`, ... |
-| .AttemptNumber | 1 |
-| .DefinitionEnvironmentID | 2 |
-| .DefinitionID | 2 |
-| .DefinitionName | My Release Pipeline |
-| .DeploymentID | 3 |
-| .Deployment.RequestedFor | Matt Cooper |
-| .Deployment.RequestedForEmail | *** |
-| .Deployment.RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b |
-| .Deployment.StartTime | 2019-04-02 12:39:52Z |
-| .DeployPhaseID | 3 |
-| .EnvironmentID | 5 |
-| .EnvironmentName | My First Stage |
-| .Environments.{stage_name}.Status | InProgress |
-| .EnvironmentURI | vstfs:///ReleaseManagement/Environment/5 |
-| .PrimaryArtifactSourceAlias | _playground |
-| .Reason | Manual |
-| .ReleaseDescription |  |
-| .ReleaseID | 5 |
-| .ReleaseName | Release-2 |
-| .ReleaseURI | vstfs:///ReleaseManagement/Release/5 |
-| .ReleaseWebURL | https://dev.azure.com/mattc-demo/0807fc91-4393-482d-9e23-defdbb7d0857/_release?releaseId=5&_a=release-summary |
-| .RequestedFor | Matt Cooper |
-| .RequestedForEmail | *** |
-| .RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b |
-| .SkipArtifactsDownload | False |
-| .TriggeringArtifact.Alias |  |
+| .Artifacts.{artifact_id}.BuildID | 1174 | rename 
+| .Artifacts.{artifact_id}.BuildNumber | 20190401.7 | rename 
+| .Artifacts.{artifact_id}.BuildURI | vstfs:///Build/Build/1174 | CUT
+| .Artifacts.{artifact_id}.DefinitionID | 14 |  rename 
+| .Artifacts.{artifact_id}.DefinitionName | playground |  rename 
+| .Artifacts.{artifact_id}.ProjectID | 0807fc91-4393-482d-9e23-defdbb7d0857 | rename 
+| .Artifacts.{artifact_id}.ProjectName | Test1 | rename 
+| .Artifacts.{artifact_id}.PullRequest.TargetBranch | refs/heads/master | rename 
+| .Artifacts.{artifact_id}.PullRequest.TargetBranchName | master | rename 
+| .Artifacts.{artifact_id}.Repository.ID | 80ab696a-644c-497e-84fd-b1d98c470825 | rename 
+| .Artifacts.{artifact_id}.Repository.Name | container | rename 
+| .Artifacts.{artifact_id}.Repository.Provider | TfsGit | rename 
+| .Artifacts.{artifact_id}.RequestedFor | Matt Cooper | rename 
+| .Artifacts.{artifact_id}.RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b | rename 
+| .Artifacts.{artifact_id}.SourceBranch | refs/heads/master | rename 
+| .Artifacts.{artifact_id}.SourceBranchName | master | rename 
+| .Artifacts.{artifact_id}.SourceVersion | 5d7a52ce5a6e5f3cd1a8d1ee36fd2dd3ae731121 | rename 
+| .Artifacts.{artifact_id}.Type | `Build`, `Jenkins`, `TeamCity`, `Git`, ... | rename 
+| .AttemptNumber | 1 | rename 
+| .DefinitionEnvironmentID | 2 | **TODO**
+| .DefinitionID | 2 | rename 
+| .DefinitionName | My Release Pipeline | rename 
+| .DeploymentID | 3 | rename 
+| .Deployment.RequestedFor | Matt Cooper | rename 
+| .Deployment.RequestedForEmail | *** | rename 
+| .Deployment.RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b | rename 
+| .Deployment.StartTime | 2019-04-02 12:39:52Z | rename 
+| .DeployPhaseID | 3 | rename 
+| .EnvironmentID | 5 | CUT
+| .EnvironmentName | My First Stage | rename
+| .Environments.{stage_name}.Status | InProgress | CUT
+| .EnvironmentURI | vstfs:///ReleaseManagement/Environment/5 | CUT
+| .PrimaryArtifactSourceAlias | _playground | CUT
+| .Reason | Manual | rename
+| .ReleaseDescription |  | CUT
+| .ReleaseID | 5 | rename
+| .ReleaseName | Release-2 | rename
+| .ReleaseURI | vstfs:///ReleaseManagement/Release/5 | CUT
+| .ReleaseWebURL | https://dev.azure.com/mattc-demo/0807fc91-4393-482d-9e23-defdbb7d0857/_release?releaseId=5&_a=release-summary | CUT
+| .RequestedFor | Matt Cooper | rename
+| .RequestedForEmail | *** | rename
+| .RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b | rename
+| .SkipArtifactsDownload | False | CUT | replace with feature flag
+| .TriggeringArtifact.Alias |  | CUT
 
 #### System
 | System. | Example data | Keep, cut, or rename | Notes |
