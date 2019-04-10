@@ -1,5 +1,5 @@
 # Node.js React Web App on Linux
-# Build a node.js React App and deploy as a Linux Web App.
+# Build a Node.js React app and deploy it as a Linux web app.
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
