@@ -87,8 +87,8 @@ Guidance on what makes a "good" variable to include:
 | .BuildURI | vstfs:///Build/Build/1174 | CUT
 | .Clean | true | CUT | already deprecated
 | .ContainerID | 2713905 | **TODO**
-| .DefinitionID | 14 | CUT | set for RM with a build artifact |
-| .DefinitionName | playground | rename | **TODO**
+| .DefinitionID | 14 | CUT | same as System.DefinitionID |
+| .DefinitionName | playground | CUT | same as System.DefinitionName
 | .DefinitionVersion | 8 | CUT | used in telemetry, but doesn't seem useful
 | .QueuedBy | Microsoft.VisualStudio.Services.TFS | rename | **TODO**
 | .QueuedByID | 00000002-0000-8888-8000-000000000000 | rename | **TODO**
@@ -144,8 +144,8 @@ Guidance on what makes a "good" variable to include:
 | .Artifacts.{artifact_id}.Type | `Build`, `Jenkins`, `TeamCity`, `Git`, ... | rename 
 | .AttemptNumber | 1 | rename 
 | .DefinitionEnvironmentID | 2 | **TODO**
-| .DefinitionID | 2 | rename 
-| .DefinitionName | My Release Pipeline | rename 
+| .DefinitionID | 2 | CUT | same as System.DefinitionID 
+| .DefinitionName | My Release Pipeline | cut | same as System.DefinitionName
 | .DeploymentID | 3 | rename 
 | .Deployment.RequestedFor | Matt Cooper | rename 
 | .Deployment.RequestedForEmail | *** | rename 
@@ -172,70 +172,70 @@ Guidance on what makes a "good" variable to include:
 #### System
 | System. | Example data | Keep, cut, or rename | Notes |
 |---------|--------------|----------------------|-------|
-| System | `build`, `release` | _note: not System.System -- just `System`_
-| .AccessToken | (access token) |
-| .ArtifactsDirectory | D:\a\1\a |
-| .CollectionID | bb420569-6e91-4163-ab87-1a5b192fd50c |
-| .CollectionURI | https://dev.azure.com/mattc-demo/ |
-| .Culture | en-US |
-| .Debug | false |
-| .DefaultWorkingDirectory | D:\a\1\s |
-| .DefinitionID | 14 |
-| .DefinitionName | playground |
-| .EnableAccessToken | `SecretVariable`, `False` |
-| .HostType | `build`, `release`, `deployment` |
-| .IsScheduled | False |
-| .JobAttempt | 1 |
-| .JobDisplayName | Job |
-| .JobID | 12f1170f-54f2-53f3-20dd-22fc7dff55f9 |
-| .JobIdentifier | Job.__default |
-| .JobName | __default |
-| .JobParallelismTag | Public |
-| .JobPositionInPhase | 1 |
-| .ParallelExecutionType | None |
-| .PhaseDisplayName | Job |
-| .PhaseID | 3a3a2a60-14c7-570b-14a4-fa42ad92f52a |
-| .PhaseName | Job |
-| .PipelineStartTime | 2019-04-01 20:03:55+00:00 |
-| .PlanID | 5e42ea59-b1aa-4240-88cf-a443c0ac38d7 |
-| .PullRequest.IsFork | False |
-| .PullRequest.PullRequestId | 17 | _note: only for Azure Repos?_
-| .PullRequest.PullRequestNumber | | _note: only for GitHub?_
-| .PullRequest.SourceBranch | refs/heads/users/raisa/new-feature |
-| .PullRequest.SourceRepositoryURI | https://dev.azure.com/ouraccount/_git/OurProject |
-| .PullRequest.TargetBranch | refs/heads/master |
-| .ServerType | Hosted |
-| .TaskDefinitionsURI | https://dev.azure.com/mattc-demo/ |
-| .TaskDisplayName | Bash |
-| .TaskInstanceId | efa2bfe1-554a-50c8-79b6-ef106ad3c7c2 |
-| .TaskInstanceName | `Bash`, `04bff6ce5394c41b0c048826688170a` |
-| .TeamFoundationCollectionURI | https://dev.azure.com/mattc-demo/ |
-| .TeamFoundationServerURI | https://dev.azure.com/mattc-demo/ |
-| .TeamProject | Test1 |
-| .TeamProjectID | 0807fc91-4393-482d-9e23-defdbb7d0857 |
-| .TimelineID | 5e42ea59-b1aa-4240-88cf-a443c0ac38d7 |
-| .TotalJobsInPhase | 1 |
-| .WorkFolder | D:\a |
+| System | `build`, `release` | CUT | _this isn't System.System -- just `System`_
+| .AccessToken | (access token) | CUT | replace with **TODO**
+| .ArtifactsDirectory | D:\a\1\a | CUT
+| .CollectionID | bb420569-6e91-4163-ab87-1a5b192fd50c | CUT
+| .CollectionURI | https://dev.azure.com/mattc-demo/ | rename | **TODO**
+| .Culture | en-US | CUT
+| .Debug | false | keep | non-existent by default
+| .DefaultWorkingDirectory | D:\a\1\s | CUT
+| .DefinitionID | 14 | rename | Pipeline.ID
+| .DefinitionName | playground | rename | Pipeline.Name
+| .EnableAccessToken | `SecretVariable`, `False` | CUT
+| .HostType | `build`, `release`, `deployment` | CUT
+| .IsScheduled | False | CUT
+| .JobAttempt | 1 | rename | Pipeline.Job.Attempt
+| .JobDisplayName | Job | rename | Pipeline.Job.DisplayName
+| .JobID | 12f1170f-54f2-53f3-20dd-22fc7dff55f9 | CUT | used in telemetry and in 2 downlevel tasks
+| .JobIdentifier | Job.__default | CUT
+| .JobName | __default | CUT
+| .JobParallelismTag | Public | CUT
+| .JobPositionInPhase | 1 | rename | **TODO**
+| .ParallelExecutionType | None | CUT
+| .PhaseDisplayName | Job | CUT
+| .PhaseID | 3a3a2a60-14c7-570b-14a4-fa42ad92f52a | CUT
+| .PhaseName | Job | CUT
+| .PipelineStartTime | 2019-04-01 20:03:55+00:00 | rename | **TODO**
+| .PlanID | 5e42ea59-b1aa-4240-88cf-a443c0ac38d7 | CUT
+| .PullRequest.IsFork | False | rename | **TODO**
+| .PullRequest.PullRequestId | 17 | rename | **TODO** _only for Azure Repos?_
+| .PullRequest.PullRequestNumber | | rename | **TODO** _only for GitHub?_
+| .PullRequest.SourceBranch | refs/heads/users/raisa/new-feature | rename | **TODO**
+| .PullRequest.SourceRepositoryURI | https://dev.azure.com/ouraccount/_git/OurProject | rename | **TODO**
+| .PullRequest.TargetBranch | refs/heads/master | rename | **TODO**
+| .ServerType | Hosted | CUT
+| .TaskDefinitionsURI | https://dev.azure.com/mattc-demo/ | CUT
+| .TaskDisplayName | Bash | rename | **TODO**
+| .TaskInstanceId | efa2bfe1-554a-50c8-79b6-ef106ad3c7c2 | CUT
+| .TaskInstanceName | `Bash`, `04bff6ce5394c41b0c048826688170a` | CUT
+| .TeamFoundationCollectionURI | https://dev.azure.com/mattc-demo/ | CUT | replace with **TODO**
+| .TeamFoundationServerURI | https://dev.azure.com/mattc-demo/ | CUT | replace with **TODO**
+| .TeamProject | Test1 | rename | **TODO**
+| .TeamProjectID | 0807fc91-4393-482d-9e23-defdbb7d0857 | CUT
+| .TimelineID | 5e42ea59-b1aa-4240-88cf-a443c0ac38d7 | rename | **TODO**
+| .TotalJobsInPhase | 1 | rename | **TODO**
+| .WorkFolder | D:\a | CUT | same as Agent.WorkFolder
 
 #### Misc
 | Variable | Example data | Keep, cut, or rename | Notes |
 |----------|--------------|----------------------|-------|
-| Common.TestResultsDirectory | D:\a\1\TestResults |
-| Endpoint.URL.SystemVSSConnection | https://dev.azure.com/mattc-demo/ |
-| RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b | _note: only set for RM_ |
-| Task.DisplayName | Bash |
-| TF_BUILD | True |
+| Common.TestResultsDirectory | D:\a\1\TestResults | CUT
+| Endpoint.URL.SystemVSSConnection | https://dev.azure.com/mattc-demo/ | CUT
+| RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b | CUT | only set for RM
+| Task.DisplayName | Bash | CUT
+| TF_BUILD | True | CUT WITH PREJUDICE
 
 ### New variables
 
 | New variable | Description | Special notes |
 |--------------|-------------|---------------|
-| CI | Set to "true" to match industry expectation for CI systems | Environment only, not available in expressions
+| CI | Set to `true` to match industry expectation for CI systems | Environment only, not available in expressions
 | Pipeline.Provider | Set to "Azure" to differentiate from other CI systems
 | Pipeline.Workspace | Root directory where all source, artifacts, etc will be placed
 | Pipeline.Run.Url | https:// URL to pipeline run | [requested](https://twitter.com/_a__w_/status/1102802095474827264)
 | Pipeline.Url | https:// URL to pipeline definition
-| Pipeline.JobDisplayName | Matches what's in the UI
+| Pipeline.Job.DisplayName | Matches what's in the UI
 | ... | Commit hash of target branch
 | ... | Merge commit
 | _TODO_
