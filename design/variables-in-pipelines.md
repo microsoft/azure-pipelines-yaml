@@ -26,10 +26,7 @@ A full solution needs to include:
 - desired future state
 - a path to bring tasks forward without breaking them on older definitions
 - a path to bring old definitions forward with minimal pain
-
-Ideally we also take this opportunity to rationalize what variables appear in what scopes.
-Current scopes are agent, orchestration time, and available 
-- (more?)
+- rationalize what variables appear in what scopes - currently confused between agent, orchestration time, and always available
 
 ### Kinds of existing variables
 
