@@ -58,19 +58,20 @@ We'll introduce a new Pipeline.\* namespace for variables.
 We'll bring forward the parts of Build.\* and Release.\* that make sense.
 All variables are available under Pipeline.\* plus the industry-standard "CI=true" variable.
 Some of these may be set conditionally, such as "only for pipelines triggered by a PR".
+Many of the new series of variables are NOT in the environment by default and must be explicitly mapped in.
 
 And those variables are...
 
-| Variable              | Description | Special notes |
-|-----------------------|-------------|---------------|
-| CI                    | Set to `true` to match industry expectation for CI systems | Environment only, not available in expressions
-| Pipeline.Provider     | Set to `Azure` to differentiate from other CI systems
-| Pipeline.Workspace    | Root directory where all source, artifacts, etc will be placed
-| Pipeline.Run.Url      | https:// URL to pipeline run | [requested](https://twitter.com/_a__w_/status/1102802095474827264)
-| Pipeline.Url          | https:// URL to pipeline definition
-| Pipeline.Job.DisplayName | Matches what's in the UI
-| ...                   | Commit hash of target branch
-| ...                   | Merge commit
+| Variable              | Description | Expression context? | Environment? |
+|-----------------------|-------------|---------------------|--------------|
+| CI                    | Set to `true` to match industry expectation for CI systems | :x: | :heavy_check_mark:
+| Pipeline.Provider     | Set to `Azure` to differentiate from other CI systems | :heavy_check_mark: | :heavy_check_mark:
+| Pipeline.Workspace    | Root directory where all source, artifacts, etc will be placed | :heavy_check_mark: | :heavy_check_mark:
+| Pipeline.Url          | https:// URL to pipeline definition | :heavy_check_mark: | :x:
+| Pipeline.Run.Url      | https:// URL to pipeline run | :heavy_check_mark: | :x:
+| Pipeline.Job.DisplayName | Matches what's in the UI | :heavy_check_mark: | :x:
+| ...                   | Commit hash of target branch | :heavy_check_mark: | :heavy_check_mark:
+| ...                   | Merge commit | :heavy_check_mark: | :heavy_check_mark:
 | _TODO_
 
 ### Task migration
@@ -79,7 +80,6 @@ We'll audit in-box tasks for dependencies on "am I running in Build or Release?"
 This behavior must be removed and replaced with correct behavior for a unified pipeline.
 At least one (the VS Test task) depends on the System Host Type.
 We'll introduce a new System Host Type, "Pipeline", which tasks can use to conditionally switch to new behavior.
-*TODO: validate that this is a sane strategy. Right now it's a proposal.*
 
 We'll introduce a task.json construct to signify "Pipeline-aware".
 Once there are no remaining dependencies on deprecated variables, tasks should declare they are Pipeline-aware.
@@ -104,16 +104,19 @@ In the designer, we give immediate feedback, and for YAML, we throw a YAML-compi
 
 For the designer, the compat mode flag is a UI checkbox.
 Newly created pipelines will default to having compat mode off.
+**NOTE**: we need to invest in a way to map context variables into the environment on a job- and task-level.
+Otherwise there's no way for designer pipelines to use the new variables.
 
 For YAML, it's a `version: 2` keyword at the root level of the file.
 YAML v2 may also introduce other breaking changes; those are [documented elsewhere](https://github.com/Microsoft/azure-pipelines-yaml/pull/92).
 
+We must give task authors a way to access the context-only variables.
+This is probably a command-line utility that's carried by the agent (and available separately for development).
+
 ## Variable scope
 
-We'll ensure everything under System.\* is available at orchestration time, including for pipeline run numbers.
-Variables under Pipeline.\* will also be available at orchestration time including run numbers.
-*TODO: Ensure this is possible.*
-Agent.\* variables are never available at orchestration time.
+Almost all variables under Pipeline\.* are available for template expansion and plan construction time.
+Pipeline.Workspace and Pipeline.Agent\.* are only available on the agent.
 
 ## Appendix: Existing variables
 
