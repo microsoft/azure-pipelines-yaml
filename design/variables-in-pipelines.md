@@ -55,7 +55,7 @@ Guidance on what makes a "good" variable to include:
 | Agent. | Example data | Keep, cut, or rename | Notes |
 |--------|--------------|----------------------|-------|
 | .BuildDirectory | D:\a\1 | rename | replace with Pipeline.Workspace
-| .DeploymentGroupId | 1 | **TODO**| _only in deployment group jobs_
+| .DeploymentGroupId | 1 | **TODO**| only in deployment group jobs
 | .Diagnostic | true | keep | non-existent by default
 | .DisableLogPlugin.TestFilePublisherPlugin | true | CUT | replace with feature flag
 | .DisableLogPlugin.TestResultLogPlugin | true | CUT | replace with feature flag
@@ -79,46 +79,46 @@ Guidance on what makes a "good" variable to include:
 #### Build
 | Build. | Example data | Keep, cut, or rename |
 |------------------|--------------|----------------------|
-| .ArtifactStagingDirectory | D:\a\1\a |
-| .BinariesDirectory | D:\a\1\b |
-| .BuildID | 1174 |
-| .BuildNumber | 20190401.7 |
-| .BuildURI | vstfs:///Build/Build/1174 |
-| .Clean | true | **cut** (already deprecated) |
-| .ContainerID | 2713905 |
-| .DefinitionID | 14 | _note: set for RM with a build artifact_ |
-| .DefinitionName | playground |
-| .DefinitionVersion | 8 |
-| .QueuedBy | Microsoft.VisualStudio.Services.TFS |
-| .QueuedByID | 00000002-0000-8888-8000-000000000000 |
-| .ProjectID | 0807fc91-4393-482d-9e23-defdbb7d0857 | _note: set for RM with a build artifact_ |
-| .ProjectName | Test1 | _note: set for RM with a build artifact_ |
-| .Reason | IndividualCI |
-| .Repository.Clean | False |
-| .Repository.Git.SubmoduleCheckout | False |
-| .Repository.ID | 80ab696a-644c-497e-84fd-b1d98c470825 |
-| .Repository.LocalPath | D:\a\1\s |
-| .Repository.Name | container |
-| .Repository.Provider | TfsGit |
-| .Repository.Tfvc.Workspace | ws_12_8 | 
-| .Repository.URI | https://mattc-demo@dev.azure.com/mattc-demo/Test1/_git/container |
-| .RequestedFor | Matt Cooper |
-| .RequestedForEmail | macoope@microsoft.com |
-| .RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b |
-| .SourceTfvcShelveset | my_shelveset |
-| .SourceBranch | refs/heads/master |
-| .SourceBranchName | master |
-| .SourcesDirectory | D:\a\1\s |
-| .SourceVersion | 5d7a52ce5a6e5f3cd1a8d1ee36fd2dd3ae731121 |
-| .SourceVersionAuthor | Matt Cooper |
-| .SourceVersionMessage | printenv | sort |
-| .StagingDirectory | D:\a\1\a |
-| .TriggeredBy.BuildId | |
-| .TriggeredBy.DefinitionId | |
-| .TriggeredBy.DefinitionName | |
-| .TriggeredBy.BuildNumber | |
-| .TriggeredBy.ProjectID | |
-| .Type | Build | _note: set for RM with a build artifact_ |
+| .ArtifactStagingDirectory | D:\a\1\a | CUT
+| .BinariesDirectory | D:\a\1\b | CUT
+| .BuildID | 1174 | rename | **TODO**
+| .BuildNumber | 20190401.7 | rename | **TODO**
+| .BuildURI | vstfs:///Build/Build/1174 | CUT
+| .Clean | true | CUT | already deprecated
+| .ContainerID | 2713905 | **TODO**
+| .DefinitionID | 14 | CUT | set for RM with a build artifact |
+| .DefinitionName | playground | rename | **TODO**
+| .DefinitionVersion | 8 | CUT | used in telemetry, but doesn't seem useful
+| .QueuedBy | Microsoft.VisualStudio.Services.TFS | rename | **TODO**
+| .QueuedByID | 00000002-0000-8888-8000-000000000000 | rename | **TODO**
+| .ProjectID | 0807fc91-4393-482d-9e23-defdbb7d0857 rename | **TODO** set for RM with a build artifact
+| .ProjectName | Test1 | rename | **TODO** set for RM with a build artifact
+| .Reason | IndividualCI | rename | **TODO**
+| .Repository.Clean | False | CUT
+| .Repository.Git.SubmoduleCheckout | False | CUT
+| .Repository.ID | 80ab696a-644c-497e-84fd-b1d98c470825 | CUT
+| .Repository.LocalPath | D:\a\1\s | rename | **TODO**
+| .Repository.Name | container | rename | **TODO**
+| .Repository.Provider | TfsGit | rename | **TODO**
+| .Repository.Tfvc.Workspace | ws_12_8 | rename | **TODO**
+| .Repository.URI | https://mattc-demo@dev.azure.com/mattc-demo/Test1/_git/container | rename | **TODO**
+| .RequestedFor | Matt Cooper | rename | **TODO**
+| .RequestedForEmail | macoope@microsoft.com | rename | **TODO**
+| .RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b | rename | **TODO**
+| .SourceTfvcShelveset | my_shelveset | rename | **TODO**
+| .SourceBranch | refs/heads/master | rename | **TODO**
+| .SourceBranchName | master | CUT | actual scenario is replaced by **TODO**
+| .SourcesDirectory | D:\a\1\s | CUT
+| .SourceVersion | 5d7a52ce5a6e5f3cd1a8d1ee36fd2dd3ae731121 | rename | **TODO**
+| .SourceVersionAuthor | Matt Cooper | rename | **TODO**
+| .SourceVersionMessage | my commit msg | rename | **TODO**
+| .StagingDirectory | D:\a\1\a | CUT
+| .TriggeredBy.BuildId | | rename | **TODO**
+| .TriggeredBy.DefinitionId | | rename | **TODO**
+| .TriggeredBy.DefinitionName | | rename | **TODO**
+| .TriggeredBy.BuildNumber | | rename | **TODO**
+| .TriggeredBy.ProjectID | | rename | **TODO**
+| .Type | Build | **TODO** | set for RM with a build artifact
 
 #### Release
 | Release. | Example data | Keep, cut, or rename |
