@@ -50,9 +50,74 @@ Guidance on what makes a "good" variable to include:
 - _Commonly_ required in an ad-hoc script or a task we ship in the box
 - Relevant to detecting or dealing with the environment (e.g. that we're running in Azure Pipelines, that we're running in CI, where on disk the pipeline workspace is rooted)
 
-### Existing variables
+## New variables
 
-#### Agent
+### New namespace for variables
+
+We'll introduce a new Pipeline.\* namespace for variables.
+We'll bring forward the parts of Build.\* and Release.\* that make sense.
+All variables are available under Pipeline.\* plus the industry-standard "CI=true" variable.
+Some of these may be set conditionally, such as "only for pipelines triggered by a PR".
+
+And those variables are...
+
+| Variable              | Description | Special notes |
+|-----------------------|-------------|---------------|
+| CI                    | Set to `true` to match industry expectation for CI systems | Environment only, not available in expressions
+| Pipeline.Provider     | Set to `Azure` to differentiate from other CI systems
+| Pipeline.Workspace    | Root directory where all source, artifacts, etc will be placed
+| Pipeline.Run.Url      | https:// URL to pipeline run | [requested](https://twitter.com/_a__w_/status/1102802095474827264)
+| Pipeline.Url          | https:// URL to pipeline definition
+| Pipeline.Job.DisplayName | Matches what's in the UI
+| ...                   | Commit hash of target branch
+| ...                   | Merge commit
+| _TODO_
+
+### Task migration
+
+We'll audit in-box tasks for dependencies on "am I running in Build or Release?"
+This behavior must be removed and replaced with correct behavior for a unified pipeline.
+At least one (the VS Test task) depends on the System Host Type.
+We'll introduce a new System Host Type, "Pipeline", which tasks can use to conditionally switch to new behavior.
+*TODO: validate that this is a sane strategy. Right now it's a proposal.*
+
+We'll introduce a task.json construct to signify "Pipeline-aware".
+Once there are no remaining dependencies on deprecated variables, tasks should declare they are Pipeline-aware.
+In-box tasks will be required to do so by some date.
+We'll run an outreach campaign to push Marketplace tasks to do the same.
+
+### Pipeline migration
+
+We'll introduce a "compat mode" flag on the Pipeline level.
+All existing designer pipelines and all YAML pipelines will default to "compat mode".
+When a pipeline runs in compat mode, both the old and new namespace variables are injected.
+This way, older tasks and scripts are not broken, but the new world is available.
+In non-compat mode, only the Pipeline.\* variables are injected -- not Build.\* or Release.\*.
+
+If any task in a pipeline is not Pipeline-aware, the flag cannot be unset on the pipeline.
+Once the pipeline is free of non-Pipeline-aware tasks, it becomes a user option to change.
+Eventually, we'll run an outreach campaign to instruct users to update their pipelines to turn off compat mode.
+This may include injecting warnings in the pipeline run.
+
+When a pipeline has compat mode turned off, non-Pipeline-aware tasks cannot be added.
+In the designer, we give immediate feedback, and for YAML, we throw a YAML-compile-time failure.
+
+For the designer, the compat mode flag is a UI checkbox.
+Newly created pipelines will default to having compat mode off.
+
+For YAML, it's a `version: 2` keyword at the root level of the file.
+YAML v2 may also introduce other breaking changes; those are [documented elsewhere](https://github.com/Microsoft/azure-pipelines-yaml/pull/92).
+
+## Variable scope
+
+We'll ensure everything under System.\* is available at orchestration time, including for pipeline run numbers.
+Variables under Pipeline.\* will also be available at orchestration time including run numbers.
+*TODO: Ensure this is possible.*
+Agent.\* variables are never available at orchestration time.
+
+## Appendix: Existing variables
+
+### Agent
 | Agent. | Example data | Keep, cut, or rename | Notes |
 |--------|--------------|----------------------|-------|
 | .BuildDirectory | D:\a\1 | rename | replace with Pipeline.Workspace
@@ -77,7 +142,7 @@ Guidance on what makes a "good" variable to include:
 | .Version | 2.148.2 | keep
 | .WorkFolder | D:\a | keep
 
-#### Build
+### Build
 | Build. | Example data | Keep, cut, or rename | Notes |
 |--------|--------------|----------------------|-------|
 | .ArtifactStagingDirectory | D:\a\1\a | CUT
@@ -121,7 +186,7 @@ Guidance on what makes a "good" variable to include:
 | .TriggeredBy.ProjectID | | rename | **TODO**
 | .Type | Build | **TODO** | set for RM with a build artifact
 
-#### Release
+### Release
 | Release. | Example data | Keep, cut, or rename | Notes |
 |----------|--------------|----------------------|-------|
 | .Artifacts.{artifact_id}.BuildID | 1174 | rename 
@@ -169,7 +234,7 @@ Guidance on what makes a "good" variable to include:
 | .SkipArtifactsDownload | False | CUT | replace with feature flag
 | .TriggeringArtifact.Alias |  | CUT
 
-#### System
+### System
 | System. | Example data | Keep, cut, or rename | Notes |
 |---------|--------------|----------------------|-------|
 | System | `build`, `release` | CUT | _this isn't System.System -- just `System`_
@@ -217,75 +282,11 @@ Guidance on what makes a "good" variable to include:
 | .TotalJobsInPhase | 1 | rename | **TODO**
 | .WorkFolder | D:\a | CUT | same as Agent.WorkFolder
 
-#### Misc
+### Misc
 | Variable | Example data | Keep, cut, or rename | Notes |
 |----------|--------------|----------------------|-------|
 | Common.TestResultsDirectory | D:\a\1\TestResults | CUT
 | Endpoint.URL.SystemVSSConnection | https://dev.azure.com/mattc-demo/ | CUT
 | RequestedForID | 58d417da-d63e-4df5-9884-72fd1e85590b | CUT | only set for RM
 | Task.DisplayName | Bash | CUT
-| TF_BUILD | True | CUT WITH PREJUDICE
-
-### New variables
-
-| New variable | Description | Special notes |
-|--------------|-------------|---------------|
-| CI | Set to `true` to match industry expectation for CI systems | Environment only, not available in expressions
-| Pipeline.Provider | Set to "Azure" to differentiate from other CI systems
-| Pipeline.Workspace | Root directory where all source, artifacts, etc will be placed
-| Pipeline.Run.Url | https:// URL to pipeline run | [requested](https://twitter.com/_a__w_/status/1102802095474827264)
-| Pipeline.Url | https:// URL to pipeline definition
-| Pipeline.Job.DisplayName | Matches what's in the UI
-| ... | Commit hash of target branch
-| ... | Merge commit
-| _TODO_
-
-### New namespace for variables
-
-We'll introduce a new Pipeline.\* namespace for variables.
-We'll bring forward the parts of Build.\* and Release.\* that make sense.
-*TODO: define what those are.*
-This is the desired future state: all relevant variables are available under Pipeline.\*, Agent.\*, or System.\*.
-Some of these may be set conditionally, such as "only for pipelines triggered by a PR".
-
-### Task migration
-
-We'll audit in-box tasks for dependencies on "am I running in Build or Release?"
-This behavior must be removed and replaced with correct behavior for a unified pipeline.
-At least one (the VS Test task) depends on the System Host Type.
-We'll introduce a new System Host Type, "Pipeline", which tasks can use to conditionally switch to new behavior.
-*TODO: validate that this is a sane strategy. Right now it's a proposal.*
-
-We'll introduce a task.json construct to signify "Pipeline-aware".
-Once there are no remaining dependencies on deprecated variables, tasks should declare they are Pipeline-aware.
-In-box tasks will be required to do so by some date.
-We'll run an outreach campaign to push Marketplace tasks to do the same.
-
-### Pipeline migration
-
-We'll introduce a "compat mode" flag on the Pipeline level.
-All existing designer pipelines and all YAML pipelines will default to "compat mode".
-When a pipeline runs in compat mode, both the old and new namespace variables are injected.
-This way, older tasks and scripts are not broken, but the new world is available.
-In non-compat mode, only the Pipeline.\* variables are injected -- not Build.\* or Release.\*.
-
-If any task in a pipeline is not Pipeline-aware, the flag cannot be unset on the pipeline.
-Once the pipeline is free of non-Pipeline-aware tasks, it becomes a user option to change.
-Eventually, we'll run an outreach campaign to instruct users to update their pipelines to turn off compat mode.
-This may include injecting warnings in the pipeline run.
-
-When a pipeline has compat mode turned off, non-Pipeline-aware tasks cannot be added.
-In the designer, we give immediate feedback, and for YAML, we throw a YAML-compile-time failure.
-
-For the designer, the compat mode flag is a UI checkbox.
-Newly created pipelines will default to having compat mode off.
-
-For YAML, it's a `version: 2` keyword at the root level of the file.
-YAML v2 may also introduce other breaking changes; those are [documented elsewhere](https://github.com/Microsoft/azure-pipelines-yaml/pull/92).
-
-## Variable scope
-
-We'll ensure everything under System.\* is available at orchestration time, including for pipeline run numbers.
-Variables under Pipeline.\* will also be available at orchestration time including run numbers.
-*TODO: Ensure this is possible.*
-Agent.\* variables are never available at orchestration time.
+| TF_BUILD | True | CUT
