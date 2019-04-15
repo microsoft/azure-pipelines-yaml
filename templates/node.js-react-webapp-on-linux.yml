@@ -6,34 +6,72 @@
 trigger:
 - master
 
-pool:
-  vmImage: 'ubuntu-latest'
+variables:
 
-steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '10.x'
-  displayName: 'Install Node.js'
-  
-- task: ArchiveFiles@2
-  displayName: 'Archive files'
-  inputs:
-    rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
-    includeRootFolder: false
-    archiveType: zip
-    archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
-    replaceExistingArchive: true
+  # Azure Resource Manager connection created during pipeline creation
+  azureSubscription: '{{ azureRmConnection.Name }}'
 
-- task: AzureRmWebAppDeployment@4
-  displayName: 'Azure App Service Deploy: {{ webAppName }}'
-  inputs:
-    azureSubscription: '{{ azureRmConnection.Name }}'
-    appType: webAppLinux
-    WebAppName: '{{ webAppName }}'
-    packageForLinux: '$(build.artifactstagingdirectory)/**/*.zip'
-    RuntimeStack: 'NODE|10.10'
-    StartupCommand: 'npm run start'
-    ScriptType: 'Inline Script'
-    InlineScript: |
-     npm install
-     npm run build
+  # Web app name
+  webAppName: '{{ webAppName }}'
+
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:  
+  - job: Build
+    displayName: Build job
+    pool:
+      vmImage: $(vmImageName)
+      
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '10.x'
+      displayName: 'Install Node.js'
+      
+    - task: ArchiveFiles@2
+      displayName: 'Archive files'
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+        includeRootFolder: false
+        archiveType: zip
+        archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+        replaceExistingArchive: true
+
+    - task: PublishPipelineArtifact@0
+      displayName: 'Publish pipeline artifacts'
+      inputs:
+        targetPath: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: Build
+  condition: succeeded()
+  jobs:
+  - job: Deploy
+    displayName: Deploy job
+    pool:
+      vmImage: $(vmImageName)
+    
+    steps:
+    - task: DownloadPipelineArtifact@1
+      displayName: 'Download Pipeline Artifact'
+      inputs:
+        buildType: current
+      
+    - task: AzureRmWebAppDeployment@4
+      displayName: 'Azure App Service Deploy: $(webAppName)'
+      inputs:
+        azureSubscription: $(azureSubscription)
+        appType: webAppLinux
+        WebAppName: $(webAppName)
+        packageForLinux: '$(System.ArtifactsDirectory)/drop/$(Build.BuildId).zip'
+        RuntimeStack: 'NODE|10.10'
+        StartupCommand: 'npm run start'
+        ScriptType: 'Inline Script'
+        InlineScript: |
+          npm install
+          npm run build --if-present
