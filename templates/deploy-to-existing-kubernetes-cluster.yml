@@ -18,7 +18,7 @@ variables:
   tag: '$(Build.BuildId)'
   
   # Kubernetes Namespace
-  k8sNamespace: '{{ environment.Resources.kubernetesConnection.Namespace }}'
+  k8sNamespace: '{{ k8sResource.Namespace }}'
   imagePullSecret: '{{ containerRegistryConnection.Name }}-auth'
 
   # Agent VM image name
@@ -51,7 +51,7 @@ stages:
     displayName: Deploy job
     pool:
       vmImage: $(vmImageName)
-    environment: '{{ environment.Environment.Name }}.{{ environment.Resources.kubernetesConnection.Name }}'
+    environment: '{{ k8sResource.EnvironmentReference.Name }}.{{ k8sResource.Name }}'
     strategy:
       runOnce:
         deploy:
