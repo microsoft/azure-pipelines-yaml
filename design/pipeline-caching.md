@@ -97,6 +97,7 @@ The example task usage above uses the explicit task references. We also want to 
 ```yaml
 steps:
 - restoreCache: yarn.lock
+  path: node_modules
 - script: yarn
 - saveCache:
   key: yarn.lock
@@ -141,6 +142,7 @@ In the interests of correctness we will not skip build steps by default based on
 ```yaml
 steps:
 - restoreCache: yarn.lock
+  path: node_modules
   skipVariable: cache.skipyarn
 - script: yarn
   condition: eq(variables['cache.skipyarn'], 'sourcehit')
