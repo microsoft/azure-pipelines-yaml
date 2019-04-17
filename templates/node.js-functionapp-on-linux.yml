@@ -58,21 +58,24 @@ stages:
   dependsOn: Build
   condition: succeeded()
   jobs:
-  - job: Deploy
+  - deployment: Deploy
     displayName: Deploy job
-    pool:
-      vmImage: $(vmImageName)
-    
-    steps:
-    - task: DownloadPipelineArtifact@1
-      displayName: 'Download Pipeline Artifact'
-      inputs:
-        buildType: current
-      
-    - task: AzureFunctionApp@1
-      displayName: 'Azure Functions App Deploy: $(functionAppName)'
-      inputs:
-        azureSubscription: '$(azureSubscription)'
-        appType: functionAppLinux
-        appName: $(functionAppName)
-        package: '$(System.ArtifactsDirectory)/drop/$(Build.BuildId).zip'
+    environment: 'development'
+    pool: 
+      vmImage: $(vmImageName)    
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadPipelineArtifact@1
+            displayName: 'Download Pipeline Artifact'
+            inputs:
+              buildType: current
+            
+          - task: AzureFunctionApp@1
+            displayName: 'Azure Functions App Deploy: {{ functionAppName }}'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              appType: functionAppLinux
+              appName: $(functionAppName)
+              package: '$(System.ArtifactsDirectory)/drop/$(Build.BuildId).zip'

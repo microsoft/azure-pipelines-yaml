@@ -57,23 +57,26 @@ stages:
   dependsOn: Build
   condition: succeeded()
   jobs:
-  - job: Deploy
+  - deployment: Deploy
     displayName: Deploy job
-    pool:
-      vmImage: $(vmImageName)
-    
-    steps:
-    - task: DownloadPipelineArtifact@1
-      displayName: 'Download Pipeline Artifact'
-      inputs:
-        buildType: 'current'
-      
-    - task: AzureWebApp@1
-      displayName: 'Azure Web App Deploy: $(webAppName)'
-      inputs:
-        azureSubscription: $(azureSubscription)
-        appType: webAppLinux
-        appName: $(webAppName)
-        runtimeStack: 'NODE|10.10'
-        package: $(System.ArtifactsDirectory)/drop/$(Build.BuildId).zip
-        startUpCommand: 'npm run start'
+    environment: 'development'
+    pool: 
+      vmImage: $(vmImageName)    
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadPipelineArtifact@1
+            displayName: 'Download Pipeline Artifact'
+            inputs:
+              buildType: 'current'
+            
+          - task: AzureWebApp@1
+            displayName: 'Azure Web App Deploy: {{ webAppName }}'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              appType: webAppLinux
+              appName: $(webAppName)
+              runtimeStack: 'NODE|10.10'
+              package: $(System.ArtifactsDirectory)/drop/$(Build.BuildId).zip
+              startUpCommand: 'npm run start'

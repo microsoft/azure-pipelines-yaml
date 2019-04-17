@@ -51,27 +51,30 @@ stages:
   dependsOn: Build
   condition: succeeded()
   jobs:
-  - job: Deploy
+  - deployment: Deploy
     displayName: Deploy job
-    pool:
-      vmImage: $(vmImageName)
-    
-    steps:
-    - task: DownloadPipelineArtifact@1
-      displayName: 'Download Pipeline Artifact'
-      inputs:
-        buildType: current
-      
-    - task: AzureRmWebAppDeployment@4
-      displayName: 'Azure App Service Deploy: $(webAppName)'
-      inputs:
-        azureSubscription: $(azureSubscription)
-        appType: webAppLinux
-        WebAppName: $(webAppName)
-        packageForLinux: '$(System.ArtifactsDirectory)/drop/$(Build.BuildId).zip'
-        RuntimeStack: 'NODE|10.10'
-        StartupCommand: 'npm run start'
-        ScriptType: 'Inline Script'
-        InlineScript: |
-          npm install
-          npm run build --if-present
+    environment: 'development'
+    pool: 
+      vmImage: $(vmImageName)    
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadPipelineArtifact@1
+            displayName: 'Download Pipeline Artifact'
+            inputs:
+              buildType: current
+            
+          - task: AzureRmWebAppDeployment@4
+            displayName: 'Azure App Service Deploy: {{ webAppName }}'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              appType: webAppLinux
+              WebAppName: $(webAppName)
+              packageForLinux: '$(System.ArtifactsDirectory)/drop/$(Build.BuildId).zip'
+              RuntimeStack: 'NODE|10.10'
+              StartupCommand: 'npm run start'
+              ScriptType: 'Inline Script'
+              InlineScript: |
+                npm install
+                npm run build --if-present
