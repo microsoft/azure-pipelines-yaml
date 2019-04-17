@@ -32,11 +32,15 @@
     "assets": [
         {
             "type": "file",
-            "path": "k8s/deployment.yml"
+            "path": "k8s/deployment.yml",
+            "destinationPath": "manifests/deployment.yml",
+            "description": "Kubernetes manifest (deployment)"
         },
         {
             "type": "file",
-            "path": "k8s/service.yml"
+            "path": "k8s/service.yml",
+            "destinationPath": "manifests/service.yml",
+            "description": "Kubernetes manifest (service)"
         }
     ]
 }
