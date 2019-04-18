@@ -185,6 +185,8 @@ resources:
 
 Repos from the `repository` resources defined are automatically synced and made available for all the jobs in the pipeline. However, in any of the jobs, you can choose to override and sync only specific repository using `checkout` shortcut. 
 
+Repos from `repository` resource and `self` repo are not automatically synced in 'deployment' jobs. If you required repo to be fetched in the deployment job, you need to explicitly `checkout`.
+
 ```yaml
 - checkout: string  # identifier for your repository; for primary repository use the keyword self.
   clean: boolean  # whether to fetch clean each time
