@@ -1,16 +1,16 @@
 apiVersion : apps/v1beta1
 kind: Deployment
 metadata:
-  name: {{}} # Data would be extracted from docker registry endpoint
+  name: {{ imageRepository }} 
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: {{}} # Data would be extracted from docker registry endpoint
+        app: {{ imageRepository }} 
     spec:
       containers:
-        - name: {{}} # Data would be extracted from docker registry endpoint
-          image: {{}}/{{ imageName }} # Data would be extracted from docker registry endpoint
+        - name: {{ imageRepository }} 
+          image: {{ containerRegistryConnection.Authorization.Parameters.loginServer }}/{{ imageRepository }} 
           ports:
           - containerPort: {{ servicePort }}
