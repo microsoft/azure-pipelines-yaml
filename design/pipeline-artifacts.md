@@ -59,18 +59,24 @@ Listing just the unique properties of the `download` step:
   path: string - the destination path for where to download the artifact(s)
 ```
 
-### Automated download
+### Automated download behavior - job vs deployment
 
-The "magic" of download is how often you _don't_ have to specify it.
-By default, all artifacts produced in the current pipeline and all artifacts in all referenced pipelines will be downloaded.
-As soon as you include an explicit `download` step (or task), the user is in total control - no more automatic download for that job.
-Similarly, you can leave out `artifact`, `patterns`, or `path` to get some automatic behaviors (described below).
+Usually a 'job' publishes build artifacts which are deployed to an environment as part of the 'deployment' job.
+Therefore, the automatic artifact download behavior varies between a 'job' and 'deployment'.
+
+#### job
+Artifacts are not automatically downloaded in regular jobs. However, if you require artifacts to be downloaded in your jobs, you need to explicitly use `download`.
+
+#### deployment
+All artifacts produced in the current pipeline and all artifacts from the referenced pipelines are automatically downloaded  and made available in the deployment jobs.
+However, as soon as you include an explicit `download` step (or task), the user is in total control - no more automatic download for that job. Similarly, you can leave out `artifact`, `patterns`, or `path` to get some automatic behaviors (described below).
 
 Or to avoid downloading any of the artifacts at all:
 
 ```yaml
 - download: none
 ```
+
 
 ### Choosing which pipelines and artifacts to download
 
