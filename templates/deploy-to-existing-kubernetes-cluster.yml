@@ -12,14 +12,14 @@ variables:
 
   # Container registry service connection established during pipeline creation - Docker Hub/ACR/...
   dockerRegistryServiceConnection: '{{ containerRegistryConnection.Id }}'
-  imageRepository: '{{ imageRepository }}'
+  imageRepository: '{{#toAlphaNumericString imageRepository 50}}{{/toAlphaNumericString}}'
   containerRegistry: '{{ containerRegistryConnection.Authorization.Parameters.loginServer }}'
   dockerfilePath: '**/Dockerfile'
   tag: '$(Build.BuildId)'
   
   # Kubernetes Namespace
   k8sNamespace: '{{ environment.Resources.kubernetesConnection.Namespace }}'
-  imagePullSecret: '{{ containerRegistryConnection.Name }}-auth'
+  imagePullSecret: '{{#toAlphaNumericString containerRegistryConnection.Name 50}}{{/toAlphaNumericString}}{{#shortGuid}}{{/shortGuid}}-auth'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
