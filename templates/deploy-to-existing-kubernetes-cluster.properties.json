@@ -7,8 +7,8 @@
             "required": "true"
         },
         {
-            "name": "environment",
-            "type": "environment",
+            "name": "k8sResource",
+            "type": "environmentResource:kubernetes",
             "required": "true"
         },
         {
