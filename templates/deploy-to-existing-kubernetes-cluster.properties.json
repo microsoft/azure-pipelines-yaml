@@ -2,11 +2,6 @@
     "iconName": "aks",
     "parameters": [
         {
-            "name": "kubernetesConnection",
-            "type": "endpoint:kubernetes",
-            "required": "true"
-        },
-        {
             "name": "k8sResource",
             "type": "environmentResource:kubernetes",
             "required": "true"
