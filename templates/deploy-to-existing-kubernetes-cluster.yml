@@ -12,14 +12,15 @@ variables:
 
   # Container registry service connection established during pipeline creation - Docker Hub/ACR/...
   dockerRegistryServiceConnection: '{{ containerRegistryConnection.Id }}'
-  imageRepository: '{{ imageRepository }}'
+  imageRepository: '{{#toAlphaNumericString imageRepository 50}}{{/toAlphaNumericString}}'
   containerRegistry: '{{ containerRegistryConnection.Authorization.Parameters.loginServer }}'
   dockerfilePath: '**/Dockerfile'
   tag: '$(Build.BuildId)'
   
   # Kubernetes Namespace
   k8sNamespace: '{{ k8sResource.Namespace }}'
-  imagePullSecret: '{{ containerRegistryConnection.Name }}-auth'
+  imagePullSecret: '{{#toAlphaNumericString containerRegistryConnection.Name 50}}{{/toAlphaNumericString}}{{#shortGuid}}{{/shortGuid}}-auth'
+
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
@@ -42,6 +43,11 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
+          
+    - task: PublishPipelineArtifact@0
+      inputs:
+        artifactName: 'manifests'
+        targetPath: 'manifests'
 
 - stage: Deploy
   displayName: Deploy stage
@@ -56,6 +62,11 @@ stages:
       runOnce:
         deploy:
           steps:
+          - task: DownloadPipelineArtifact@1
+            inputs:
+              artifactName: 'manifests'
+              downloadPath: '$(System.ArtifactsDirectory)/manifests'
+
           - task: KubernetesManifest@0
             displayName: Create imagePullSecret
             inputs:
@@ -70,8 +81,8 @@ stages:
               action: deploy
               namespace: $(k8sNamespace)
               manifests: |
-                manifests/*
+                $(System.ArtifactsDirectory)/manifests/*
               imagePullSecrets: |
                 $(imagePullSecret)
               containers: |
-                $ (containerRegistry)/$(imageRepository):$(tag)
+                $(containerRegistry)/$(imageRepository):$(tag)
