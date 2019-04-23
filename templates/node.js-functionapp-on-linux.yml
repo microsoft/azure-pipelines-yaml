@@ -1,5 +1,5 @@
-# Node.js Express Web App on Linux
-# Build a Node.js Express app and deploy it as a Linux web app.
+# Node.js Function App on Linux
+# Build and deploy a Node.js Function app on Linux.
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
@@ -10,9 +10,9 @@ variables:
 
   # Azure Resource Manager connection created during pipeline creation
   azureSubscription: '{{ azureRmConnection.Id }}'
-  
-  # Web app name
-  webAppName: '{{ webAppName }}'
+
+  # Function app name
+  functionAppName: '{{ functionAppName }}'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
@@ -33,10 +33,11 @@ stages:
       displayName: 'Install Node.js'
 
     - script: |
+        dotnet build --runtime ubuntu.16.04-x64 --output './bin/'
         npm install
         npm run build --if-present
         npm run test --if-present
-      displayName: 'npm install, build and test'
+      displayName: 'Build extensions and prepare binaries'
       
     - task: ArchiveFiles@2
       displayName: 'Archive files'
@@ -69,14 +70,12 @@ stages:
           - task: DownloadPipelineArtifact@1
             displayName: 'Download Pipeline Artifact'
             inputs:
-              buildType: 'current'
+              buildType: current
             
-          - task: AzureWebApp@1
-            displayName: 'Azure Web App Deploy: {{ webAppName }}'
+          - task: AzureFunctionApp@1
+            displayName: 'Azure Functions App Deploy: {{ functionAppName }}'
             inputs:
-              azureSubscription: $(azureSubscription)
-              appType: webAppLinux
-              appName: $(webAppName)
-              runtimeStack: 'NODE|10.10'
-              package: $(System.ArtifactsDirectory)/drop/$(Build.BuildId).zip
-              startUpCommand: 'npm run start'
+              azureSubscription: '$(azureSubscription)'
+              appType: functionAppLinux
+              appName: $(functionAppName)
+              package: '$(System.ArtifactsDirectory)/drop/$(Build.BuildId).zip'
