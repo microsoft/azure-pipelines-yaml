@@ -9,7 +9,7 @@ trigger:
 variables:
 
   # Azure Resource Manager connection created during pipeline creation
-  azureSubscription: '{{ azureRmConnection.Name }}'
+  azureSubscription: '{{ azureRmConnection.Id }}'
 
   # Function app name
   functionAppName: '{{ functionAppName }}'
@@ -22,7 +22,7 @@ stages:
   displayName: Build stage
   jobs:  
   - job: Build
-    displayName: Build job
+    displayName: Build
     pool:
       vmImage: $(vmImageName)
       
@@ -59,7 +59,7 @@ stages:
   condition: succeeded()
   jobs:
   - deployment: Deploy
-    displayName: Deploy job
+    displayName: Deploy
     environment: 'development'
     pool: 
       vmImage: $(vmImageName)    
