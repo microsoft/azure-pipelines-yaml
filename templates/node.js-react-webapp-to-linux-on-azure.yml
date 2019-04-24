@@ -1,5 +1,5 @@
-# Node.js React Web App on Linux
-# Build a Node.js React app and deploy it as a Linux web app.
+# Node.js React Web App to Linux on Azure
+# Build a Node.js React app and deploy it to Azure as a Linux web app.
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
@@ -50,7 +50,7 @@ stages:
     displayName: Deploy
     environment: 'development'
     pool: 
-      vmImage: $(vmImageName)    
+      vmImage: $(vmImageName)
     strategy:
       runOnce:
         deploy:

@@ -1,5 +1,5 @@
-# Node.js Function App on Linux
-# Build and deploy a Node.js Function app on Linux.
+# Node.js Express Web App to Linux on Azure
+# Build a Node.js Express app and deploy it to Azure as a Linux web app.
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
@@ -10,9 +10,9 @@ variables:
 
   # Azure Resource Manager connection created during pipeline creation
   azureSubscription: '{{ azureRmConnection.Id }}'
-
-  # Function app name
-  functionAppName: '{{ functionAppName }}'
+  
+  # Web app name
+  webAppName: '{{ webAppName }}'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
@@ -33,11 +33,10 @@ stages:
       displayName: 'Install Node.js'
 
     - script: |
-        dotnet build --runtime ubuntu.16.04-x64 --output './bin/'
         npm install
         npm run build --if-present
         npm run test --if-present
-      displayName: 'Build extensions and prepare binaries'
+      displayName: 'npm install, build and test'
       
     - task: ArchiveFiles@2
       displayName: 'Archive files'
@@ -62,7 +61,7 @@ stages:
     displayName: Deploy
     environment: 'development'
     pool: 
-      vmImage: $(vmImageName)    
+      vmImage: $(vmImageName)
     strategy:
       runOnce:
         deploy:
@@ -70,12 +69,14 @@ stages:
           - task: DownloadPipelineArtifact@1
             displayName: 'Download Pipeline Artifact'
             inputs:
-              buildType: current
+              buildType: 'current'
             
-          - task: AzureFunctionApp@1
-            displayName: 'Azure Functions App Deploy: {{ functionAppName }}'
+          - task: AzureWebApp@1
+            displayName: 'Azure Web App Deploy: {{ webAppName }}'
             inputs:
-              azureSubscription: '$(azureSubscription)'
-              appType: functionAppLinux
-              appName: $(functionAppName)
-              package: '$(System.ArtifactsDirectory)/drop/$(Build.BuildId).zip'
+              azureSubscription: $(azureSubscription)
+              appType: webAppLinux
+              appName: $(webAppName)
+              runtimeStack: 'NODE|10.10'
+              package: $(System.ArtifactsDirectory)/drop/$(Build.BuildId).zip
+              startUpCommand: 'npm run start'
