@@ -61,8 +61,8 @@ steps:
     azureSubscription: $(azureSubscription)
     scriptLocation: inlineScript
     inlineScript: |
-    { az ml workspace create -w $(workspaceName) -g $(resourceGroupName) -y --exist-ok } &&
-    { az ml computetarget create amlcompute -n $(computeName) --max-nodes 1 -s STANDARD_D3_V2 -w $(workspaceName) -g $(resourceGroupName) }
+    { az ml workspace create -w $(workspaceName) -g $(resourceGroupName) -y --exist-ok; } &&
+    { az ml computetarget create amlcompute -n $(computeName) --max-nodes 1 -s STANDARD_D3_V2 -w $(workspaceName) -g $(resourceGroupName); }
     failOnStandardError: true
 
 - task: AzureCLI@1
@@ -71,8 +71,8 @@ steps:
     azureSubscription: $(azureSubscription)
     scriptLocation: inlineScript
     inlineScript: |
-    { az ml folder attach -e amlexperiment -w $(workspaceName) -g $(resourceGroupName) } &&
-    { az ml run submit-script -e amlexperiment -d $(condaFile) -c $(runConfig) -t runmetadata.json -w $(workspaceName) -g $(resourceGroupName) $(trainScript) }
+    { az ml folder attach -e amlexperiment -w $(workspaceName) -g $(resourceGroupName); } &&
+    { az ml run submit-script -e amlexperiment -d $(condaFile) -c $(runConfig) -t runmetadata.json -w $(workspaceName) -g $(resourceGroupName) $(trainScript); }
 
 - task: AzureCLI@1
   displayName: 'Register and Deploy Model'
@@ -80,5 +80,5 @@ steps:
     azureSubscription: $(azureSubscription)
     scriptLocation: inlineScript
     inlineScript: |
-    { az ml model register -n $(modelName) -f runmetadata.json --experiment-name amlexperiment --asset-path $(modelAssetPath) -t modelmetadata.json -w $(workspaceName) -g $(resourceGroupName) } &&
-    { az ml model deploy -n amlservice --overwrite -f modelmetadata.json -df $(deploymentMetadataFile) --inference-metadata-file $(inferenceMetadataFile) -w $(workspaceName) -g $(resourceGroupName) }
+    { az ml model register -n $(modelName) -f runmetadata.json --experiment-name amlexperiment --asset-path $(modelAssetPath) -t modelmetadata.json -w $(workspaceName) -g $(resourceGroupName); } &&
+    { az ml model deploy -n amlservice --overwrite -f modelmetadata.json -df $(deploymentMetadataFile) --inference-metadata-file $(inferenceMetadataFile) -w $(workspaceName) -g $(resourceGroupName); }
