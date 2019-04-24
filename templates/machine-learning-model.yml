@@ -1,0 +1,84 @@
+# Machine Learning Model
+# Build and deploy a ML model using Azure ML SDK.
+# Add steps that build, test, save build artifacts, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+variables:
+
+  # Azure Resource Manager connection created during pipeline creation
+  azureSubscription: '{{ azureRmConnection.Id }}'
+
+  # Name of compute target
+  computeName: 'aml-compute'
+
+  # Conda dependencies file
+  condaFile: 'myenv.yml'
+
+  # Path to a JSON or YAML file containing deployment metadata
+  deploymentMetadataFile: 'deployment.yml'
+
+  # Path to a JSON or YAML file containing inference metadata
+  inferenceMetadataFile: 'inferenceConfig.yml'
+
+  # The cloud path where the experiment run stores the model file
+  modelAssetPath: 'outputs/model.pkl'
+
+  # Name of model to register
+  modelName: 'aml-model'
+
+  # Azure resource group name
+  resourceGroupName: 'aml-rg'
+
+  # Run configuration file name
+  runConfig: 'sklearn'
+
+  # Training script file name
+  trainScript: 'train.py'
+
+  # Azure ML workspace name
+  workspaceName: 'aml-ws'
+
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+pool:
+  vmImage: $(vmImageName)
+  
+steps:
+- task: AzureCLI@1
+  displayName: 'Install Azure CLI ML Extension'
+  inputs:
+    azureSubscription: $(azureSubscription)
+    scriptLocation: inlineScript
+    inlineScript: 'az extension add -y -s https://azuremlsdktestpypi.blob.core.windows.net/wheels/Smoke-tests-windows-az-extension-add/2864553/azure_cli_ml-0.1.0.2864553-py2.py3-none-any.whl --pip-extra-index-urls https://azuremlsdktestpypi.azureedge.net/Smoke-tests-windows-az-extension-add/2864553'
+
+- task: AzureCLI@1
+  displayName: Setup
+  inputs:
+    azureSubscription: $(azureSubscription)
+    scriptLocation: inlineScript
+    inlineScript: |
+    { az ml workspace create -w $(workspaceName) -g $(resourceGroupName) -y --exist-ok } &&
+    { az ml computetarget create amlcompute -n $(computeName) --max-nodes 1 -s STANDARD_D3_V2 -w $(workspaceName) -g $(resourceGroupName) }
+    failOnStandardError: true
+
+- task: AzureCLI@1
+  displayName: 'Train Model'
+  inputs:
+    azureSubscription: $(azureSubscription)
+    scriptLocation: inlineScript
+    inlineScript: |
+    { az ml folder attach -e amlexperiment -w $(workspaceName) -g $(resourceGroupName) } &&
+    { az ml run submit-script -e amlexperiment -d $(condaFile) -c $(runConfig) -t runmetadata.json -w $(workspaceName) -g $(resourceGroupName) $(trainScript) }
+
+- task: AzureCLI@1
+  displayName: 'Register and Deploy Model'
+  inputs:
+    azureSubscription: $(azureSubscription)
+    scriptLocation: inlineScript
+    inlineScript: |
+    { az ml model register -n $(modelName) -f runmetadata.json --experiment-name amlexperiment --asset-path $(modelAssetPath) -t modelmetadata.json -w $(workspaceName) -g $(resourceGroupName) } &&
+    { az ml model deploy -n amlservice --overwrite -f modelmetadata.json -df $(deploymentMetadataFile) --inference-metadata-file $(inferenceMetadataFile) -w $(workspaceName) -g $(resourceGroupName) }

@@ -1,0 +1,10 @@
+{
+    "iconName": "empty",
+    "parameters": [
+        {
+            "name": "azureRmConnection",
+            "type": "endpoint:azureRm",
+            "required": "true"
+        }
+    ]
+}
