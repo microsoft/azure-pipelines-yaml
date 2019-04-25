@@ -11,35 +11,38 @@ variables:
   # Azure Resource Manager connection created during pipeline creation
   azureSubscription: '{{ azureRmConnection.Id }}'
 
-  # Name of compute target
-  computeName: 'aml-compute'
-
-  # Conda dependencies file
-  condaFile: 'myenv.yml'
-
-  # Path to a JSON or YAML file containing deployment metadata
-  deploymentMetadataFile: 'deployment.yml'
-
-  # Path to a JSON or YAML file containing inference metadata
-  inferenceMetadataFile: 'inferenceConfig.yml'
-
-  # The cloud path where the experiment run stores the model file
-  modelAssetPath: 'outputs/model.pkl'
-
-  # Name of model to register
-  modelName: 'aml-model'
-
   # Azure resource group name
-  resourceGroupName: 'aml-rg'
-
-  # Run configuration file name
-  runConfig: 'sklearn'
-
-  # Training script file name
-  trainScript: 'train.py'
+  resourceGroupName: '{{ resourceGroupName }}'
 
   # Azure ML workspace name
-  workspaceName: 'aml-ws'
+  workspaceName: '{{ workspaceName }}'
+
+  # Name of compute target
+  computeName: '{{ computeName }}'
+
+  # Training script file name
+  trainScript: '{{ trainScript }}'
+
+  # Conda dependencies file
+  condaFile: '{{ condaFile }}'
+
+  # Run configuration file name
+  runConfig: '{{ runConfig }}'
+
+  # Name of model to register
+  modelName: '{{ modelName }}'
+
+  # The cloud path where the experiment run stores the model file
+  modelAssetPath: '{{ modelAssetPath }}'
+
+  # Azure ML service name
+  serviceName: '{{ serviceName }}'
+
+  # Path to a JSON or YAML file containing deployment metadata
+  deploymentMetadataFile: '{{ deploymentMetadataFile }}'
+
+  # Path to a JSON or YAML file containing inference metadata
+  inferenceMetadataFile: '{{ inferenceMetadataFile }}'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
@@ -61,8 +64,10 @@ steps:
     azureSubscription: $(azureSubscription)
     scriptLocation: inlineScript
     inlineScript: |
-    { az ml workspace create -w $(workspaceName) -g $(resourceGroupName) -y --exist-ok; } &&
-    { az ml computetarget create amlcompute -n $(computeName) --max-nodes 1 -s STANDARD_D3_V2 -w $(workspaceName) -g $(resourceGroupName); }
+     { az ml workspace create -w $(workspaceName) -g $(resourceGroupName) -y --exist-ok; } &&
+     { az configure -d aml_workspace=$(workspaceName) group=$(resourceGroupName); } &&
+     { az ml computetarget create amlcompute -n $(computeName) --max-nodes 1 -s STANDARD_D3_V2 -w $(workspaceName) -g $(resourceGroupName); } && 
+     { az ml folder attach -e $(serviceName)Experiment -w $(workspaceName); }
     failOnStandardError: true
 
 - task: AzureCLI@1
@@ -71,14 +76,12 @@ steps:
     azureSubscription: $(azureSubscription)
     scriptLocation: inlineScript
     inlineScript: |
-    { az ml folder attach -e amlexperiment -w $(workspaceName) -g $(resourceGroupName); } &&
-    { az ml run submit-script -e amlexperiment -d $(condaFile) -c $(runConfig) -t runmetadata.json -w $(workspaceName) -g $(resourceGroupName) $(trainScript); }
+     { az ml run submit-script -e $(serviceName)Experiment -d $(condaFile) -c $(runConfig) -t runmetadata.json $(trainScript); } && 
+     { az ml model register -n $(modelName) -f runmetadata.json --experiment-name $(serviceName)Experiment --asset-path $(modelAssetPath) -t modelmetadata.json; } 
 
 - task: AzureCLI@1
-  displayName: 'Register and Deploy Model'
+  displayName: 'Deploy Model'
   inputs:
     azureSubscription: $(azureSubscription)
     scriptLocation: inlineScript
-    inlineScript: |
-    { az ml model register -n $(modelName) -f runmetadata.json --experiment-name amlexperiment --asset-path $(modelAssetPath) -t modelmetadata.json -w $(workspaceName) -g $(resourceGroupName); } &&
-    { az ml model deploy -n amlservice --overwrite -f modelmetadata.json -df $(deploymentMetadataFile) --inference-metadata-file $(inferenceMetadataFile) -w $(workspaceName) -g $(resourceGroupName); }
+    inlineScript: 'az ml model deploy -n $(serviceName) --overwrite -f modelmetadata.json -df $(deploymentMetadataFile) --inference-metadata-file $(inferenceMetadataFile)'

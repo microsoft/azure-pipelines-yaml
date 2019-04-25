@@ -2,6 +2,65 @@
     "iconName": "empty",
     "parameters": [
         {
+            "name": "resourceGroupName",
+            "type": "string",
+            "required": "true"
+        },
+        {
+            "name": "workspaceName",
+            "type": "string",
+            "required": "true"
+        },
+        {
+            "name": "computeName",
+            "type": "string",
+            "required": "true"
+        },
+        {
+            "name": "trainScript",
+			"defaultValue": "train.py",
+            "type": "string",
+            "required": "true"
+        },
+        {
+            "name": "condaFile",
+            "type": "string",
+            "required": "true"
+        },
+        {
+            "name": "runConfig",
+			"defaultValue": "sklearn",
+            "type": "string",
+            "required": "true"
+        },
+        {
+            "name": "modelName",
+            "type": "string",
+            "required": "true"
+        },
+        {
+            "name": "modelAssetPath",
+            "type": "string",
+            "required": "true"
+        },
+        {
+            "name": "serviceName",
+            "type": "string",
+            "required": "true"
+        },
+        {
+            "name": "deploymentMetadataFile",
+			"defaultValue": "deployment.yml",
+            "type": "string",
+            "required": "true"
+        },
+        {
+            "name": "inferenceMetadataFile",
+			"defaultValue": "inferenceConfig.yml",
+            "type": "string",
+            "required": "true"
+        },
+        {
             "name": "azureRmConnection",
             "type": "endpoint:azureRm",
             "required": "true"
