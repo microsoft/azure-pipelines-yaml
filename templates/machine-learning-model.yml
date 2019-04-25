@@ -9,7 +9,7 @@ trigger:
 variables:
 
   # Azure Resource Manager connection created during pipeline creation
-  azureSubscription: '{{ azureRmConnection.Id }}'
+  azureSubscription: 'RMDev (c00d16c7-6c1f-4c03-9be1-6934a4c49682)'
 
   # Azure resource group name
   resourceGroupName: '{{ resourceGroupName }}'

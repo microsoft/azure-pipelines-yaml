@@ -59,11 +59,6 @@
 			"defaultValue": "inferenceConfig.yml",
             "type": "string",
             "required": "true"
-        },
-        {
-            "name": "azureRmConnection",
-            "type": "endpoint:azureRm",
-            "required": "true"
         }
     ]
 }
