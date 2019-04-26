@@ -41,6 +41,8 @@ stages:
 
     - task: PublishPipelineArtifacts@0
       displayName: 'Publish pipeline artifacts'
+      inputs:
+        targetPath: $(Build.ArtifactStagingDirectory)
 
 - stage: Deploy
   displayName: Deploy stage
