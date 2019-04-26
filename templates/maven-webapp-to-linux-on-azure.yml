@@ -28,18 +28,19 @@ stages:
     
     steps:
     - task: Maven@3
-      displayName: 'Maven Package $(mavenPOMFile)'
+      displayName: 'Maven Package'
       inputs:
         mavenPomFile: 'pom.xml'
 
     - task: CopyFiles@2
-      displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
+      displayName: 'Copy Files to artifact staging directory'
       inputs:
         SourceFolder: '$(System.DefaultWorkingDirectory)'
-        Contents: '**/*.jar'
+        Contents: '**/target/*.?ar'
         TargetFolder: $(Build.ArtifactStagingDirectory)
 
-    - task: PublishBuildArtifacts@1
+    - task: PublishPipelineArtifacts@0
+      displayName: 'Publish pipeline artifacts'
 
 - stage: Deploy
   displayName: Deploy stage
@@ -55,15 +56,15 @@ stages:
       runOnce:
         deploy:
           steps:
-          - task: DownloadBuildArtifacts@0
-            displayName: 'Download Build Artifacts'
+          - task: DownloadPipelineArtifact@1
+            displayName: 'Download Pipeline Artifact'
             inputs:
-              artifactName: drop
+              buildType: 'current'
 
           - task: AzureWebApp@1
-            displayName: 'Azure Web App Deploy: LinuxJSEApp'
+            displayName: 'Azure Web App Deploy: {{ webAppName }}'
             inputs:
-              azureSubscription: '{{ azureRmConnection.Name }}'
+              azureSubscription: $(azureSubscription)
               appType: webAppLinux
-              appName: '{{ webAppName }}'
-              package: '$(Build.ArtifactStagingDirectory)/**/*.jar'
+              appName: $(webAppName)
+              package: '$(System.ArtifactsDirectory)/drop/**/target/*.?ar'
