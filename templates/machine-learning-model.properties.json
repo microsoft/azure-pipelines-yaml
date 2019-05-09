@@ -5,71 +5,51 @@
             "name": "resourceGroupName",
             "type": "string",
             "required": "true",
-            "displayName":"Resource group name"
+            "displayName": "Resource group name"
         },
         {
             "name": "workspaceName",
             "type": "string",
             "required": "true",
-            "displayName":"Workspace name"
-        },
-        {
-            "name": "computeName",
-            "type": "string",
-            "required": "true",
-            "displayName":"Compute name"
-        },
-        {
-            "name": "trainScript",
-			"defaultValue": "train.py",
-            "type": "string",
-            "required": "true",
-            "displayName":"Train script"
-        },
-        {
-            "name": "condaFile",
-            "type": "string",
-            "required": "true",
-            "displayName":"Conda dependencies file"
+            "displayName": "Workspace name"
         },
         {
             "name": "runConfig",
-			"defaultValue": "sklearn",
             "type": "string",
             "required": "true",
-            "displayName":"Run configuration"
+            "displayName": "Run configuration"
         },
         {
             "name": "modelName",
             "type": "string",
             "required": "true",
-            "displayName":"Model name"
+            "displayName": "Model name"
         },
         {
             "name": "modelAssetPath",
             "type": "string",
             "required": "true",
-            "displayName":"Model asset path"
+            "displayName": "Model asset path"
         },
         {
             "name": "serviceName",
             "type": "string",
             "required": "true",
-            "displayName":"Service name"
+            "displayName": "Service name"
         },
         {
-            "name": "deploymentMetadataFile",
-			"defaultValue": "deployment.yml",
+            "name": "inferenceConfigFile",
+            "defaultValue": "inferenceConfig.yml",
             "type": "string",
             "required": "true",
-            "displayName":"Deployment metadata file"
+            "displayName": "Inference config file"
         },
         {
-            "name": "inferenceMetadataFile",
-			"defaultValue": "inferenceConfig.yml",
+            "name": "deploymentConfigFile",
+            "defaultValue": "deploymentConfig.yml",
             "type": "string",
             "required": "true",
-            "displayName":"Inference metadata file"
+            "displayName": "Deployment config file"
         }
     ]
 }
