@@ -1,7 +1,23 @@
 {
   "iconName": "docker",
   "parameters": [
-    { "name":"dockerfilePath", "type":"string", "required":"false", "displayName":"Dockerfile", "defaultValue":"Dockerfile" },
-    { "name":"buildContextPath", "type":"string", "required":"false", "displayName":"Build Context", "defaultValue":"." }
+    {
+      "name": "containerRegistryConnection",
+      "type": "endpoint:containerRegistry",
+      "required": "true"
+    },
+    {
+      "name": "imageRepository",
+      "type": "string",
+      "required": "true",
+      "displayName": "Image Name"
+    },
+    {
+      "name": "dockerfilePath",
+      "type": "string",
+      "required": "false",
+      "displayName": "Dockerfile",
+      "defaultValue": "**/Dockerfile"
+    }
   ]
 }

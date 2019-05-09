@@ -1,5 +1,5 @@
-# Deploy to Azure Kubernetes Service (AKS)
-# Build a Docker image, push to an Azure Container Registry, and deploy it to Azure Kubernetes Service.
+# Deploy to Azure Kubernetes Service
+# Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
@@ -10,7 +10,7 @@ resources:
 
 variables:
 
-  # Container registry service connection established during pipeline creation - Docker Hub/ACR/...
+  # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: '{{ containerRegistryConnection.Id }}'
   imageRepository: '{{#toAlphaNumericString imageRepository 50}}{{/toAlphaNumericString}}'
   containerRegistry: '{{ containerRegistryConnection.Authorization.Parameters.loginServer }}'
@@ -20,7 +20,6 @@ variables:
   # Kubernetes Namespace
   k8sNamespace: '{{ k8sResource.Namespace }}'
   imagePullSecret: '{{#toAlphaNumericString containerRegistryConnection.Name 50}}{{/toAlphaNumericString}}{{#shortGuid}}{{/shortGuid}}-auth'
-
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
@@ -81,7 +80,8 @@ stages:
               action: deploy
               namespace: $(k8sNamespace)
               manifests: |
-                $(System.ArtifactsDirectory)/manifests/*.yml
+                $(System.ArtifactsDirectory)/manifests/deployment.yml
+                $(System.ArtifactsDirectory)/manifests/service.yml
               imagePullSecrets: |
                 $(imagePullSecret)
               containers: |

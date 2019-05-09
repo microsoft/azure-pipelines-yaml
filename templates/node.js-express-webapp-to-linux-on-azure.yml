@@ -1,5 +1,5 @@
-# Node.js React Web App on Linux
-# Build a Node.js React app and deploy it as a Linux web app.
+# Node.js Express Web App to Linux on Azure
+# Build a Node.js Express app and deploy it to Azure as a Linux web app.
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
@@ -10,7 +10,7 @@ variables:
 
   # Azure Resource Manager connection created during pipeline creation
   azureSubscription: '{{ azureRmConnection.Id }}'
-
+  
   # Web app name
   webAppName: '{{ webAppName }}'
 
@@ -25,8 +25,19 @@ stages:
     displayName: Build
     pool:
       vmImage: $(vmImageName)
-
+      
     steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '10.x'
+      displayName: 'Install Node.js'
+
+    - script: |
+        npm install
+        npm run build --if-present
+        npm run test --if-present
+      displayName: 'npm install, build and test'
+      
     - task: ArchiveFiles@2
       displayName: 'Archive files'
       inputs:
@@ -50,7 +61,7 @@ stages:
     displayName: Deploy
     environment: 'development'
     pool: 
-      vmImage: $(vmImageName)    
+      vmImage: $(vmImageName)
     strategy:
       runOnce:
         deploy:
@@ -58,18 +69,14 @@ stages:
           - task: DownloadPipelineArtifact@1
             displayName: 'Download Pipeline Artifact'
             inputs:
-              buildType: current
+              buildType: 'current'
             
-          - task: AzureRmWebAppDeployment@4
-            displayName: 'Azure App Service Deploy: {{ webAppName }}'
+          - task: AzureWebApp@1
+            displayName: 'Azure Web App Deploy: {{ webAppName }}'
             inputs:
               azureSubscription: $(azureSubscription)
               appType: webAppLinux
-              WebAppName: $(webAppName)
-              packageForLinux: '$(System.ArtifactsDirectory)/drop/$(Build.BuildId).zip'
-              RuntimeStack: 'NODE|10.10'
-              StartupCommand: 'npm run start'
-              ScriptType: 'Inline Script'
-              InlineScript: |
-                npm install
-                npm run build --if-present
+              appName: $(webAppName)
+              runtimeStack: 'NODE|10.10'
+              package: $(System.ArtifactsDirectory)/drop/$(Build.BuildId).zip
+              startUpCommand: 'npm run start'
