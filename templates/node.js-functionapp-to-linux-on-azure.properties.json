@@ -8,9 +8,16 @@
         },
         {
             "name": "functionAppName",
-            "type": "string",
+            "type": "dataSourceDropdown",
             "required": "true",
-            "displayName":"Function App name"
+            "displayName":"Function App name",
+            "properties": {
+                "endpointType": "azureRm",
+                "dataSourceName": "AzureFunctionAppNamesByAppType",
+                "parameters": {
+                    "WebAppKind": "functionAppLinux"
+                }
+            }
         }
     ]
 }
