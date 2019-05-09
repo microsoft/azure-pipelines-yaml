@@ -54,9 +54,8 @@ It will download artifacts uploaded from a previous job, stage, or from another 
 Listing just the unique properties of the `download` step:
 ```yaml
 - download: string - the pipeline to download from (`current` or a resource id) or the word `none`
-  artifact: string - the specific artifact; optional unless `path` specified
+  artifact: string - the specific artifact; optional
   patterns: string - minimatch patterns of files to grab from the artifact(s); defaults to **/*
-  path: string - the destination path for where to download the artifact(s)
 ```
 
 ### Automated download
@@ -64,7 +63,7 @@ Listing just the unique properties of the `download` step:
 The "magic" of download is how often you _don't_ have to specify it.
 By default, all artifacts produced in the current pipeline and all artifacts in all referenced pipelines will be downloaded.
 As soon as you include an explicit `download` step (or task), the user is in total control - no more automatic download for that job.
-Similarly, you can leave out `artifact`, `patterns`, or `path` to get some automatic behaviors (described below).
+Similarly, you can leave out `artifact` or `patterns` to get some automatic behaviors (described below).
 
 Or to avoid downloading any of the artifacts at all:
 
@@ -89,11 +88,7 @@ The spec that follows is lengthy because it covers details and edge cases.
 But for customers, it should be easy to understand:
 1. If you don't say anything, you get a directory per artifact from the current pipeline. You also get a directory per pipeline containing a directory per artifact from other pipelines.
 2. As soon as you put a `download` step, you have to be explicit about all pipelines you want to download from. You still get  automatic directory layout.
-3. You may mention a specific artifact, but you don't have to unless you mention a `path`. As soon as you mention a `path`, you _must_ also choose the artifact. This is the mode with ultimate control/flexibility.
-
-##### With no `path`
-
-If no `path` is specified, either because of automatic download _or_ because you added a `download:` entry with no path, there are some decisions made automatically for you:
+3. You may mention a specific artifact in the `download` step in which case there are some decisions made automatically for you:
 - Artifacts from the current pipeline each get their own directory, e.g. `$(Pipeline.Workspace)\myartifact` for an artifact named `myartifact`.
 - Other pipelines each get their own directory, e.g. `$(Pipeline.Workspace)\mypipeline` for a pipeline whose ID is `mypipeline`. (Pipeline ID comes from the current pipeline's `resource` name.)
 - Artifacts from other pipelines each get a directory within their pipeline's directory. `$(Pipeline.Workspace)\mypipeline\someartifact` for the `someartifact` artifact of the `mypipeline` pipeline.
@@ -126,31 +121,6 @@ jobs:
     # this listing shows two folders: `makeartifact` and `mypipe`
 ```
 
-##### With `path`
-
-If the `path` key is specified, it's a relative path from `$(Pipeline.Workspace)`.
-Directory names are not automatically injected by the pipeline anymore (but of course, directories present in the artifact itself are still used).
-
-If you include a `path`, `artifact` becomes required.
-Otherwise, we would risk sticking multiple artifacts' contents together in the same directory, clobbering files unpredictably.
-
-Example:
-```yaml
-jobs:
-- job: makeartifact
-  steps:
-  - script: ./build.sh
-  - upload: outputs/**/*
-
-- job: useartifact
-  dependsOn: makeartifact
-  steps:
-  - download: current
-    path: foo
-  - script: ls $(Pipeline.Workspace)
-    # listing shows one folder, "foo"
-```
-
 #### Build and RM classic pipelines
 No change to current behavior. Artifacts are downloaded to `$(System.DefaultWorkingDirectory)`, which is the sources folder on Build and the artifacts folder on RM.
 
@@ -163,9 +133,8 @@ If present, it's a newline-separated list of minimatch patterns for what files t
 
 ```yaml
 - download: string # pipeline ID, `current`, or `none`; required
-  artifact: string # identifier for the artifact to download; optional unless `path` is specified
-  patterns: string # a minimatch path or list of [minimatch paths](tasks/file-matching-patterns.md) to download; if blank, the entire artifact is downloaded
-  path: string # the relative directory in which to download files, rooted from $(Pipeline.Workspace); missing or empty value will mean to put it directly in $(Pipeline.Workspace)
+  artifact: string # identifier for the artifact to download; optional 
+  patterns: string # a minimatch pattern or list of [minimatch patterns](tasks/file-matching-patterns.md) to download; if blank, the entire artifact is downloaded
   
   # these are common to all steps
   displayName: string # friendly name displayed in the UI
@@ -204,6 +173,7 @@ You can add files to any artifact multiple times in the same job, in different j
 ## Variables
 
 In addition to the new `$(Pipeline.Workspace)` variable, we introduce a variable per resource indicating where it was checked out on disk. For example:
+
 ```yaml
 resources:
   pipelines:
@@ -242,24 +212,6 @@ This is a simple pipeline that include a build job and a deployment job. The bui
   steps:
   - script: |
       ./my-deploy-script.sh $(Pipeline.Workspace)/Build/
-```
-
-### Specify a custom location for a build artifact
-
-You can control the location where artifacts are downloaded using the `path` key.
-
-```yaml
-- job: Build
-  steps:
-  - script: dotnet publish --configuration $(buildConfiguration)
-  - upload: bin/*
-- job: Deploy
-  steps:
-  - download: current
-    artifact: Build
-    path: from-build/
-  - script: |
-      ./my-deploy-script.sh $(Pipeline.Workspace)/from-build/
 ```
 
 ### Add to an artifact multiple times
@@ -307,11 +259,9 @@ You can give an artifact a name, and you can upload multiple named artifacts. Al
   - script: ./my-xamarin-script.sh $(Pipeline.Workspace)/MobileApp/
 ```
 
-### Multiple artifact downloads with explicit path
+### Override download of multiple build artifacts
 
-If a download step covers multiple artifacts and no explicit path is given, they're each pulled into a separate directory.
-With an explicit path, the artifact is put exactly there.
-This gives the user final say over on-disk layout.
+You can control which artifacts to download in your deployment job.
 
 ```yaml
 - job: Build
@@ -325,10 +275,5 @@ This gives the user final say over on-disk layout.
   steps:
   - download: current
     artifact: WebApp
-    path: Apps/Web
-  - download: current
-    artifact: MobileApp
-    path: Apps/iOS
-  - script: ./my-deploy-script.sh $(Pipeline.Workspace)/Apps/Web
-  - script: ./my-xamarin-script.sh $(Pipeline.Workspace)/Apps/iOS
+  - script: ./my-deploy-script.sh $(Pipeline.Workspace)/WebApp
 ```
