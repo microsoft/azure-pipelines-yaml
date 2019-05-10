@@ -143,7 +143,7 @@ However, if you include a `path` but don't mention any `artifact`, all the avail
 Example:
 ```yaml
 jobs:
-- job: myjob
+- job: job1
   steps:
   - script: ./build.sh
   - upload: outputs/**/*
@@ -151,8 +151,8 @@ jobs:
   - upload: daata/**/*
     artifact: DBTier
 
-- job: useartifact
-  dependsOn: makeartifact
+- job: job2
+  dependsOn: job1
   steps:
   - download: current
     path: foo
