@@ -1,5 +1,5 @@
 # Machine Learning Model
-# Build and deploy a ML model using Azure ML SDK.
+# Build and deploy a ML model using Azure Machine Learning CLI.
 # Add steps that build, test, save build artifacts, deploy, and more:
 # https://aka.ms/yaml
 
@@ -9,6 +9,7 @@ trigger:
 variables:
 
   # Azure Resource Manager connection created during pipeline creation
+  # azureSubscription: '{{ azureRmConnection.Id }}'
   azureSubscription: 'RMDev (c00d16c7-6c1f-4c03-9be1-6934a4c49682)'
 
   # Azure resource group name
@@ -38,49 +39,68 @@ variables:
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
 
-pool:
-  vmImage: $(vmImageName)
-  
-steps:
-- task: AzureCLI@1
-  displayName: 'Install Azure CLI ML Extension'
-  inputs:
-    azureSubscription: $(azureSubscription)
-    scriptLocation: inlineScript
-    inlineScript: |
-     # install the azure ml cli extension
-     az extension add -n azure-cli-ml
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: AzureCLI@1
+      displayName: 'Install Azure CLI ML Extension'
+      inputs:
+        azureSubscription: $(azureSubscription)
+        scriptLocation: inlineScript
+        inlineScript: |
+          # install the azure ml cli extension
+          az extension add -n azure-cli-ml
 
-- task: AzureCLI@1
-  displayName: Setup
-  inputs:
-    azureSubscription: $(azureSubscription)
-    scriptLocation: inlineScript
-    inlineScript: |
-     # Setup the Azure Machine Learning service workspace and compute target for training
-     { az ml workspace create -w $(workspaceName) -g $(resourceGroupName) --exist-ok; } &&
-     { az configure -d aml_workspace=$(workspaceName) group=$(resourceGroupName); } &&
-     { az ml computetarget create amlcompute -n cpu-cluster --max-nodes 1 -s STANDARD_D3_V2 -w $(workspaceName) -g $(resourceGroupName); } &&
-     # Attach a workspace configuration to a folder to enable CLI contextual awareness.
-     { az ml folder attach -w $(workspaceName); }
+    - task: AzureCLI@1
+      displayName: Setup
+      inputs:
+        azureSubscription: $(azureSubscription)
+        scriptLocation: inlineScript
+        inlineScript: |
+          # Setup the Azure Machine Learning service workspace and compute target for training
+          { az ml workspace create -w $(workspaceName) -g $(resourceGroupName) --exist-ok; } &&
+          { az configure -d aml_workspace=$(workspaceName) group=$(resourceGroupName); } &&
+          { az ml computetarget create amlcompute -n cpu-cluster --max-nodes 1 -s STANDARD_D3_V2 -w $(workspaceName) -g $(resourceGroupName); } &&
+          # Attach a workspace configuration to a folder to enable CLI contextual awareness.
+          { az ml folder attach -w $(workspaceName); }
 
-- task: AzureCLI@1
-  displayName: 'Train Model'
-  inputs:
-    azureSubscription: $(azureSubscription)
-    scriptLocation: inlineScript
-    inlineScript: |
-     # Start a run of the experiment. Specify the runconfig (the text before *.runconfig in the repository) against the -c parameter.
-     { az ml run submit-script -c $(runConfig) -t runmetadata.json; } &&
-     # Register a model with Azure Machine Learning.
-     { az ml model register -n $(modelName) --asset-path $(modelAssetPath) -f runmetadata.json -t modelmetadata.json; }
+    - task: AzureCLI@1
+      displayName: 'Train Model'
+      inputs:
+        azureSubscription: $(azureSubscription)
+        scriptLocation: inlineScript
+        inlineScript: |
+          # Start a run of the experiment. Specify the runconfig (the text before *.runconfig in the repository) against the -c parameter.
+          { az ml run submit-script -c $(runConfig) -t runmetadata.json; } &&
+          # Register a model with Azure Machine Learning.
+          { az ml model register -n $(modelName) --asset-path $(modelAssetPath) -f runmetadata.json -t modelmetadata.json; }
 
-- task: AzureCLI@1
-  displayName: 'Deploy Model'
-  inputs:
-    azureSubscription: $(azureSubscription)
-    scriptLocation: inlineScript
-    inlineScript: |
-     # Deploy the registered model to AKS.
-     { az ml computetarget create aks -n $(serviceName) -w $(workspaceName) -g $(resourceGroupName); } &&
-     { az ml model deploy -n $(serviceName) --overwrite -f modelmetadata.json --ic $(inferenceConfigFile) --dc $(deploymentConfigFile) --ct $(serviceName); }
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: Build
+  condition: succeeded()
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    environment: 'development'
+    pool:
+      vmImage: $(vmImageName)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureCLI@1
+            displayName: 'Deploy Model'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              scriptLocation: inlineScript
+              inlineScript: |
+                # Deploy the registered model to AKS.
+                { az ml computetarget create aks -n $(serviceName) -w $(workspaceName) -g $(resourceGroupName); } &&
+                { az ml model deploy -n $(serviceName) --overwrite -f modelmetadata.json --ic $(inferenceConfigFile) --dc $(deploymentConfigFile) --ct $(serviceName); }
