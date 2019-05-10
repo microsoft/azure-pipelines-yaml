@@ -65,7 +65,7 @@ Usually a 'job' publishes build artifacts which are deployed to an environment a
 Therefore, the automatic artifact download behavior varies between a 'job' and 'deployment'.
 
 #### job
-Artifacts are not automatically downloaded in regular jobs. However, if you require artifacts to be downloaded in your jobs, you need to explicitly use `download`.
+Artifacts are not automatically downloaded in regular jobs. To download artifacts in these jobs, use the `download` shortcut.
 
 #### deployment
 All artifacts produced in the current pipeline and all artifacts from the referenced pipelines are automatically downloaded  and made available in the deployment jobs.
