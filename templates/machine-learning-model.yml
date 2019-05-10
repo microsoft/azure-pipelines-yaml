@@ -96,6 +96,15 @@ stages:
         deploy:
           steps:
           - task: AzureCLI@1
+            displayName: 'Install Azure CLI ML Extension'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              scriptLocation: inlineScript
+              inlineScript: |
+                # install the azure ml cli extension
+                az extension add -n azure-cli-ml
+
+          - task: AzureCLI@1
             displayName: 'Deploy Model'
             inputs:
               azureSubscription: $(azureSubscription)
