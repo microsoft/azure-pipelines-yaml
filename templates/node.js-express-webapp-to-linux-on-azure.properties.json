@@ -8,16 +8,19 @@
         },
         {
             "name": "webAppName",
-            "type": "dataSourceDropdown",
+            "type": "dataSourcePicklist",
             "required": "true",
-            "displayName": "Web App name",
-            "properties": {
-                "endpointType": "azureRm",
-                "dataSourceName": "AzureRMWebAppNamesByAppType",
-                "parameters": {
-                    "WebAppKind": "webAppLinux"
-                }
-            }
+            "displayName": "Web App name"
+        }
+    ],
+    "dataSourceBindings": [
+        {
+            "dataSourceName": "AzureRMWebAppNamesByAppType",
+            "endpointParameterName": "azureRmConnection",
+            "parameters": {
+                "WebAppKind": "webAppLinux"
+            },
+            "target": "webAppName"
         }
     ]
 }
