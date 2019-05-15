@@ -67,7 +67,7 @@ resources:
 
 ### `download` for pipelines
 
-All artifacts from the current pipeline and from all `pipeline` resources are automatically downloaded and made available at the beginning of each job. You can override this behavior: see [Pipeline Artifacts](pipeline-artifacts.md#default-and-named-artifacts) for more details.
+All artifacts from the current pipeline and from all `pipeline` resources are automatically downloaded and made available at the beginning of each of the 'deployment' job. You can override this behavior: see [Pipeline Artifacts](pipeline-artifacts.md#default-and-named-artifacts) for more details. For regular 'job' artifacts are not automatically downloaded. You need to use `download` explicitly wherever needed.
 
 ```yaml
 - job: deploy_windows_x86_agent
@@ -83,7 +83,7 @@ Or to avoid downloading any of the artifacts at all:
 - download: none
 ```
 
-Artifacts from the `pipeline` resource are downloaded to `$PIPELINES_RESOURCESDIR/<pipeline-identifier>/<artifact-identifier>` folder; see [artifact download location](https://github.com/Microsoft/azure-pipelines-yaml/blob/master/design/pipeline-artifacts.md#artifact-download-location) for more details.
+Artifacts from the `pipeline` resource are downloaded to `$(PIPELINE.WORKSPACE)/<pipeline-identifier>/<artifact-identifier>` folder; see [artifact download location](https://github.com/Microsoft/azure-pipelines-yaml/blob/master/design/pipeline-artifacts.md#artifact-download-location) for more details.
 
 ## Resources: `builds`
 
@@ -101,10 +101,9 @@ resources:        # types: pipelines | builds | repositories | containers | pack
     version: string   # the build number to pick the artifact, defaults to Latest successful build
     branch: string   # branch to pick the artifact; defaults to master branch
 ```
+The inputs for the `build` resource can change based on the `type` of the build service (i.e. Jenkins, TeamCity etc.). The publisher of each extension defines the inputs for the resource. During the pipeline authoring time, when user defines the resource, it is validated based on the inputs defined in the extension.
 
 ### Examples
-
-The inputs for the `build` resource can change based on the `type` of the build service.
 
 ```yaml
 resources:
@@ -115,10 +114,9 @@ resources:
     source: SpaceworkzProj   # name of the jenkins source project
 ```
 
-
 ### `downloadBuild` for builds
 
-All artifacts from the defined `build` resources are automatically downloaded and made available at the beginning of each job. However, you can override this behavior using `downloadBuild` macro.
+All artifacts from the defined `build` resources are automatically downloaded and made available at the beginning of each of the 'deployment' job. However, you can override this behavior using `downloadBuild` macro. For regular 'job', artifacts are not automatically downloaded. You need to use `downloadBuild` explicitly wherever needed.
 
 ### Schema
 
@@ -126,10 +124,15 @@ All artifacts from the defined `build` resources are automatically downloaded an
 - downloadBuild: string # identifier for the resource from which to download artifacts
   artifact: string # identifier for the artifact to download; if left blank, downloads all artifacts associated with the resource provided
   patterns: string | [ string ] # a minimatch path or list of [minimatch paths](tasks/file-matching-patterns.md) to download; if blank, the entire artifact is downloaded
-  path: string # the directory in which to download files, defaults to $PIPELINE_WORKSPACE
+  path: string # relative path from $(PIPELINE.WORKSPACE) to download the artifacts
 ```
 
+The inputs for `downloadBuild` macro is fixed for all the build resources. The automatic artifact download and overriding behavior of `downloadBuild` is same as the `download` macro used for [pipeline artifacts](https://github.com/Microsoft/azure-pipelines-yaml/blob/master/design/pipeline-artifacts.md#downloading-artifacts-download).
+
+In a job, once you use `downloadBuild`, build artifacts are no longer downloaded automatically. You get the full control and you have to explicitly use `downloadBuild` for each build resource you wish to download artifacts from. However, this does not have any effect on the other resource categories like `pipelines`, `repositories` and `packages`.
+
 ### Examples
+You can customize the download behavior for each deployment or job.
 
 ```yaml
 - job: deploy_windows_x86_agent
@@ -144,8 +147,11 @@ Or to avoid downloading any of the artifacts at all:
 ```yaml
 - downloadBuild: none
 ```
+Based on the type of build resource (Jenkins, TeamCity etc.) and the associated artifacts, apropriate task is used to download the artifacts in the job.
 
-Artifacts from the `build` resource are downloaded to `$PIPELINE_WORKSPACE/<build-identifier>/` folder.
+Artifacts from the `build` resource are downloaded to `$(PIPELINE.WORKSPACE)/<build-identifier>/` folder unless user specifies a path in which case artifacts are downloaded to the path provided. 
+
+We provide full artifact traceability i.e which artifact is downloaded from which resource for every job in a pipeline.
 
 ## Resources: `repositories`
 
@@ -178,6 +184,8 @@ resources:
 ### `checkout` your repository
 
 Repos from the `repository` resources defined are automatically synced and made available for all the jobs in the pipeline. However, in any of the jobs, you can choose to override and sync only specific repository using `checkout` shortcut. 
+
+Repos from `repository` resource and `self` repo are not automatically synced in 'deployment' jobs. If you required repo to be fetched in the deployment job, you need to explicitly `checkout`.
 
 ```yaml
 - checkout: string  # identifier for your repository; for primary repository use the keyword self.
@@ -247,5 +255,4 @@ resources:
 Once you define a container as resource, container image metadata passed to the pipeline in the form of variables. Information like image, registry and connection details are made accessible across all the jobs so that your kubernetes deploy tasks can extract the image pull secrets and pass it to the cluster.
 
 # Triggers
-<TODO>
-Proposal for resource level triggers will be taken care in the next iteration.
+Refer to the [spec](https://github.com/Microsoft/azure-pipelines-yaml/blob/master/design/pipeline-triggers.md) for resource level triggers.
