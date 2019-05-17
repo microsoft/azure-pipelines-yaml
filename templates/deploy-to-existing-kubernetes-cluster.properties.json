@@ -19,7 +19,7 @@
         },
         {
             "name": "servicePort",
-            "type": "string",
+            "type": "pickList",
             "required": "true",
             "displayName": "Service Port"
         }
