@@ -230,15 +230,36 @@ If you need to consume a container image as part of your CI/CD pipeline, you can
 
 ### Schema
 
+We provide first class experience for Azure Container registry (ACR). You can create a container resource of type ACR. 
 ```yaml
 resources:          # types: pipelines | repositories | containers | packages
   containers:
   - container: string # identifier for the container resource      
-    type: enum # type of the registry like ACR, Docker etc. 
-    connection: string # service connection to connect to the image registry, defaults to ACR??
+    type: string # type of the registry like ACR etc. 
+    subscription: string # Azure subscription for container registry
+    registry: string # registry for the container images
     image: string # container image name, Tag/Digest is optional; defaults to latest image
-    options: string # arguments to pass to container at startup
-    env: { string:string } # list of environment variables to add
+```
+### Examples
+
+```yaml
+resources:         
+  containers:
+  - container: petStore
+    type: ACR
+    subscription: jPetsAzureSubscription 
+    registry: myDockerRegistry
+    image: jPetStoreImage 
+```
+ACR container resource provides you with rich [triggers] (https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/pipeline-triggers.md#containers) and better traceability.
+
+If you need to consume images from external docker registries you can define a Docker container resource.
+```yaml
+resources:          # types: pipelines | repositories | containers | packages
+  containers:
+  - container: string # identifier for the container resource   
+    connection: string # service connection to connect to the image registry
+    image: string # container image name, Tag/Digest is optional; defaults to latest image
 ```
 
 ### Examples
@@ -247,7 +268,6 @@ resources:          # types: pipelines | repositories | containers | packages
 resources:         
   containers:
   - container: smartHotel 
-    type: Docker
     connection: myDockerRegistry
     image: smartHotelApp 
 ```
