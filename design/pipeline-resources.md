@@ -251,7 +251,7 @@ resources:
     registry: myDockerRegistry
     image: jPetStoreImage 
 ```
-ACR container resource provides you with rich (triggers) [https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/pipeline-triggers.md#containers] and better traceability.
+ACR container resource provides you with rich [triggers](https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/pipeline-triggers.md#containers) and better traceability.
 
 If you need to consume images from external docker registries you can define a generic container resource.
 ```yaml
