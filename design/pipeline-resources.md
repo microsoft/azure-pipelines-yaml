@@ -236,7 +236,7 @@ resources:          # types: pipelines | repositories | containers | packages
   containers:
   - container: string # identifier for the container resource      
     type: string # type of the registry like ACR etc. 
-    subscription: string # Azure subscription for container registry
+    subscription: string # Azure subscription for container registry; uses ARM service connection (service principal)
     registry: string # registry for the container images
     image: string # container image name, Tag/Digest is optional; defaults to latest image
 ```
@@ -258,7 +258,7 @@ If you need to consume images from external docker registries you can define a D
 resources:          # types: pipelines | repositories | containers | packages
   containers:
   - container: string # identifier for the container resource   
-    connection: string # service connection to connect to the image registry
+    connection: string # service connection to connect to the image registry; uses Docker registry service connection
     image: string # container image name, Tag/Digest is optional; defaults to latest image
 ```
 
