@@ -236,7 +236,7 @@ resources:          # types: pipelines | repositories | containers | packages
   containers:
   - container: string # identifier for the container resource      
     type: string # type of the registry like ACR etc. 
-    subscription: string # Azure subscription for container registry; uses ARM service connection (service principal)
+    subscription: string # Azure subscription (ARM service connection) for container registry;
     registry: string # registry for the container images
     image: string # container image name, Tag/Digest is optional; defaults to latest image
 ```
@@ -251,14 +251,14 @@ resources:
     registry: myDockerRegistry
     image: jPetStoreImage 
 ```
-ACR container resource provides you with rich [triggers] (https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/pipeline-triggers.md#containers) and better traceability.
+ACR container resource provides you with rich (triggers) [https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/pipeline-triggers.md#containers] and better traceability.
 
-If you need to consume images from external docker registries you can define a Docker container resource.
+If you need to consume images from external docker registries you can define a generic container resource.
 ```yaml
 resources:          # types: pipelines | repositories | containers | packages
   containers:
   - container: string # identifier for the container resource   
-    connection: string # service connection to connect to the image registry; uses Docker registry service connection
+    connection: string # service connection (Docker registry) to connect to the image registry;
     image: string # container image name, Tag/Digest is optional; defaults to latest image
 ```
 
