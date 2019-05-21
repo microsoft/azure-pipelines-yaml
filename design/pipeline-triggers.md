@@ -315,11 +315,11 @@ Whenever a new image got published to the container registry, your pipeline run 
 However, triggers are not enabled on `container` resource today. So, we will keep the current behavior. In the next version of YAML we will enable the triggers by default.
 
 #### Schema
+
 ```yaml
 resources:          
   containers:
   - container: string       
-    type: enum  
     connection: string 
     image: string # container image name, Tag/Digest is optional; defaults to latest image
     trigger: # Optional; Triggers are enabled by default
@@ -358,8 +358,27 @@ resources:
         - version-2017*
 ```
 
+If you are using ACR container resource, you can configure triggers based on the geo-location the image got published.
+#### Schema
 
-If you have an ACR `container` resource, you can specify the geo location to get the triggers.
+```yaml
+resources:          
+  containers:
+  - container: string       
+    type: ACR  
+    connection: string 
+    image: string # container image name, Tag/Digest is optional; defaults to latest image
+    trigger: # Optional; Triggers are enabled by default
+      tags:
+        include: [ string ]  # image tags to consider the trigger events, optional; defaults to any new tag
+        exclude: [ string ]  # image tags on discard the trigger events, option; defaults to none
+      location:
+        include: [ string ]  # the image publish location to consider the trigger event, optional; defaults to any
+        exclude: [ string ]  # the image publish location to discard the trigger event, optional; defaults to none
+```
+
+#### example 
+
 ```yaml
 repositories:
   containers:
