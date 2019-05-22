@@ -228,9 +228,31 @@ other repositories' checkout directory: `$PIPELINES_RESOURCESDIR/<repository-ide
 
 If you need to consume a container image as part of your CI/CD pipeline, you can achieve it using `containers`. A container can be an Azure Container Registry or any external Docker registry.
 
-### Schema
 
-We provide first class experience for Azure Container registry (ACR). You can create a container resource of type ACR. 
+If you need to consume images from external docker registries as part of your pipeline, you can define a generic container resource. A generic container resource requires a Docker registry service connection.
+
+### Schema
+```yaml
+resources:          # types: pipelines | repositories | containers | packages
+  containers:
+  - container: string # identifier for the container resource   
+    connection: string # service connection (Docker registry) to connect to the image registry;
+    image: string # container image name, Tag/Digest is optional; defaults to latest image
+```
+
+### Examples
+
+```yaml
+resources:         
+  containers:
+  - container: smartHotel 
+    connection: myDockerRegistry
+    image: smartHotelApp 
+```
+
+We also provide a first class experience for Azure Container registry (ACR). You can create a container resource of type ACR. 
+
+### Schema
 ```yaml
 resources:          # types: pipelines | repositories | containers | packages
   containers:
@@ -251,26 +273,8 @@ resources:
     registry: myDockerRegistry
     image: jPetStoreImage 
 ```
-ACR container resource provides you with rich [triggers](https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/pipeline-triggers.md#containers) and better traceability.
-
-If you need to consume images from external docker registries you can define a generic container resource.
-```yaml
-resources:          # types: pipelines | repositories | containers | packages
-  containers:
-  - container: string # identifier for the container resource   
-    connection: string # service connection (Docker registry) to connect to the image registry;
-    image: string # container image name, Tag/Digest is optional; defaults to latest image
-```
-
-### Examples
-
-```yaml
-resources:         
-  containers:
-  - container: smartHotel 
-    connection: myDockerRegistry
-    image: smartHotelApp 
-```
+ACR container resource enables you to use Azure service pricipal (ARM service connection) for authentication. You can disable admin user for the container registry in azure and enfore using service principal.
+ACR container resource provides you with rich [triggers](https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/pipeline-triggers.md#containers) experience with support for location based triggers and better traceability. 
 
 Once you define a container as resource, container image metadata passed to the pipeline in the form of variables. Information like image, registry and connection details are made accessible across all the jobs so that your kubernetes deploy tasks can extract the image pull secrets and pass it to the cluster.
 
