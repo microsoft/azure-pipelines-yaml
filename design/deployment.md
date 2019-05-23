@@ -69,27 +69,27 @@ The following example snippet demonstrates how a pipeline can refer an environme
 ```YAML
 jobs:
 - deployment: DeployWeb
-    displayName: deploy Web App
-    pool:
-      vmImage: 'Ubuntu-16.04'
-    # records deployment against bookings resource - Kubernetes namespace
-    environment: 'smarthotel-dev.bookings'
-    strategy: 
-      runOnce:
-        deploy:
-          steps:
-            # No need to explicitly pass the connection details
-          - task: KubernetesManifest@0
-            displayName: Deploy to Kubernetes cluster
-            inputs:
-              action: deploy
-              namespace: $(k8sNamespace)
-              manifests: |
-                $(System.ArtifactsDirectory)/manifests/*
-              imagePullSecrets: |
-                $(imagePullSecret)
-              containers: |
-                $(containerRegistry)/$(imageRepository):$(tag)
+  displayName: deploy Web App
+  pool:
+    vmImage: 'Ubuntu-16.04'
+  # records deployment against bookings resource - Kubernetes namespace
+  environment: 'smarthotel-dev.bookings'
+  strategy: 
+    runOnce:
+      deploy:
+        steps:
+          # No need to explicitly pass the connection details
+        - task: KubernetesManifest@0
+          displayName: Deploy to Kubernetes cluster
+          inputs:
+            action: deploy
+            namespace: $(k8sNamespace)
+            manifests: |
+              $(System.ArtifactsDirectory)/manifests/*
+            imagePullSecrets: |
+              $(imagePullSecret)
+            containers: |
+              $(containerRegistry)/$(imageRepository):$(tag)
 ```
 
 The above approach has the following benefits - 
