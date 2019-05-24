@@ -29,7 +29,7 @@ stages:
   displayName: Build stage
   jobs:  
   - job: Build
-    displayName: Build job
+    displayName: Build
     pool:
       vmImage: $(vmImageName)
     steps:
@@ -53,7 +53,7 @@ stages:
   dependsOn: Build
   jobs:
   - deployment: Deploy
-    displayName: Deploy job
+    displayName: Deploy
     pool:
       vmImage: $(vmImageName)
     environment: '{{ k8sResource.EnvironmentReference.Name }}.{{ k8sResource.Name }}'
@@ -61,11 +61,6 @@ stages:
       runOnce:
         deploy:
           steps:
-          - task: DownloadPipelineArtifact@1
-            inputs:
-              artifactName: 'manifests'
-              downloadPath: '$(System.ArtifactsDirectory)/manifests'
-
           - task: KubernetesManifest@0
             displayName: Create imagePullSecret
             inputs:
