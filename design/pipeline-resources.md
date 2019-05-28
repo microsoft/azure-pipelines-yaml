@@ -238,6 +238,10 @@ resources:          # types: pipelines | repositories | containers | packages
   - container: string # identifier for the container resource   
     connection: string # service connection (Docker registry) to connect to the image registry;
     image: string # container image name, Tag/Digest is optional; defaults to latest image
+    options: string  # arguments to pass to container at startup
+    env: { string: string }  # list of environment variables to add
+    ports: [ string ] # ports to expose on the container
+    volumes: [ string ] # volumes to mount on the containe
 ```
 
 ### Examples
@@ -257,7 +261,7 @@ We also provide a first class experience for Azure Container registry (ACR). You
 resources:          # types: pipelines | repositories | containers | packages
   containers:
   - container: string # identifier for the container resource      
-    type: string # type of the registry like ACR etc. 
+    type: string # type of the registry like ACR, GCR etc. 
     subscription: string # Azure subscription (ARM service connection) for container registry;
     registry: string # registry for the container images
     image: string # container image name, Tag/Digest is optional; defaults to latest image
