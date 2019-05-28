@@ -314,12 +314,12 @@ Whenever a new image got published to the container registry, your pipeline run 
 
 However, triggers are not enabled on `container` resource today. So, we will keep the current behavior. In the next version of YAML we will enable the triggers by default.
 
-#### Schema
+#### Schema - generic container resource
+
 ```yaml
 resources:          
   containers:
   - container: string       
-    type: enum  
     connection: string 
     image: string # container image name, Tag/Digest is optional; defaults to latest image
     trigger: # Optional; Triggers are enabled by default
@@ -330,7 +330,7 @@ resources:
 
 #### Examples
 
-You can specify the image tag format to get the trigger by simple syntax.
+You can specify the image tag pattern to get the trigger.
 ```yaml
 resources:         
   containers:
@@ -341,6 +341,7 @@ resources:
       tags:
       - version-*
 ```
+When a new image gets published which matches the pattern (say version-02), the pipeline gets triggered. 
 
 
 You can specify the image tags to include and exclude.
@@ -358,8 +359,27 @@ resources:
         - version-2017*
 ```
 
+If you are using ACR container resource, you can configure triggers based on the geo-location the image got published.
+#### Schema - ACR container resource
 
-If you have an ACR `container` resource, you can specify the geo location to get the triggers.
+```yaml
+resources:          
+  containers:
+  - container: string       
+    type: ACR  
+    connection: string 
+    image: string # container image name, Tag/Digest is optional; defaults to latest image
+    trigger: # Optional; Triggers are enabled by default
+      tags:
+        include: [ string ]  # image tags to consider the trigger events, optional; defaults to any new tag
+        exclude: [ string ]  # image tags on discard the trigger events, option; defaults to none
+      location:
+        include: [ string ]  # the image publish location to consider the trigger event, optional; defaults to any
+        exclude: [ string ]  # the image publish location to discard the trigger event, optional; defaults to none
+```
+
+#### example 
+
 ```yaml
 repositories:
   containers:
@@ -376,6 +396,7 @@ repositories:
       - east-US
       - west-EU
 ```
+When a new 'production' image gets published to east-US or west-US geo locations, a new pipeline gets triggered.
 
 ### Rules for evaluation of resource triggers.
 Based on the trigger defined on each resource, a new pipeline run gets triggered whenever an event is received. The branch of the self repo from which the YAML definition will be picked is based on the following rules:
