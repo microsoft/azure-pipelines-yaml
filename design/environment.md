@@ -109,7 +109,7 @@ environment:
   name: string  # name of the environment to run this job on.
   resourceName: string  # name of the resource in the environment to record the deployments against
   resourceId: number # resource identifier  
-  tags: string # tag names to filter the resources in the environment
+  tags: string | [ string ] # tag names to filter the resources in the environment
 ```
 
 If you are targeting the resource by name and don't need to specify tags or resourceId, this can be shortened to:
