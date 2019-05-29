@@ -108,7 +108,8 @@ Full syntax:
 environment:
   name: string  # name of the environment to run this job on.
   resourceName: string  # name of the resource in the environment to record the deployments against
-  resourceId: number # resource identifier  
+  resourceId: number # resource identifier
+  resourceType: string # type of the resource you want to target. Supported types: virtualMachine, Kubernetes, appService
   tags: string | [ string ] # tag names to filter the resources in the environment
 ```
 
