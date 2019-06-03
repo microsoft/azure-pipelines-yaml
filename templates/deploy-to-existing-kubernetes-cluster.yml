@@ -44,6 +44,7 @@ stages:
           $(tag)
           
     - task: PublishPipelineArtifact@0
+      displayName: Publish manifest files
       inputs:
         artifactName: 'manifests'
         targetPath: 'manifests'
