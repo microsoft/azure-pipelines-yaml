@@ -27,9 +27,9 @@ YAML is script-first. In other words, YAML prefers that customers use - script: 
 Accordingly we should deprecate the full-featured tasks (NuGet, npm) as well as the package management auth portions of the build system tasks (.NET Core, Visual Studio Build, MSBuild, Maven, Gradle).
 For customers that continue to use the designer, we should continue to provide a good experience that does not have the limitations of the current tasks (which do not accept custom inputs and limit customers’ ability to control the interactions with artifacts).
 
-### Don't move configuration files, and don't write tokens into the sources directory, if possible
+### Prefer cred providers, don't move configuration files, and don't write tokens into the sources directory, if possible
 
-We should avoid moving any pre-existing configuration file, which may contain relative paths that we'll break by moving. Additionally, we should use environment variables or a config written a level above the sources directory wherever possible to ensure that subsequent operations (e.g. `npm pack`) which operate on the repo don't accidentally include a config file with credentials.
+Prefer credential providers, rather than configuration files, if they're available for the ecosystem. If not, we should avoid moving any pre-existing configuration file, which may contain relative paths that we'll break by moving. Additionally, we should use environment variables or a config written a level above the sources directory wherever possible to ensure that subsequent operations (e.g. `npm pack`) which operate on the repo don't accidentally include a config file with credentials.
 
 Whatever we implement here, we need to test inside container builds and ensure that it works correctly.
 
