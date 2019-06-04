@@ -58,13 +58,16 @@ Today, several of our tasks turn on verbose logging by default. These tasks shou
 
 The `mvn` command line is used to build Java projects and can install and publish Maven packages. `mvn` supports Azure Artifacts feeds and external feeds using basic authentication.
 
-The Maven Authenticate task accepts one or more Azure Artifacts feed names and one or more Maven-typed service connection names. If a pom.xml exists in the root of your repo, any Azure Artifacts feeds within your organization will be automatically authenticated. Example:
+The Maven Authenticate task accepts one or more Azure Artifacts feed names and one or more Maven-typed service connection names and generates a settings.xml in the appropriate location with the provided feeds. Example:
 
 ```yaml
 - task: MavenAuthenticate@0
+  inputs:
+    artifactsFeeds: codesharing-demo
+    externalFeeds: myMavenFeed
 ```
 
-More TBD.
+It will be up to users to ensure that in their `pom.xml`, the ID matches the feed name. This will preclude users from using multiple feeds in different orgs that share the same name, but it simplifies the mainstream case. We will also provide documentation (see last section) that covers how to manually construct a `settings.xml` using `SYSTEM_ACCESSTOKEN` if users need more control.
 
 ### npm
 
@@ -315,3 +318,5 @@ If you'd prefer not to use the `auth` shortcut and instead manually construct yo
 1. Ensure that the appropriate build identity (likely `Project Collection Build Service`) has the correct level of access (likely `Reader` or `Contributor`, as desired) to your feed [using these instructions](/azure/devops/artifacts/feeds/feed-permissions#package-permissions-in-azure-pipelines).
 2. Make `System.AccessToken` available to scripts and tasks by mapping it [using these instructions](variables.md#systemaccesstoken).
 3. Construct your configuration file using a scripting or templating language of your choice.
+
+We will document this as part of the documentation wave we release alongside this feature.
