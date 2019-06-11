@@ -29,7 +29,9 @@ For customers that continue to use the designer, we should continue to provide a
 
 ### Prefer cred providers, don't move configuration files, and don't write tokens into the sources directory, if possible
 
-Prefer credential providers, rather than configuration files, if they're available for the ecosystem. If not, we should avoid moving any pre-existing configuration file, which may contain relative paths that we'll break by moving. Additionally, we should use environment variables or a config written a level above the sources directory wherever possible to ensure that subsequent operations (e.g. `npm pack`) which operate on the repo don't accidentally include a config file with credentials.
+Prefer credential providers, rather than configuration files, if they're available for the ecosystem. If not, we should avoid moving any pre-existing configuration file, which may contain relative paths that we'll break by moving. Additionally, we should use environment variables or a create a new config written a level above the sources directory wherever possible to ensure that subsequent operations (e.g. `npm pack`) which operate on the repo don't accidentally include a config file with credentials. 
+
+If appropriate for the ecosystem, allow users to write credentials directly into the provided pre-existing configuration file **opt-in**. This is a non-ideal security configuration by may be necessary for package types that don't combine config files from multiple locations.
 
 Whatever we implement here, we need to test inside container builds and ensure that it works correctly.
 
@@ -51,6 +53,7 @@ Today, several of our tasks turn on verbose logging by default. These tasks shou
   - Show the file contents during verbose logging, along with a warning that these files may include tokens
 - The feeds/service connections we were able to match up correctly
 - Any unused service connections - this should also throw an error
+- If a tool installer was used, the version of the tool it provided and whether or not that tool is new enough to be compatible with the authenticate task
 
 ## Design, ecosystem by ecosystem
 
