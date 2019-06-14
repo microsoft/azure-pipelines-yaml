@@ -23,6 +23,7 @@ parameters:
   type: enum            # data type; see below
   default: any          # default value; if no default, then the parameter MUST be given by the user at runtime
   values: [ string ]    # allowed list of values (for some data types)
+  secret: bool          # whether to treat this value as a secret; defaults to false
 ```
 
 See [below](#back-compat-with-current-syntax) for details about how this coexists with existing `parameters` syntax.
@@ -145,12 +146,16 @@ parameters:
 - name: pool
   type: pool
   default: ubuntu-16.04
+- name: mySecret
+  type: string
+  secret: true
 
 job: Build
 pool:
   vmImage: ${{ parameters.pool }}
 steps:
 - script: echo Building on the pool of your choice
+- script: echo You used secret ${{ parameters.mySecret }}  # this will echo "You used secret ***"
 ```
 
 ### Connecting template parameters with strong typing
