@@ -19,7 +19,6 @@ parameters:
 # this is a sequence, so the block may be repeated as many times as needed
 - name: string          # name of the parameter; required
   displayName: string   # UI string
-  displayHint: enum     # see below
   type: enum            # data type; see below
   default: any          # default value; if no default, then the parameter MUST be given by the user at runtime
   values: [ string ]    # allowed list of values (for some data types)
@@ -63,16 +62,6 @@ The run panel would look something like this:
 
 ![Run panel with parameters](images/run-panel-with-params.png)
 
-### Comment triggers
-
-_TODO_
-
-### Editor experiences
-
-We can teach the editors (web, VS Code) how templates fit together.
-When a user's pipeline consumes a template, we can offer IntelliSense for the names and allowed values of parameters.
-*This is out of scope for v1.*
-
 ## Data types
 
 ### Data types for runtime parameters
@@ -102,23 +91,6 @@ They're rendered like a plain `object` in the UI.
 | `steps` | sequence of steps
 | `jobs` | sequence of jobs
 | `stages` | sequence of stages
-
-## Display hints
-
-Optionally, the pipeline author can hint to the UI what widget should be displayed.
-Not all widgets are compatible with all data types, and UI may evolve over time, so these are only hints.
-
-| Display hint | Compatible data types | Default for |
-|--------------|-----------------------|-------------|
-| `oneline` | string, number | string, number
-| `multiline` | string, object | object
-| `pickList` | number, boolean, enum | enum
-| `checkbox` | boolean | boolean
-| `radio` | number, boolean, enum | -
-
-For data types not listed in the above table, there is a "special" UI (such as a file picker, pool picker, etc.) that's automatically used.
-
-*This part can be postponed. It's nice-to-have, especially for cases like single line vs multiline input.*
 
 ## Full examples
 
@@ -164,9 +136,6 @@ jobs:
     steps:
     - script: echo Building arm...
 ```
-
-*There's a possible future enhancement hiding here: a data type of "flags" which would be like an enum but allow multiple specification.
-This version is more verbose but also clear and straightforward.*
 
 ### Select your pool
 
@@ -262,3 +231,47 @@ parameters:
     NODE_VERSION: '8.x'
     PYTHON_VERSION: '3.7'
 ```
+
+## Future additions
+
+**These are out of scope for v1.**
+
+### Comment triggers
+
+GitHub `/azp` commands will also need to be able to pass values to the parameters.
+For v1, it's enough to let the defaults win.
+A pipeline with a parameter that doesn't have a default value will result in an error if queued using `/azp run`.
+In the future, the command syntax will be expanded to allow setting values.
+
+### Editor experiences
+
+We can teach the editors (web, VS Code) how templates fit together.
+When a user's pipeline consumes a template, we can offer IntelliSense for the names and allowed values of parameters.
+
+### Display hints
+
+Optionally, the pipeline author can hint to the UI what widget should be displayed.
+Not all widgets are compatible with all data types, and UI may evolve over time, so these are only hints.
+
+```yaml
+parameters:
+- name: string          # name of the parameter; required
+  displayName: string   # UI string
+  type: enum            # data type
+  displayHint: enum     # display widget, see below
+```
+
+| Display hint | Compatible data types | Default for |
+|--------------|-----------------------|-------------|
+| `oneline` | string, number | string, number
+| `multiline` | string, object | object
+| `pickList` | number, boolean, enum | enum
+| `checkbox` | boolean | boolean
+| `radio` | number, boolean, enum | -
+
+For data types not listed in the above table, there is a "special" UI (such as a file picker, pool picker, etc.) that's automatically used.
+
+### New data type: `flags`
+
+A data type of `flags` would be like an `enum` but allow multiple specification.
+
