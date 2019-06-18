@@ -162,6 +162,41 @@ steps:
 - script: echo You used secret ${{ parameters.mySecret }}  # this will echo "You used secret ***"
 ```
 
+### Selectively omit a stage
+
+If you have a stage to selectively knock out, that can be modeled this way.
+(CD pipelines will have arbitrary start/stop stages built in natively, so users won't have to proliferate variables all over the place.
+It's helpful when there's just 1-2 that you want explicit control over.)
+
+```yaml
+parameters:
+- name: runPerfTests
+  type: boolean
+  default: false
+
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+
+- stage: UnitTest
+  dependsOn: Build
+  jobs:
+  - job: UnitTest
+
+# TODO: I don't think this syntax is quite right...
+${{ if eq(parameters.runPerfTests, true) }}:
+  - stage: PerfTest
+    dependsOn: Build
+    jobs:
+    - job: PerfTest
+
+- stage: Deploy
+  dependsOn: UnitTest
+  jobs:
+  - deployment: Ring0
+```
+
 ### Connecting template parameters with strong typing
 
 This is common for sophisticated customers such as .NET.
