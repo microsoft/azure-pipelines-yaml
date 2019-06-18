@@ -32,7 +32,36 @@ See [below](#back-compat-with-current-syntax) for details about how this coexist
 
 ### Run panel ("queue dialog")
 
-_TODO_
+Given this YAML:
+
+```yaml
+parameters:
+- name: myString
+  type: string
+  default: 'default value!'
+- name: mynum
+  displayName: 'My Number Param'
+  type: number
+  default: 123
+- name: mypool
+  displayName: 'Pool'
+  type: pool
+  values:
+  - ubuntu-latest
+  - windows-latest
+  - macos-latest
+
+pool: ${{ parameters.mypool }}
+
+steps:
+- script: echo ${{ parameters.myString }} was entered at runtime!
+- ${{ if not(eq(parameters.mynum, 123)) }}:
+  - script: echo You overrode the default number to ${{ parameters.mynum }}
+```
+
+The run panel would look something like this:
+
+![Run panel with parameters](images/run-panel-with-params.png)
 
 ### Comment triggers
 
