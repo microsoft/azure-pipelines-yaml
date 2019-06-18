@@ -27,9 +27,7 @@ parameters:
 
 See [below](#back-compat-with-current-syntax) for details about how this coexists with existing `parameters` syntax.
 
-## User interactions
-
-### Run panel ("queue dialog")
+## Run panel ("queue dialog")
 
 Given this YAML:
 
@@ -61,6 +59,14 @@ steps:
 The run panel would look something like this:
 
 ![Run panel with parameters](images/run-panel-with-params.png)
+
+`myString` is a parameter name with no display name.
+`My Number Param` is the display name of `mynum`.
+Both have defaults, unlike `mypool`.
+The run cannot be started until `mypool` is selected.
+
+This PM art does not attempt to show the various editors and widgets.
+That's a future exercise for design and product to work on together.
 
 ## Data types
 
