@@ -197,6 +197,22 @@ ${{ if eq(parameters.runPerfTests, true) }}:
   - deployment: Ring0
 ```
 
+### Select a template at runtime
+
+```yaml
+parameters:
+- name: experimentalTemplate
+  displayName: 'Use experimental build process?'
+  type: boolean
+  default: false
+
+steps:
+- ${{ if eq(parameters.experimentalTemplate, true) }}:
+  - template: experimental.yml
+- ${{ if not(eq(parameters.experimentalTemplate, true)) }}:
+  - template: stable.yml
+```
+
 ### Connecting template parameters with strong typing
 
 This is common for sophisticated customers such as .NET.
