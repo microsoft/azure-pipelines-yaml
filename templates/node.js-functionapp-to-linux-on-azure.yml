@@ -48,10 +48,8 @@ stages:
         archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
         replaceExistingArchive: true
 
-    - task: PublishPipelineArtifact@0
-      displayName: 'Publish pipeline artifacts'
-      inputs:
-        targetPath: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+    - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+      artifact: drop
 
 - stage: Deploy
   displayName: Deploy stage
@@ -66,16 +64,11 @@ stages:
     strategy:
       runOnce:
         deploy:
-          steps:
-          - task: DownloadPipelineArtifact@1
-            displayName: 'Download Pipeline Artifact'
-            inputs:
-              buildType: current
-            
+          steps:            
           - task: AzureFunctionApp@1
             displayName: 'Azure Functions App Deploy: {{ functionAppName }}'
             inputs:
               azureSubscription: '$(azureSubscription)'
               appType: functionAppLinux
               appName: $(functionAppName)
-              package: '$(System.ArtifactsDirectory)/drop/$(Build.BuildId).zip'
+              package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'

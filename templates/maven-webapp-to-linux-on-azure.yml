@@ -39,10 +39,8 @@ stages:
         Contents: '**/target/*.?(war|jar)'
         TargetFolder: $(Build.ArtifactStagingDirectory)
 
-    - task: PublishPipelineArtifact@0
-      displayName: 'Publish pipeline artifacts'
-      inputs:
-        targetPath: $(Build.ArtifactStagingDirectory)
+    - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+      artifact: drop
 
 - stage: Deploy
   displayName: Deploy stage
@@ -58,15 +56,10 @@ stages:
       runOnce:
         deploy:
           steps:
-          - task: DownloadPipelineArtifact@1
-            displayName: 'Download Pipeline Artifact'
-            inputs:
-              buildType: 'current'
-
           - task: AzureWebApp@1
             displayName: 'Azure Web App Deploy: {{ webAppName }}'
             inputs:
               azureSubscription: $(azureSubscription)
               appType: webAppLinux
               appName: $(webAppName)
-              package: '$(System.ArtifactsDirectory)/drop/**/target/*.?(war|jar)'
+              package: '$(Pipeline.Workspace)/drop/**/target/*.?(war|jar)'
