@@ -100,6 +100,26 @@ jobs:
         - script: kubectl apply ... 
 ```
 
+### Environment schema
+
+Full syntax:
+
+```yaml
+environment:
+  name: string  # name of the environment to run this job on.
+  resourceName: string  # name of the resource in the environment to record the deployments against
+  resourceId: number # resource identifier
+  resourceType: string # type of the resource you want to target. Supported types: virtualMachine, Kubernetes, appService
+  tags: string | [ string ] # tag names to filter the resources in the environment
+```
+
+If you are targeting the resource by name and don't need to specify tags or resourceId, this can be shortened to:
+
+```yaml
+environment: environmentName.resourceName
+```
+
+
 ## Future (discussion only)
 `canary`, `blue-green`, and `rolling` strategies to be supported by `deployment` job. 
 
