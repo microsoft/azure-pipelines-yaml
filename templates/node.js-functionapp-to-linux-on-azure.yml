@@ -33,11 +33,17 @@ stages:
       displayName: 'Install Node.js'
 
     - script: |
-        dotnet build extensions.csproj --runtime ubuntu.16.04-x64 --output ./bin/
+        if [ -f extensions.csproj ]
+        then
+            dotnet build extensions.csproj --runtime ubuntu.16.04-x64 --output ./bin
+        fi
+      displayName: 'Build extensions'
+
+    - script: |
         npm install
         npm run build --if-present
         npm run test --if-present
-      displayName: 'Build extensions and prepare binaries'
+      displayName: 'Prepare binaries'
       
     - task: ArchiveFiles@2
       displayName: 'Archive files'
