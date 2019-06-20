@@ -120,7 +120,7 @@ jobs:
       init:                                    
         steps:          
         - script: initialize, cleanup....  
-      deploy            
+      deploy:            
         steps:
         - script: echo deploy web app...
       route:
