@@ -40,11 +40,8 @@ stages:
         tags: |
           $(tag)
           
-    - task: PublishPipelineArtifact@0
-      displayName: Publish manifest files
-      inputs:
-        artifactName: 'manifests'
-        targetPath: 'manifests'
+    - upload: manifests
+      artifact: manifests
 
 - stage: Deploy
   displayName: Deploy stage
@@ -71,8 +68,8 @@ stages:
             inputs:
               action: deploy
               manifests: |
-                $(System.ArtifactsDirectory)/manifests/deployment.yml
-                $(System.ArtifactsDirectory)/manifests/service.yml
+                $(Pipeline.Workspace)/manifests/deployment.yml
+                $(Pipeline.Workspace)/manifests/service.yml
               imagePullSecrets: |
                 $(imagePullSecret)
               containers: |
