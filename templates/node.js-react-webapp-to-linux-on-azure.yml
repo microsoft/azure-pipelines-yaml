@@ -36,10 +36,8 @@ stages:
         archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
         replaceExistingArchive: true
 
-    - task: PublishPipelineArtifact@0
-      displayName: 'Publish pipeline artifacts'
-      inputs:
-        targetPath: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+    - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+      artifact: drop
 
 - stage: Deploy
   displayName: Deploy stage
@@ -54,19 +52,14 @@ stages:
     strategy:
       runOnce:
         deploy:
-          steps:
-          - task: DownloadPipelineArtifact@1
-            displayName: 'Download Pipeline Artifact'
-            inputs:
-              buildType: current
-            
+          steps:            
           - task: AzureRmWebAppDeployment@4
             displayName: 'Azure App Service Deploy: {{ webAppName }}'
             inputs:
               azureSubscription: $(azureSubscription)
               appType: webAppLinux
               WebAppName: $(webAppName)
-              packageForLinux: '$(System.ArtifactsDirectory)/drop/$(Build.BuildId).zip'
+              packageForLinux: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
               RuntimeStack: 'NODE|10.10'
               StartupCommand: 'npm run start'
               ScriptType: 'Inline Script'

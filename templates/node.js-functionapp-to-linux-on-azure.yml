@@ -33,11 +33,17 @@ stages:
       displayName: 'Install Node.js'
 
     - script: |
-        dotnet build extensions.csproj --runtime ubuntu.16.04-x64 --output ./bin/
+        if [ -f extensions.csproj ]
+        then
+            dotnet build extensions.csproj --runtime ubuntu.16.04-x64 --output ./bin
+        fi
+      displayName: 'Build extensions'
+
+    - script: |
         npm install
         npm run build --if-present
         npm run test --if-present
-      displayName: 'Build extensions and prepare binaries'
+      displayName: 'Prepare binaries'
       
     - task: ArchiveFiles@2
       displayName: 'Archive files'
@@ -48,10 +54,8 @@ stages:
         archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
         replaceExistingArchive: true
 
-    - task: PublishPipelineArtifact@0
-      displayName: 'Publish pipeline artifacts'
-      inputs:
-        targetPath: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+    - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+      artifact: drop
 
 - stage: Deploy
   displayName: Deploy stage
@@ -66,16 +70,11 @@ stages:
     strategy:
       runOnce:
         deploy:
-          steps:
-          - task: DownloadPipelineArtifact@1
-            displayName: 'Download Pipeline Artifact'
-            inputs:
-              buildType: current
-            
+          steps:            
           - task: AzureFunctionApp@1
             displayName: 'Azure Functions App Deploy: {{ functionAppName }}'
             inputs:
               azureSubscription: '$(azureSubscription)'
               appType: functionAppLinux
               appName: $(functionAppName)
-              package: '$(System.ArtifactsDirectory)/drop/$(Build.BuildId).zip'
+              package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
