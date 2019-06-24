@@ -6,7 +6,7 @@ With Azure DevOps, environments are first-class constructs, handling the underly
 
 This proposal contains a number of interconnected elements. For example, an [environment](environment.md), a [deployment](deployment.md) job, primitive building blocks, and simplified YAML syntax to enable **safe deployments** in the majority of cases. Our approach to building a deployment orchestration language for **safe deployments** will be to get the fundamental building blocks right. 
 
-**runOnce**: default strategy, if not defined. Supports `deploy`, along with with `onFailure` and `onSuccess` lifecycle hooks. 
+**runOnce**: default strategy, if not defined. 
 
 ```yaml
 jobs:
@@ -19,13 +19,25 @@ jobs:
       deploy:    
         steps:             
         - script: echo deploy web app...   
-      onFailure:
-        steps:
-        - script: echo restore from backup...
-      onSuccess:
-        steps:
-        - script: echo passed...
  ```
+
+When deploying application updates it is important that the technique used to deliver update enables initialization, deploying the update, testing the updated version after routing traffic and in case of failure, run steps to restore to last known good version. We achieve this using fundamental building blocks viz., hooks where you can run your steps during deployment lifecycle. Following are descriptions of the lifecycle events where you can run a hook during a deployment lifecycle
+
+**preDeploy** – Use to run tasks before the deploy step is executed. A rollback is not possible at this point.
+
+**Deploy** – Use to run the deploy tasks.  The results of a lifecycle hook event can trigger a rollback.
+
+**routeTraffic** – Use to run tasks that serves the traffic to the updated version. The results of a lifecycle hook event can trigger a rollback.
+
+**postRouteTrafficChecK** - Use to run the tasks after the traffic is routed. Typically these tasks monitor the health of the updated version for defined interval. The results of a lifecycle hook event can trigger a rollback.
+
+**on: Failure or Success** - Use to run the task to peform rollback actions or clean-up. The results of a lifecycle hook event doesn't trigger a rollback.
+
+Using the lifecycle hooks, we can achieve complex deployment events such as - 
+
+- Canary
+- Blue Green
+- Rolling
 
 **Blue-Green**: Reduce deployment downtime by having identical standby environment. 
 At any time one of them, let's say `blue` for the example, is live. As you prepare a new release of your software,
