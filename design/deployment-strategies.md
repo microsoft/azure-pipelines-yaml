@@ -123,10 +123,9 @@ jobs:
           - script: echo checks passed...
 ```
 
-The example task usage above uses the explicit references to 'Staging' and 'Prod' slots from an environment variable. Typically built-in tasks such as AppService used to deploy to manage publishes the target type information. i.e, Prod or staging in other words blue or green information as a metadata on the resource in the environment context. With this, the target type whether blue or green information is persisted, updated and/or retrieved from the enviroment context and the workflow doesn't have to be edited during deployment. We also want to provide simplified commands/APIs to persist/update the slot information applied to the example above. 
+The example task usage above uses the explicit references to **staging** and **prod** slots from an environment variable. Typically built-in tasks such as AppService publishes the target type i.e, **Prod** or **staging** in other words **blue** or **green** information as a metadata on the resource in the environment context. With this, the target type whether blue or green information is persisted, updated and/or retrieved from the enviroment context and the workflow doesn't have to be edited for deployment. We also want to provide simplified commands/APIs to persist/update the slot information applied to the example above. 
 
 This example, can be scaled for any resource for example, **VMs** or **VMSS** or **K8S**. 
-
 
 **Canary**: reduce the risk by slowly rolling out the change to a small subset of users. 
 As you gain more confidence in the new version, you can start releasing it to more servers in your infrastructure
