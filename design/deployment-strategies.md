@@ -35,14 +35,16 @@ When deploying application updates it is important that the technique used to de
 
 Using the lifecycle hooks, we can achieve complex deployment events such as - 
 
-- Canary
 - Blue Green
+- Canary
 - Rolling
 
 **Blue-Green**: Reduce deployment downtime by having identical standby environment. 
 At any time one of them, let's say `blue` for the example, is live. As you prepare a new release of your software,
 you do your final stage of testing in the green environment. Once the software is working in the green environment, 
 you switch the traffic so that all incoming requests go to the green environment - the blue one is now idle.
+
+Consider the following Azure Pipelines pipeline defined in YAML
 
 ```yaml
 jobs:
@@ -52,31 +54,118 @@ jobs:
     name: musicCarnivalProdPool
   strategy:                   
     blueGreen:    
-      init:
+      preDeploy:
         steps:
         - script: echo initialize, cleanup, install certs...
       deploy:              
         steps:                                   
-        - script: echo deploy web app... 
-      route:
+        - script: echo deploy app updates... 
+      routeTraffic:
         delay: 60m
         steps:
-        - script: echo swap slots...   
-      check:
+        - script: echo route traffic...   
+      postRouteTafficCheck:
         timeout: 60m
         samplingInterval: 5m
         steps:          
-        - task: appInsightsAlerts        
-    on:
-      failure:
-        steps:
-        - script: echo swap slots back..     
-      success:
-        steps:
-        - script: echo checks passed...
+        - script: echo monitor app health        
+      on:
+        failure:
+          steps:
+          - script: echo rollback, cleanup..     
+        success:
+          steps:
+          - script: echo checks passed...
 ```
 
-For example, deploy a web app using blue-green strategy
+For example, deploy a web app using blue-green strategy.
+
+```yaml
+jobs:
+- deployment:
+  environment: musicCarnivalProd.musicCarnivalWeb
+  pool:
+    name: musicCarnivalProdPool
+  strategy:                   
+    blueGreen:    
+      deploy:              
+        steps:                                   
+        - task: AzureWebApp@1
+          inputs:
+            appName: 'musicCarnivalWeb'
+            package: '$(System.DefaultWorkingDirectory)/**/*.zip' 
+            slotName: $(environment.staging)                        # deploy to green
+      routeTraffic:
+        delay: 60m
+        steps:
+        - task: AzureAppServiceManage@0
+          inputs:
+            Action: 'Swap Slots'                                    # swap green with blue
+            WebAppName: 'musicCarnivalWeb'
+            sourceSlot: $(environment.staging)
+            destinationSlot: $(environment.prod)
+      postRouteTafficCheck:
+        timeout: 60m
+        samplingInterval: 5m
+        steps:          
+        - script: echo monitor app health        
+      on:
+        failure:
+          steps:
+          - task: AzureAppServiceManage@0
+            inputs:
+              Action: 'Swap Slots'
+              WebAppName: 'musicCarnivalWeb'
+              sourceSlot: $(environment.prod)
+              destinationSlot: $(environment.staging)    
+        success:
+          steps:
+          - script: echo checks passed...
+```
+
+The example task usage above uses the explicit references to 'Staging' and 'Prod' slots from an environment variable. Typically built-in tasks such as AppService used to deploy to manage publishes the target type information. i.e, Prod or staging in other words blue or green information as a metadata on the resource in the environment context. With this, the target type whether blue or green information is persisted, updated and/or retrieved from the enviroment context and the workflow doesn't have to be edited during deployment. We also want to provide simplified commands/APIs to persist/update the slot information applied to the example above. 
+
+This example, can be scaled for any resource for example, **VMs** or **VMSS** or **K8S**. 
+
+
+**Canary**: reduce the risk by slowly rolling out the change to a small subset of users. 
+As you gain more confidence in the new version, you can start releasing it to more servers in your infrastructure
+and routing more users to it. 
+
+Consider the following Azure Pipelines pipeline defined in YAML
+
+```yaml
+jobs:
+- deployment:
+  environment: musicCarnivalProd
+  pool:
+    name: musicCarnivalProdPool 
+  strategy:                 
+    canary:     
+      increments: [10,20] 
+      preDeploy:                                    
+        steps:          
+        - script: initialize, cleanup....  
+      deploy:            
+        steps:
+        - script: echo deploy updates...
+      routeTraffic:
+        delay: 60m 
+        steps:
+        - script: echo routing traffic...
+      postRouteTrafficCheck:
+        timeout: 60m
+        samplingInterval: 5m
+        steps:          
+        - script: echo monitor application health...  
+      on:
+        failure:
+          steps:
+          - script: echo perform rollback actions.     
+        success:
+          steps:
+          - script: echo checks passed, notify...
+ ```
 
 
 **Rolling**: A rolling deployment replaces instances of the previous version of an application with instances of the new version of the application on a fixed set of machines (rolling set) in each iteration. 
@@ -92,27 +181,33 @@ jobs:
   strategy:                 
     rolling:
       max-parallel: 5
-      init:
+      preDeploy:
         steps:
         - script: echo initialize, cleanup, install certs...
       deploy:              
         steps:                                     
         - script: echo deploy web app...      
-      route:
+      routeTraffic:
         delay: 60m
         steps:
         - script: echo swap slots...   
-      check:
+      postTrafficHealthCheck:
         timeout: 60m
         samplingInterval: 5m
         steps:          
         - task: appInsightsAlerts .   
-    on:
-      failure:
-        steps:
-        - script: echo swap slots back..     
-      success:
-        steps:
-        - script: echo checks passed...
+      on:
+        failure:
+          steps:
+          - script: echo swap slots back..     
+        success:
+          steps:
+          - script: echo checks passed...
 ```
+
+### Virtual Machine deployment (for discussion)
+
+Azure Pipelimes supports **push** using remote script such as SSH and **pull** deployments using local agents to Virtual Machines. The proposal involves supporting **push** based deployments as first class option using remote PowerShell or SSH to Virtual Machines in the environment. 
+
+**Pool** specifies which pool to use for a job of the pipeline. While this works for **remote or push** deployments for PaaS resources, it doesn't apploy for **pull** deployments to VMs using local agents. In case of deployments to VMs in an environment the deployment job executes on the local agents and doesn't need a pool. The approach planned includes a new keyword **environment.pool** or **self** to define the execution target for the jobs. 
 
