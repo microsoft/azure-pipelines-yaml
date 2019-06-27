@@ -10,7 +10,7 @@ Scenarios:
 - Pipeline authors can control the types, ranges allowed, and defaults for run-time parameters
 - Pipeline authors can allow flexible, run-time control over stages/jobs to run, including adding/removing matrix legs
 - The pipeline itself can be altered at run time: pools, agentspecs, service connections, environments, and more
-- The runtime values can be used in template expressions (`${{ if }}`, for example), for instance so that jobs/steps can be dynamically selected
+- The runtime values can be used in template expressions (`${{ if }}`, for example), for instance so that jobs/steps can be dynamically selected (this is not currently possible because queue-time variables are not available during template expansion)
 
 ## Syntax
 
