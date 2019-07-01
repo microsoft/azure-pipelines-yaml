@@ -260,7 +260,7 @@ Users publishing to Azure Artifacts should use an instance of the task and also 
 
 #### Open questions
 
-- `HTTP_PROXY` support [seems brand-new](https://github.com/dotnet/corefx/pull/37200). Does it work? What is the minimum version of NuGet, dotnet, or msbuild required? Will the Credential Provider automatically use this proxy configuration as well?
+- `HTTP_PROXY` support [seems brand-new](https://github.com/dotnet/corefx/pull/37200). Does it work? What is the minimum version of NuGet, dotnet, or msbuild required? Let's investigate this during dev design.
 
 ### Python install (download)
 
@@ -397,6 +397,8 @@ First, we need to build and release all of the new tasks and update all of the d
 - Install private packages from inside a container job
 - Publish packages from inside a container job
 
+PM and engineering should walk through this list and validate that it's complete for each package type.
+
 ### Phase 1: Prevent new usage
 
 #### Full-featured tasks (NuGet and npm)
@@ -419,7 +421,7 @@ Whenever the NuGet, npm, or .NET Core task fails, we should include in the error
 
 As usage decreases, we will eventually support the old tasks solely by asking users to migrate to the new tasks.
 
-### Plan for keeping Tool Installer defaults up to date
+### Plan for keeping Tool Installer defaults and Cred Provider versions up to date
 
 Open question: is this really only about NuGet and dotnet or is it broader?
 
