@@ -211,12 +211,9 @@ Users can store the `.npmrc` in a subfolder. Example:
 
 ##### Authentication
 
-The task looks for a `Nuget.config` either in the root of the repo or at the user's provided location, sets appropriate [environment variables](https://github.com/Microsoft/artifacts-credprovider#environment-variables) for each item provided, and ensures the credential provider is installed. To help users understand this, we should provide a message in the logs along the lines of "Note: This task sets up authentication via https://github.com/Microsoft/artifacts-credprovider, which requires NuGet x.x.x+, dotnet x.x.x+, or msbuild x+."
+The task sets appropriate [environment variables](https://github.com/Microsoft/artifacts-credprovider#environment-variables) to allow automatic authentication to all Azure Artifacts feeds within the organization and all external feeds for which service connections are provided, and ensures the credential provider is installed. To help users understand this, we should provide a message in the logs along the lines of "Note: This task sets up authentication via https://github.com/Microsoft/artifacts-credprovider, which requires NuGet 4.9.0+, dotnet 2.1.500+ or 2.2.100+, or msbuild 15.9.0+."
 
-If the task discovers or if a user provides an Azure Artifacts feed name, the task will set an environment variable:
-
-`VSS_NUGET_EXTERNAL_FEED_ENDPOINTS={"endpointCredentials": [{"endpoint":"https://pkgs.dev.azure.com/codesharing-demo/_packaging/codesharing-demo/nuget/v3/index.json", "username":"optional", "password":"accesstoken"}]}`
-
+`VSS_NUGET_EXTERNAL_FEED_ENDPOINTS` and `VSS_NUGET_URI_PREFIXES` are the environment variables we will set.
 
 ##### Proxy
 
@@ -224,29 +221,19 @@ If the agent's proxy information is available, the task will set the `HTTP_PROXY
 
 #### Examples
 
-If an `NuGet.config` exists in the root of the repo, the task will discover any Azure Artifacts feeds within your organization and set the corresponding environment variables to the build's access token. Example:
+With no inputs, the task will set the `VSS_NUGET_URI_PREFIXES` environment variables up with the build's access token. Example:
 
 ```yaml
 steps:
 - task: NuGetAuthenticate@0
 ```
 
-If the `NuGet.config` file cannot be found in the root of your repo, this task will fail.
-
 Users can use Azure Artifacts feeds in other organizations or non-Azure Artifacts feeds (e.g. MyGet, NuGet.org, etc.) by providing one or more NuGet-typed service connections. Example:
 
 ```yaml
 - task: NuGetAuthenticate@0
   inputs:
-    NuGetServiceConnections: MyGetFeedConnection
-```
-
-Users can store the `NuGet.config` in a subfolder. Example:
-
-```yaml
-- task: NuGetAuthenticate@0
-  inputs:
-    nugetConfig: path/to/my/nuget.config
+    nuGetServiceConnections: MyGetFeedConnection
 ```
 
 Users can publish to NuGet.org or any non-Azure Artifacts source without this task. Instead, they can create a [secret variable](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?view=azure-devops&tabs=yaml%2Cbatch#secret-variables) and run a standard push command:
@@ -259,20 +246,7 @@ Users publishing to Azure Artifacts should use an instance of the task and also 
 
 ```yaml
 - task: NuGetAuthenticate@0
-  inputs:
-    artifactFeeds: MyFeed
-    generateNuGetConfig: nuget.config
-- script: dotnet nuget push -k az -s MyFeed my-package.1.0.0.nupkg
-```
-
-Users can generate a NuGet.config by providing any combination of Azure Artifacts feeds and service connections. This is useful for users who are used to the Visual Studio "set up my feeds once per machine" method.
-
-```yaml
-- task: NuGetAuthenticate@0
-  inputs:
-    artifactFeeds: MyFeed
-    NuGetServiceConnections: MyGetFeedConnection
-    generateNuGetConfig: path/to/generated/nuget.config
+- script: dotnet nuget push -k az -s [artifacts-feed-URL] my-package.1.0.0.nupkg
 ```
 
 #### Task reference
@@ -281,10 +255,7 @@ Users can generate a NuGet.config by providing any combination of Azure Artifact
 # NuGet Authenticate
 - task: NuGetAuthenticate@0
   inputs:
-    artifactFeeds: # Optional, one or more Azure Artifacts feed names/GUIDs, comma-separated
-    NuGetServiceConnections: # Optional, one or more NuGet-typed service connection names/GUIDs, comma-separated
-    nugetConfig: # Optional, path to your NuGet.config file
-    generateNuGetConfig: # Optional, path where you want to generate a NuGet.config
+    nuGetServiceConnections: # Optional, one or more NuGet-typed service connection names/GUIDs, comma-separated
 ```
 
 #### Open questions
@@ -334,13 +305,13 @@ If the agent's proxy information is available, the task will set the `HTTPS_PROX
 ```yaml
 - task: PipAuthenticate@0
   inputs:
-    PythonDownloadServiceConnections: codesharing-demo # Primary index
+    pythonDownloadServiceConnections: codesharing-demo # Primary index
 ```
 
 ```yaml
 - task: PipAuthenticate@0
   inputs:
-    PythonDownloadServiceConnections:
+    pythonDownloadServiceConnections:
       - codesharing-demo # Primary index
       - otherfeed # Extra index
 ```
@@ -361,7 +332,7 @@ Users can disable the primary index behavior and always add `extra-index-url`s b
 - task: PipAuthenticate@1
   inputs:
     artifactFeeds: # Optional, one or more Azure Artifacts feed names/GUIDs, comma-separated
-    PythonDownloadServiceConnections: # Optional, one or more NuGet-typed service connection names/GUIDs, comma-separated
+    pythonDownloadServiceConnections: # Optional, one or more NuGet-typed service connection names/GUIDs, comma-separated
     onlyAddExtraIndex: # Optional, boolean defaults to false
 ```
 
@@ -395,7 +366,7 @@ The task creates a new .pypirc file in the root of the workspace and sets the `P
 ```yaml
 - task: TwineAuthenticate@1
   inputs:
-    PythonUploadServiceConnection: PyPIConnection
+    pythonUploadServiceConnection: PyPIConnection
 - script: twine upload -r PyPIConnection --config-file $(PYPIRC_PATH)
 ```
 
@@ -406,7 +377,7 @@ The task creates a new .pypirc file in the root of the workspace and sets the `P
 - task: TwineAuthenticate@1
   inputs:
     artifactFeed: # Optional, one feed name
-    PythonUploadServiceConnection: # Optional, one Python package upload-typed service connection
+    pythonUploadServiceConnection: # Optional, one Python package upload-typed service connection
 ```
 
 ## Transition plan from today's full-featured tasks
@@ -456,10 +427,4 @@ Open question: is this really only about NuGet and dotnet or is it broader?
 
 ### How do I use feeds in a vendor-agnostic way?
 
-If you'd prefer not to use the `auth` shortcut and instead manually construct your package client's configuration file (e.g. `nuget.config`, `.npmrc`, etc.), you can still access Azure Artifacts feeds. To do so:
-
-1. Ensure that the appropriate build identity (likely `Project Collection Build Service`) has the correct level of access (likely `Reader` or `Contributor`, as desired) to your feed [using these instructions](/azure/devops/artifacts/feeds/feed-permissions#package-permissions-in-azure-pipelines).
-2. Make `System.AccessToken` available to scripts and tasks by mapping it [using these instructions](variables.md#systemaccesstoken).
-3. Construct your configuration file using a scripting or templating language of your choice.
-
-We will document this as part of the documentation wave we release alongside this feature.
+For users who don't want to use these tasks and instead manually set up their client, we'll cover how to do so in the docs.
