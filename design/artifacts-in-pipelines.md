@@ -29,7 +29,7 @@ We should ensure that any packages published using auth that was set up by any o
 
 After too many DTSes, it has become clear that many of our customers running Server and/or using private agents are working behind corporate proxies.
 Going forward, all Artifacts-produced tasks must support proxies (insofar as the underlying tool supports them) before we ship.
-In addition to our tasks, we should enable setting up tools that support proxies with the pipeline’s proxy.
+In addition to our tasks, we should enable setting up tools that support proxies with the agent's proxy.
 
 ### Implementation principles
 
