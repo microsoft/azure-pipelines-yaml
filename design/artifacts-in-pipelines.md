@@ -130,7 +130,7 @@ The `npm` utility (which comes with Node.js) is used to install packages and too
 
 ##### Authentication
 
-The task looks for an `.npmrc` either in the root of the repo or at the user's provided location and sets appropriate [environment variables](https://docs.npmjs.com/misc/config#environment-variables) for each item provided. For example, if a user provids a service connection for npmjs with an authtoken, the task will set an environment variable:
+The task looks for an `.npmrc` either in the root of the repo or at the user's provided location and sets appropriate [environment variables](https://docs.npmjs.com/misc/config#environment-variables) for each item provided. For example, if a user provides a service connection for npmjs with an authtoken, the task will set an environment variable:
 
 `npm_config_//registry.npmjs.org/:_authToken=token`
 
@@ -424,6 +424,8 @@ As usage decreases, we will eventually support the old tasks solely by asking us
 ### Plan for keeping Tool Installer defaults and Cred Provider versions up to date
 
 Open question: is this really only about NuGet and dotnet or is it broader?
+
+As part of this, publish a set of minimum tool versions supported by Azure Artifacts.
 
 ## FAQ
 
