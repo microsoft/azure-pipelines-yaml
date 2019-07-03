@@ -144,7 +144,7 @@ If the task discovers or if a user provides an Azure Artifacts feed name, the ta
 
 ##### Proxy
 
-If the agent's proxy information is available, the task will set the `HTTPS_PROXY` and/or `HTTP_PROXY` variables as appropriate.
+If the agent's proxy information is available, the task will set the `HTTPS_PROXY` and/or `HTTP_PROXY` variables as appropriate. We should also take the list of regexes that represent hosts that should be bypassed, check each regex against the registries found in the `.npmrc` file, and add any matches to `NO_PROXY`.
 
 #### Examples
 
@@ -217,7 +217,7 @@ The task sets appropriate [environment variables](https://github.com/Microsoft/a
 
 ##### Proxy
 
-If the agent's proxy information is available, the task will set the `HTTP_PROXY` variables as appropriate.
+If the agent's proxy information is available, the task will set the `HTTP_PROXY` variables as appropriate. We should also take the list of regexes that represent hosts that should be bypassed, check each regex against the prefix of the organization and against any provided  service connection URLs, and add any matches to `NO_PROXY`.
 
 #### Examples
 
@@ -421,11 +421,11 @@ Whenever the NuGet, npm, or .NET Core task fails, we should include in the error
 
 As usage decreases, we will eventually support the old tasks solely by asking users to migrate to the new tasks.
 
-### Plan for keeping Tool Installer defaults and Cred Provider versions up to date
+## Plan for keeping Tool Installer defaults and Cred Provider versions up to date
 
-Open question: is this really only about NuGet and dotnet or is it broader?
+As part of this work, we will publish a set of minimum tool versions supported by Azure Artifacts, using our existing test framework and adding new tests as appropriate to prove out a set of supported tools. This will be published to the docs next to the new troubleshooting guides coming as part of the connect to feed update.
 
-As part of this, publish a set of minimum tool versions supported by Azure Artifacts.
+At the end of every sprint, we will evaluate new versions of tools and see if they remain compatible. If so, we will update the Tool Installer default versions and the version of the Credential Provider that ships with any of the tasks.
 
 ## FAQ
 
