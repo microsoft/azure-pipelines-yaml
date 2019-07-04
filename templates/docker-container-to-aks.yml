@@ -41,6 +41,7 @@ variables:
   ACR.Sku: 'Standard'
   AKS.KubeDeploymentYaml: '$(System.DefaultWorkingDirectory)/KubeDeployment.yml' # Update AKS.KubeDeploymentYaml if you want to use deployment file from repo instead of generated file.
   AKS.DeploymentPort: '$(Container.Port)'
+  AKS.ServiceConnectionId: '$(Azure.ServiceConnectionAKS)'
   Azure.CreateResources: 'true' # Update Azure.CreateResources to false if you have already created resources like resource group, azure container registry and azure kubernetes cluster.
   System.Debug: 'false'
 
@@ -145,5 +146,6 @@ jobs:
       azureSubscriptionEndpoint: '$(Azure.ServiceConnectionId)'
       azureResourceGroup: '$(Azure.ResourceGroupName)'
       kubernetesCluster: '$(AKS.ClusterName)'
+      kubernetesServiceEndpoint: '$(AKS.ServiceConnectionId)'
       arguments: '-f $(AKS.KubeDeploymentYaml)'
       command: 'apply'
