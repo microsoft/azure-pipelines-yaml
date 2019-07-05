@@ -1,0 +1,12 @@
+{
+  "iconName": "docker",
+  "parameters": [
+    {
+      "name": "dockerfilePath",
+      "type": "string",
+      "required": "true",
+      "displayName": "Dockerfile",
+      "defaultValue": "**/Dockerfile"
+    }
+  ]
+}
