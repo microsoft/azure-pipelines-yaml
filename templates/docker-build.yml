@@ -8,9 +8,12 @@ trigger:
 resources:
 - repo: self
 
+variables:
+  tag: '$(Build.BuildId)'
+
 stages:
 - stage: Build
-  displayName: Build image stage
+  displayName: Build image
   jobs:  
   - job: Build
     displayName: Build
@@ -22,3 +25,5 @@ stages:
       inputs:
         command: build
         dockerfile: '{{ dockerfilePath }}'
+        tags: |
+          $(tag)
