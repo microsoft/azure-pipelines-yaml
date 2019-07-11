@@ -116,8 +116,6 @@ The only way to change the location of `settings.xml` is via the [`mvn -s` param
 
 ### npm
 
-consider: ever generate npmrc?
-
 The `npm` utility (which comes with Node.js) is used to install packages and tools required for your Node.js development. `npm` supports Azure Artifacts feeds and external feeds using basic or token authentication.
 
 #### Inputs
