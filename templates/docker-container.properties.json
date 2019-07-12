@@ -4,7 +4,8 @@
     {
       "name": "containerRegistryConnection",
       "type": "endpoint:containerRegistry",
-      "required": "true"
+      "required": "true",
+      "displayName": "Container Registry"
     },
     {
       "name": "imageRepository",
