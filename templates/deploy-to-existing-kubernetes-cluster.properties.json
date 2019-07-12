@@ -4,12 +4,14 @@
         {
             "name": "k8sResource",
             "type": "environmentResource:kubernetes",
-            "required": "true"
+            "required": "true",
+            "displayName": "Kubernetes Resource"
         },
         {
             "name": "containerRegistryConnection",
             "type": "endpoint:containerRegistry",
-            "required": "true"
+            "required": "true",
+            "displayName": "Container Registry"
         },
         {
             "name": "imageRepository",
