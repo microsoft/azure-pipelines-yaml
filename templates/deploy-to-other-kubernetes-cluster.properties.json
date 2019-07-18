@@ -8,7 +8,7 @@
         },
         {
             "name": "containerRegistryConnection",
-            "type": "endpoint:otherContainerRegistry",
+            "type": "endpoint:genericContainerRegistry",
             "required": "true"
         },
         {
