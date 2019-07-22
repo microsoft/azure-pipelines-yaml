@@ -1,0 +1,100 @@
+# Python Django to Windows Web App on Azure
+# Build your Python Django project and deploy it to Azure as a Windows Web App.
+# Change python version to one thats appropriate for your application.
+# https://docs.microsoft.com/azure/devops/pipelines/languages/python
+
+trigger:
+- master
+
+variables:
+  # Azure Resource Manager connection created during pipeline creation
+  azureServiceConnectionId: '{{ azureServiceConnection.Id }}'
+  
+  # Web app name
+  webAppName: '{{ webAppName }}'
+
+  # Agent VM image name
+  vmImageName: 'windows-latest'
+
+  # Environment name
+  environmentName: '{{ webAppName }}'
+
+  # Project root folder. Point to the folder containing manage.py file.
+  projectRoot: $(System.DefaultWorkingDirectory)
+
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:
+  - job: BuildJob
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: ArchiveFiles@2
+      displayName: 'Archive files'
+      inputs:
+        rootFolderOrFile: '$(projectRoot)'
+        includeRootFolder: false
+        archiveType: zip
+        archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+        replaceExistingArchive: true
+
+    - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+      displayName: 'Upload package'
+      artifact: drop
+
+- stage: Deploy
+  displayName: 'Deploy Web App'
+  dependsOn: Build
+  condition: succeeded()
+  jobs:
+  - deployment: DeploymentJob
+    pool:
+      vmImage: $(vmImageName)
+    environment: $(environmentName)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureAppServiceManage@0
+            displayName: 'Install Python Extension'
+            inputs:
+              azureSubscription: $(azureServiceConnectionId)
+              Action: 'Install Extensions'
+              WebAppName: $(webAppName)
+              ExtensionsList: python353x86
+              OutputVariable: 'PYTHON_EXT'
+
+          - task: AzureRmWebAppDeployment@4
+            displayName: 'Azure App Service Deploy'
+            inputs:
+              azureSubscription: $(azureServiceConnectionId)
+              WebAppName: $(webAppName)
+              packageForLinux: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
+              ScriptType: 'Inline Script'
+              InlineScript: |
+                @echo off
+                if NOT exist requirements.txt (
+                  echo No Requirements.txt found.
+                  EXIT /b 0
+                )
+                if NOT exist "$(PYTHON_EXT)/python.exe" (
+                  echo Python extension not available >&2
+                  EXIT /b 1
+                )
+                echo Installing dependencies
+                call "$(PYTHON_EXT)/python.exe" -m pip install --upgrade pip
+                call "$(PYTHON_EXT)/python.exe" -m pip install --upgrade setuptools
+                if %errorlevel% NEQ 0 (
+                  echo Failed to install setuptools >&2
+                  EXIT /b 1
+                )
+                call "$(PYTHON_EXT)/python.exe" -m pip install -r requirements.txt
+                if %errorlevel% NEQ 0 (
+                  echo Failed to install dependencies>&2
+                  EXIT /b 1
+                )
+              enableCustomDeployment: true
+              ExcludeFilesFromAppDataFlag: false
+              DeploymentType: webDeploy
+              WebConfigParameters: -WSGI_HANDLER django.core.wsgi.get_wsgi_application()  -PYTHON_PATH "$(PYTHON_EXT)\python.exe" -PYTHON_WFASTCGI_PATH "$(PYTHON_EXT)\wfastcgi.py" -DJANGO_SETTINGS_MODULE -appType python_Django
