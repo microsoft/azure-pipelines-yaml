@@ -201,17 +201,18 @@ Users can store the `.npmrc` in a subfolder. Example:
 
 `NuGet.exe`, `dotnet`, or `msbuild` (the latter two include NuGet functionality) are used to install NuGet packages required for your .NET development. All tools supports Azure Artifacts feeds and external feeds using basic authentication via the credential provider.
 
+There will be 3 tasks: `NuGetExeAuthenticate`, `DotNetAuthenticate`, and `MSBuildAuthenticate` corresponding with the tools they set up. Only one tool (e.g. nuget.exe or dotnet) can be set up at a time due to technical limitations in NuGet. Therefore, if a customer requires using multiple tools, the correct authentication task must be the last one to run before invoking that tool.
+
 #### Inputs
 
-- 0+ Azure Artifacts feed names/GUIDs
 - 0+ NuGet-typed service connection names/GUIDs
 - Agent's proxy information, if available
 
 ##### Authentication
 
-The task sets appropriate [environment variables](https://github.com/Microsoft/artifacts-credprovider#environment-variables) to allow automatic authentication to all Azure Artifacts feeds within the organization and all external feeds for which service connections are provided, and ensures the credential provider is installed. To help users understand this, we should provide a message in the logs along the lines of "Note: This task sets up authentication via https://github.com/Microsoft/artifacts-credprovider, which requires NuGet 4.9.0+, dotnet 2.1.500+ or 2.2.100+, or msbuild 15.9.0+."
+The tasks set appropriate [environment variables](https://github.com/Microsoft/artifacts-credprovider#environment-variables) to allow automatic authentication to all Azure Artifacts feeds within the organization and all external feeds for which service connections are provided, and ensures the credential provider is installed. To help users understand this, we should provide a message in the logs along the lines of "Note: This task sets up authentication via https://github.com/Microsoft/artifacts-credprovider, which requires NuGet 4.9.0+, dotnet 2.1.500+ or 2.2.100+, or msbuild 15.9.0+."
 
-`VSS_NUGET_EXTERNAL_FEED_ENDPOINTS` and `VSS_NUGET_URI_PREFIXES` are the environment variables we will set.
+`VSS_NUGET_EXTERNAL_FEED_ENDPOINTS`, `VSS_NUGET_URI_PREFIXES`, and `VSS_NUGET_ACCESSTOKEN` are the environment variables we will set to configure the credential provider. We will also configure nuget.exe/dotnet/MSBuild to use the credential provider using the `NUGET_PLUGIN_PATHS` environment variable.
 
 ##### Proxy
 
@@ -223,13 +224,13 @@ With no inputs, the task will set the `VSS_NUGET_URI_PREFIXES` environment varia
 
 ```yaml
 steps:
-- task: NuGetAuthenticate@0
+- task: NuGetExeAuthenticate@0 # Or DotNetAuthenticate@0, or MSBuildAuthenticate@0
 ```
 
 Users can use Azure Artifacts feeds in other organizations or non-Azure Artifacts feeds (e.g. MyGet, NuGet.org, etc.) by providing one or more NuGet-typed service connections. Example:
 
 ```yaml
-- task: NuGetAuthenticate@0
+- task: NuGetExeAuthenticate@0 # Or DotNetAuthenticate@0, or MSBuildAuthenticate@0
   inputs:
     nuGetServiceConnections: MyGetFeedConnection
 ```
@@ -243,7 +244,7 @@ Users can publish to NuGet.org or any non-Azure Artifacts source without this ta
 Users publishing to Azure Artifacts should use an instance of the task and also provide an API Key (any string) in the push command.
 
 ```yaml
-- task: NuGetAuthenticate@0
+- task: NuGetExeAuthenticate@0 # Or DotNetAuthenticate@0, or MSBuildAuthenticate@0
 - script: dotnet nuget push -k az -s [artifacts-feed-URL] my-package.1.0.0.nupkg
 ```
 
@@ -251,7 +252,7 @@ Users publishing to Azure Artifacts should use an instance of the task and also 
 
 ```yaml
 # NuGet Authenticate
-- task: NuGetAuthenticate@0
+- task: [NuGetExeAuthenticate@0 | DotNetAuthenticate@0 | MSBuildAuthenticate@0]
   inputs:
     nuGetServiceConnections: # Optional, one or more NuGet-typed service connection names/GUIDs, comma-separated
 ```
