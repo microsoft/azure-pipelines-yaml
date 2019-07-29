@@ -12,6 +12,12 @@
             "type": "dataSourcePicklist",
             "required": "true",
             "displayName":"Function App name"
+        },
+        {
+            "name": "functionAppKind",
+            "type": "pickList",
+            "required": "true",
+            "displayName": "Function App Kind"
         }
     ],
     "dataSourceBindings": [
@@ -19,7 +25,7 @@
             "dataSourceName": "AzureFunctionAppNamesByAppType",
             "endpointParameterName": "azureRmConnection",
             "parameters": {
-                "WebAppKind": "functionAppLinux"
+                "WebAppKind": "functionAppKind"
             },
             "target": "functionAppName"
         }
