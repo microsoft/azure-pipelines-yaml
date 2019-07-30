@@ -8,12 +8,6 @@
             "displayName": "Azure Connection"
         },
         {
-            "name": "functionAppKind",
-            "type": "pickList",
-            "required": "true",
-            "displayName": "Function App Kind"
-        },
-        {
             "name": "functionAppName",
             "type": "dataSourcePicklist",
             "required": "true",
@@ -25,7 +19,7 @@
             "dataSourceName": "AzureFunctionAppNamesByAppType",
             "endpointParameterName": "azureRmConnection",
             "parameters": {
-                "WebAppKind": "functionAppKind"
+                "WebAppKind": "functionApp"
             },
             "target": "functionAppName"
         }
