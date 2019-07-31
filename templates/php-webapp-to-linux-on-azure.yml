@@ -1,4 +1,4 @@
-# PHP
+# PHP as Linux Web App on Azure
 # Build, package and deploy your PHP project to Azure Linux Web App.
 # Add steps that run tests and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/php
@@ -26,7 +26,7 @@ stages:
 - stage: Build
   displayName: Build stage
   variables:
-    phpVersion: 7.3
+    phpVersion: '7.3'
   jobs:
   - job: BuildJob
     pool:
