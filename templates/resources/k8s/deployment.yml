@@ -1,16 +1,20 @@
 apiVersion : apps/v1beta1
 kind: Deployment
 metadata:
-  name: {{ imageRepository }} 
+  name: {{ imageRepository }}
+  labels:
+    app.kubernetes.io/name: {{ imageRepository }}
+    app.kubernetes.io/managed-by: azure-pipelines
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: {{ imageRepository }} 
+        app.kubernetes.io/name: {{ imageRepository }}
+        app.kubernetes.io/managed-by: azure-pipelines
     spec:
       containers:
-        - name: {{ imageRepository }} 
-          image: {{ containerRegistryConnection.Authorization.Parameters.loginServer }}/{{ imageRepository }} 
-          ports:
-          - containerPort: {{ servicePort }}
+      - name: {{ imageRepository }}
+        image: {{ containerRegistryConnection.Authorization.Parameters.loginServer }}/{{ imageRepository }}
+        ports:
+        - containerPort: {{ servicePort }}
