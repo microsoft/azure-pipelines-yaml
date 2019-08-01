@@ -6,7 +6,7 @@ An example of a resource can be another CI/CD pipeline that produces artifacts (
 
 ## Why resources?
 
-Resources are defined at one place and can be consumed anywhere in your pipeline. Resources provide you the full traceablity of the services consumed in your pipeline including the branch, version, tags, associated commits and work-items. You can fully automate your DevOps workflow by subscribing to trigger events on your resources.
+Resources are defined at one place and can be consumed anywhere in your pipeline. Resources provide you the full traceability of the services consumed in your pipeline including the branch, version, tags, associated commits and work-items. You can fully automate your DevOps workflow by subscribing to trigger events on your resources.
 
 Resources in YAML represent sources of types pipelines, builds, repositories, containers and packages. 
 
@@ -37,22 +37,22 @@ resources:        # types: pipelines | builds | repositories | containers | pack
   - pipeline: string  # identifier for the pipeline resource
     connection: string  # service connection for pipelines from other Azure DevOps organizations
     project: string # project for the source; optional for current project
-    source: string  # source defintion of the pipeline
+    source: string  # source definition of the pipeline
     version: string  # the pipeline run number to pick the artifact, defaults to Latest pipeline successful across all stages
-    branch: string  # branch to pick the artiafct, optional; defaults to master branch
+    branch: string  # branch to pick the artifact, optional; defaults to master branch
     tags: string # picks the artifacts on from the pipeline with given tag, optional; defaults to no tags
 ```
 
 ### Examples
 
-If you need to consume artifacts from another azure pipeline from the current project and if you dont require setting branch, version and tags etc., this can be shortened to:
+If you need to consume artifacts from another azure pipeline from the current project and if you don't require setting branch, version and tags etc., this can be shortened to:
 
 ```yaml
 resources:
   pipelines:
   - pipeline: SmartHotel
     source: SmartHotel-CI # name of the pipeline source definition
-```
+```A
 
 In case you need to consume a Pipeline from other project, then you need to include the project name while providing source name.
 
@@ -147,7 +147,7 @@ Or to avoid downloading any of the artifacts at all:
 ```yaml
 - downloadBuild: none
 ```
-Based on the type of build resource (Jenkins, TeamCity etc.) and the associated artifacts, apropriate task is used to download the artifacts in the job.
+Based on the type of build resource (Jenkins, TeamCity etc.) and the associated artifacts, appropriate task is used to download the artifacts in the job.
 
 Artifacts from the `build` resource are downloaded to `$(PIPELINE.WORKSPACE)/<build-identifier>/` folder unless user specifies a path in which case artifacts are downloaded to the path provided. 
 
@@ -241,7 +241,7 @@ resources:          # types: pipelines | repositories | containers | packages
     options: string  # arguments to pass to container at startup
     env: { string: string }  # list of environment variables to add
     ports: [ string ] # ports to expose on the container
-    volumes: [ string ] # volumes to mount on the containe
+    volumes: [ string ] # volumes to mount on the container
 ```
 
 ### Examples
@@ -277,7 +277,7 @@ resources:
     registry: myDockerRegistry
     image: jPetStoreImage 
 ```
-ACR container resource enables you to use Azure service pricipal (ARM service connection) for authentication. You can disable admin user for the container registry in azure and enfore using service principal.
+ACR container resource enables you to use Azure service principal (ARM service connection) for authentication. You can disable admin user for the container registry in azure and enforce using service principal.
 ACR container resource provides you with rich [triggers](https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/pipeline-triggers.md#containers) experience with support for location based triggers and better traceability. 
 
 Once you define a container as resource, container image metadata is passed to the pipeline in the form of variables. Information like image, registry and connection details are made accessible across all the jobs so that your kubernetes deploy tasks can extract the image pull secrets and pass it to the cluster.
