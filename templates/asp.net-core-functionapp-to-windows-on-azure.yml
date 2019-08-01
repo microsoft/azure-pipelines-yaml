@@ -1,7 +1,7 @@
-# .NET Core Function App on Azure
-# Build a .NET Core function app and deploy it to Azure.
+# .NET Core Function App to Windows on Azure
+# Build a .NET Core function app and deploy it to Azure as a Windows function App.
 # Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
 - master
