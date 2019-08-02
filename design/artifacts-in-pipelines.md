@@ -25,11 +25,11 @@ YAML is script-first. In other words, YAML prefers that customers use - script: 
 
 We should ensure that any packages published using auth that was set up by any of these tasks have the appropriate build and commit provenance information.
 
-### Proxy support is part of the min-bar
+### ~~Proxy support is part of the min-bar~~
 
-After too many DTSes, it has become clear that many of our customers running Server and/or using private agents are working behind corporate proxies.
-Going forward, all Artifacts-produced tasks must support proxies (insofar as the underlying tool supports them) before we ship.
-In addition to our tasks, we should enable setting up tools that support proxies with the agent's proxy.
+~~After too many DTSes, it has become clear that many of our customers running Server and/or using private agents are working behind corporate proxies. Going forward, all Artifacts-produced tasks must support proxies (insofar as the underlying tool supports them) before we ship. In addition to our tasks, we should enable setting up tools that support proxies with the agent's proxy.~~
+
+We've made the design decision that handling proxies should be a function of the underlying pipeline and agents. We should handle any proxy that the pipeline or agent should be able to run, but each task should not be responsible for handling proxies in their own way. 
 
 ### Implementation principles
 
@@ -201,10 +201,13 @@ Users can store the `.npmrc` in a subfolder. Example:
 
 `NuGet.exe`, `dotnet`, or `msbuild` (the latter two include NuGet functionality) are used to install NuGet packages required for your .NET development. All tools supports Azure Artifacts feeds and external feeds using basic authentication via the credential provider.
 
-There will be 3 tasks: `NuGetExeAuthenticate`, `DotNetAuthenticate`, and `MSBuildAuthenticate` corresponding with the tools they set up. Only one tool (e.g. nuget.exe or dotnet) can be set up at a time due to technical limitations in NuGet. Therefore, if a customer requires using multiple tools, the correct authentication task must be the last one to run before invoking that tool.
+There will be 1 task that will cover all three tools: `NuGetExeAuthenticate`. That task will have a "tool" input that will accept one of the three tools: `nugetExe`, `dotnet`, or `msbuild`. 
+
+This one-task approach will help ease confusion when invoking multiple tools in one build, as the user will know to run the task again with the appropriate tool to invoke the corresponding command.
 
 #### Inputs
 
+- **tool**: `nuget`, `dotnet`, or `msbuild`
 - 0+ NuGet-typed service connection names/GUIDs
 - Agent's proxy information, if available
 
