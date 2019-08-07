@@ -42,9 +42,8 @@ stages:
     - bash: |
         python -m venv worker_venv
         source worker_venv/bin/activate
-        pip install setuptools
         pip install -r requirements.txt
-      displayName: 'Install Application Dependencies'  
+      displayName: 'Install application dependencies'  
       
     - task: ArchiveFiles@2
       displayName: 'Archive files'
@@ -76,7 +75,7 @@ stages:
 
           steps:            
           - task: AzureFunctionApp@1
-            displayName: 'Azure Functions App Deploy: {{ functionAppName }}'
+            displayName: 'Azure functions app deploy'
             inputs:
               azureSubscription: '$(azureSubscription)'
               appType: functionAppLinux
