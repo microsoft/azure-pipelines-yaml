@@ -1,13 +1,12 @@
 # Python Function App to Linux on Azure
 # Build a Python function app and deploy it to Azure as a Linux function app.
 # Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+# https://docs.microsoft.com/azure/devops/pipelines/languages/python
 
 trigger:
 - master
 
 variables:
-
   # Azure Resource Manager connection created during pipeline creation
   azureSubscription: '{{ azureRmConnection.Id }}'
 
@@ -20,14 +19,14 @@ variables:
 stages:
 - stage: Build
   displayName: Build stage
-  jobs:  
+
+  jobs:
   - job: Build
     displayName: Build
     pool:
       vmImage: $(vmImageName)
       
     steps:
-
     - bash: |
         if [ -f extensions.csproj ]
         then
@@ -41,10 +40,10 @@ stages:
         versionSpec: 3.6
 
     - bash: |
-        python3.6 -m venv worker_venv
+        python -m venv worker_venv
         source worker_venv/bin/activate
-        pip3.6 install setuptools
-        pip3.6 install -r requirements.txt
+        pip install setuptools
+        pip install -r requirements.txt
       displayName: 'Install Application Dependencies'  
       
     - task: ArchiveFiles@2
@@ -63,15 +62,18 @@ stages:
   displayName: Deploy stage
   dependsOn: Build
   condition: succeeded()
+
   jobs:
   - deployment: Deploy
     displayName: Deploy
     environment: 'development'
-    pool: 
+    pool:
       vmImage: $(vmImageName)
+
     strategy:
       runOnce:
         deploy:
+
           steps:            
           - task: AzureFunctionApp@1
             displayName: 'Azure Functions App Deploy: {{ functionAppName }}'
