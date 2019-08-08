@@ -25,7 +25,7 @@ stages:
     displayName: Build
     pool:
       vmImage: $(vmImageName)
-      
+
     steps:
     - bash: |
         if [ -f extensions.csproj ]
@@ -43,8 +43,8 @@ stages:
         python -m venv worker_venv
         source worker_venv/bin/activate
         pip install -r requirements.txt
-      displayName: 'Install application dependencies'  
-      
+      displayName: 'Install application dependencies'
+
     - task: ArchiveFiles@2
       displayName: 'Archive files'
       inputs:
@@ -73,7 +73,7 @@ stages:
       runOnce:
         deploy:
 
-          steps:            
+          steps:
           - task: AzureFunctionApp@1
             displayName: 'Azure functions app deploy'
             inputs:
