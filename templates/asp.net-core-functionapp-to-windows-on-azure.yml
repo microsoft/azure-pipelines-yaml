@@ -19,13 +19,13 @@ variables:
 stages:
 - stage: Build
   displayName: Build stage
-  
-  jobs:  
+
+  jobs:
   - job: Build
     displayName: Build
     pool:
       vmImage: $(vmImageName)
-      
+
     steps:
     - task: DotNetCoreCLI@2
       displayName: Build
@@ -56,14 +56,14 @@ stages:
   - deployment: Deploy
     displayName: Deploy
     environment: 'development'
-    pool: 
+    pool:
       vmImage: $(vmImageName)
-    
+
     strategy:
       runOnce:
         deploy:
 
-          steps:            
+          steps:
           - task: AzureFunctionApp@1
             displayName: 'Azure functions app deploy'
             inputs:
