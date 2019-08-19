@@ -24,6 +24,12 @@
             "type": "pickList",
             "required": "true",
             "displayName": "Service Port"
+        },
+        {
+            "name": "dockerfilePath",
+            "type": "pickList",
+            "required": "true",
+            "displayName": "Service Port"
         }
     ],
     "assets": [
