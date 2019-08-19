@@ -29,7 +29,7 @@
             "name": "dockerfilePath",
             "type": "pickList",
             "required": "true",
-            "displayName": "Service Port"
+            "displayName": "Dockerfile"
         }
     ],
     "assets": [
