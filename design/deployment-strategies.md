@@ -21,7 +21,7 @@ jobs:
         - script: echo deploy web app...   
  ```
 
-When deploying application updates it is important that the technique used to deliver update enables initialization, deploying the update, testing the updated version after routing traffic and in case of failure, run steps to restore to last known good version. We achieve this using fundamental building blocks viz., hooks where you can run your steps during deployment lifecycle. Each of the lifecycle hooks will be resolved into an agent, or a server, (*or a container or validation job in future*). The lifecycle job type would be determined by the `pool` attribute. By default the lifecycle jobs will inherit the pool type specified by the `deployment`. 
+When deploying application updates it is important that the technique used to deliver update enables initialization, deploying the update, testing the updated version after routing traffic and in case of failure, run steps to restore to last known good version. We achieve this using fundamental building blocks viz., hooks where you can run your steps during deployment lifecycle. Each of the lifecycle hooks will be resolved into an agent, or a [server](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/phases?view=azure-devops&tabs=yaml#server-jobs), (*or a container or validation job in future*). The lifecycle job type would be determined by the `pool` attribute. By default the lifecycle jobs will inherit the pool type specified by the `deployment`. 
 
 Following are descriptions of the lifecycle events where you can run a hook during a deployment lifecycle
 
@@ -123,7 +123,7 @@ jobs:
           - script: echo checks passed...
 ```
 
-The example task usage above uses the explicit references to **staging** and **prod** slots from an environment variable. Typically built-in tasks such as AppService publishes the target type i.e, **Prod** or **staging** in other words **blue** or **green** information as a metadata on the resource in the environment context. With this, the target type whether blue or green information is persisted, updated and/or retrieved from the enviroment context and the workflow doesn't have to be edited for deployment. We also want to provide simplified commands/APIs to persist/update the slot information applied to the example above. 
+The example task usage above uses the explicit references to **staging** and **prod** slots from an environment variable. Typically built-in tasks such as AppService publishes the target type i.e, **Prod** or **staging** in other words **blue** or **green** information as a metadata on the resource in the environment context. With this, the target type whether blue or green information is persisted, updated and/or retrieved from the enviroment context and the workflow doesn't have to be edited for deployment. We also want to provide simplified commands/APIs to persist/update the slot information applied to the example above.  
 
 This example, can be scaled for any resource for example, **VMs** or **VMSS** or **K8S**. 
 
@@ -201,6 +201,9 @@ jobs:
           steps:
           - script: echo checks passed...
 ```
+
+#### Variables
+During execution, the jobs would have access to pre-defined system variables. For example, $(strategy), $(environment.staging) or $(green), $(environment.prod) or $(blue), $(action), $(increments) etc. 
 
 ### Virtual Machine deployment (for discussion)
 
