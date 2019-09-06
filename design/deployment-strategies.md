@@ -21,15 +21,17 @@ jobs:
         - script: echo deploy web app...   
  ```
 
-When deploying application updates it is important that the technique used to deliver update enables initialization, deploying the update, testing the updated version after routing traffic and in case of failure, run steps to restore to last known good version. We achieve this using fundamental building blocks viz., hooks where you can run your steps during deployment lifecycle. Following are descriptions of the lifecycle events where you can run a hook during a deployment lifecycle
+When deploying application updates it is important that the technique used to deliver update enables initialization, deploying the update, testing the updated version after routing traffic and in case of failure, run steps to restore to last known good version. We achieve this using fundamental building blocks viz., hooks where you can run your steps during deployment lifecycle. Each of the lifecycle hooks will be resolved into an agent, or a server, (*or a container or validation job in future*). The lifecycle job type would be determined by the `pool` attribute. By default the lifecycle jobs will inherit the pool type specified by the `deployment`. 
 
-**preDeploy** – Use to run tasks before the deploy step is executed. A rollback is not possible at this point.
+Following are descriptions of the lifecycle events where you can run a hook during a deployment lifecycle
+
+**preDeploy** – Use to run tasks before the deploy step is executed.
 
 **Deploy** – Use to run the deploy tasks.  The results of a lifecycle hook event can trigger a rollback.
 
 **routeTraffic** – Use to run tasks that serves the traffic to the updated version. The results of a lifecycle hook event can trigger a rollback.
 
-**postRouteTrafficChecK** - Use to run the tasks after the traffic is routed. Typically these tasks monitor the health of the updated version for defined interval. The results of a lifecycle hook event can trigger a rollback.
+**postRouteTraffic** - Use to run the tasks after the traffic is routed. Typically these tasks monitor the health of the updated version for defined interval. The results of a lifecycle hook event can trigger a rollback.
 
 **on: Failure or Success** - Use to run the task to peform rollback actions or clean-up. The results of a lifecycle hook event doesn't trigger a rollback.
 
@@ -64,9 +66,8 @@ jobs:
         delay: 60m
         steps:
         - script: echo route traffic...   
-      postRouteTafficCheck:
-        timeout: 60m
-        samplingInterval: 5m
+      postRouteTaffic:
+        pool: server       # lifecycle job pool type
         steps:          
         - script: echo monitor app health        
       on:
@@ -104,9 +105,8 @@ jobs:
             WebAppName: 'musicCarnivalWeb'
             sourceSlot: $(environment.staging)
             destinationSlot: $(environment.prod)
-      postRouteTafficCheck:
-        timeout: 60m
-        samplingInterval: 5m
+      postRouteTaffic:
+        pool: server
         steps:          
         - script: echo monitor app health        
       on:
@@ -152,9 +152,8 @@ jobs:
         delay: 60m 
         steps:
         - script: echo routing traffic...
-      postRouteTrafficCheck:
-        timeout: 60m
-        samplingInterval: 5m
+      postRouteTaffic:
+        pool: server
         steps:          
         - script: echo monitor application health...  
       on:
@@ -190,9 +189,8 @@ jobs:
         delay: 60m
         steps:
         - script: echo swap slots...   
-      postTrafficHealthCheck:
-        timeout: 60m
-        samplingInterval: 5m
+      postRouteTaffic:
+        pool: server
         steps:          
         - task: appInsightsAlerts .   
       on:
@@ -208,5 +206,4 @@ jobs:
 
 Azure Pipelimes supports **push** using remote script such as SSH and **pull** deployments using local agents to Virtual Machines. The proposal involves supporting **push** based deployments as first class option using remote PowerShell or SSH to Virtual Machines in the environment. 
 
-**Pool** specifies which pool to use for a job of the pipeline. While this works for **remote or push** deployments for PaaS resources, it doesn't apploy for **pull** deployments to VMs using local agents. In case of deployments to VMs in an environment the deployment job executes on the local agents and doesn't need a pool. The approach planned includes a new keyword **environment.pool** or **self** to define the execution target for the jobs. 
 
