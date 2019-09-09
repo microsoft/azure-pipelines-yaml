@@ -1,3 +1,4 @@
+[![Build Status](https://dev.azure.com/roselyncterawe/pipeline_azdevops/_apis/build/status/roselynann.azure-pipelines-yaml?branchName=master)](https://dev.azure.com/roselyncterawe/pipeline_azdevops/_build/latest?definitionId=1&branchName=master)
 # Azure Pipelines YAML
 
 YAML templates, samples, and community interaction for [Azure Pipelines](https://docs.microsoft.com/azure/devops/pipelines/).
