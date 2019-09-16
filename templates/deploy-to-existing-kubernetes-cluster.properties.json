@@ -24,6 +24,17 @@
             "type": "pickList",
             "required": "true",
             "displayName": "Service Port"
+        },
+        {
+            "name": "reviewApp",
+            "type": "boolean",
+            "displayName": "Enable review app for this pipeline"
+        },
+        {
+            "name": "azureServiceConnection",
+            "type": "endpoint:azureRm",
+            "required": "true",
+            "displayName": "Azure Connection"
         }
     ],
     "assets": [

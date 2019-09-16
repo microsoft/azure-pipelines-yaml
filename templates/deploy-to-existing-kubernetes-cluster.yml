@@ -20,6 +20,10 @@ variables:
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
+  
+  {{ #if reviewApp }}
+  azureServiceConnection: '{{ azureServiceConnection }}'
+  {{ /if }}
 
 stages:
 - stage: Build
@@ -46,6 +50,9 @@ stages:
 - stage: Deploy
   displayName: Deploy stage
   dependsOn: Build
+  {{ #if reviewApp }}
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/pull/'))
+  {{ /if }}
   jobs:
   - deployment: Deploy
     displayName: Deploy
@@ -74,3 +81,78 @@ stages:
                 $(imagePullSecret)
               containers: |
                 $(containerRegistry)/$(imageRepository):$(tag)
+
+{{ #if reviewApp }}
+# Deploy all PR changes
+- stage: DeployPR
+  displayName: Deploy PR review app
+  dependsOn: Build
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/pull/'))
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy job
+    pool:
+      vmImage: 'ubuntu-latest'
+      
+    environment: 'BikeSharing-PR'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: Kubernetes@1
+            displayName: 'Create namespace'
+            inputs:
+              command: create
+              arguments: 'ns $(system.pullRequest.sourceBranch)'
+
+          - task: Kubernetes@1
+            displayName: 'Add devspace label'
+            inputs:
+              command: label
+              arguments: '--overwrite ns $(system.pullRequest.sourceBranch) azds.io/space=true'
+
+          - task: Kubernetes@1
+            displayName: 'Setup root devspace to dev'
+            inputs:
+              command: label
+              arguments: '--overwrite ns $(system.pullRequest.sourceBranch) azds.io/parent-space=$(k8sNamespace)'
+
+          - task: KubernetesManifest@0
+            displayName: Create imagePullSecret
+            inputs:
+              action: createSecret
+              secretName: $(imagePullSecret)
+              namespace: $(k8sNamespaceforpr)
+              dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+
+          - task: KubernetesManifest@0
+            displayName: bake
+            name: bake
+            inputs:
+              action: bake
+              helmChart: '$(System.ArtifactsDirectory)/charts'
+              releaseName: bikesharing
+              overrides: |
+                image.repository:$(containerRegistry)/$(imageRepository)
+                image.tag:$(tag)
+
+          - task: KubernetesManifest@0
+            displayName: deploy
+            name: deploy
+            inputs:
+              action: deploy
+              namespace: $(k8sNamespaceforpr)
+              manifests: $(bake.manifestsBundle)
+              imagePullSecrets: $(imagePullSecret)
+          
+          - task: AzureCLI@1
+            displayName: 'List all review app URLs'
+            inputs:
+              azureSubscription: $(azureServiceConnection)
+              scriptLocation: inlineScript
+              inlineScript: |
+                az aks use-dev-spaces -n $(AZDSControllerName) -g $(AZDSControllerRG) -y -s $(k8sNamespace)/$(system.pullRequest.sourceBranch) --update
+                azds up -d
+                azds list-uris -o json 
+                azds list-uris -o json > $(AGENT.TEMPDIRECTORY)/azdsuri.txt
+{{ /if }}
