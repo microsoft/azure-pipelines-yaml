@@ -21,9 +21,13 @@ variables:
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
   
-  {{ #if reviewApp }}
-  azureServiceConnection: '{{ azureServiceConnection }}'
-  {{ /if }}
+  {{#if reviewApp}}
+  azureServiceConnection: '{{ azureServiceConnection.Id }}'
+  k8sNamespaceForPR: '$(System.pullRequest.sourceBranch)'
+  k8sNamespace: '{{ k8sResource.Name }}'
+  AZDSControllerName: '' # Extract logic to be updated
+  AZDSControllerRG: '' # Extract logic to be updated
+  {{/if}}
 
 stages:
 - stage: Build
@@ -50,9 +54,9 @@ stages:
 - stage: Deploy
   displayName: Deploy stage
   dependsOn: Build
-  {{ #if reviewApp }}
+  {{#if reviewApp}}
   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/pull/'))
-  {{ /if }}
+  {{/if}}
   jobs:
   - deployment: Deploy
     displayName: Deploy
@@ -82,7 +86,7 @@ stages:
               containers: |
                 $(containerRegistry)/$(imageRepository):$(tag)
 
-{{ #if reviewApp }}
+{{#if reviewApp}}
 # Deploy all PR changes
 - stage: DeployPR
   displayName: Deploy PR review app
@@ -94,7 +98,7 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
       
-    environment: 'BikeSharing-PR'
+    environment: '{{ k8sResource.EnvironmentReference.Name }}.{{ k8sResource.Name }}'
     strategy:
       runOnce:
         deploy:
@@ -103,19 +107,19 @@ stages:
             displayName: 'Create namespace'
             inputs:
               command: create
-              arguments: 'ns $(system.pullRequest.sourceBranch)'
+              arguments: 'ns $(k8sNamespaceForPR)'
 
           - task: Kubernetes@1
             displayName: 'Add devspace label'
             inputs:
               command: label
-              arguments: '--overwrite ns $(system.pullRequest.sourceBranch) azds.io/space=true'
+              arguments: '--overwrite ns $(k8sNamespaceForPR) azds.io/space=true'
 
           - task: Kubernetes@1
             displayName: 'Setup root devspace to dev'
             inputs:
               command: label
-              arguments: '--overwrite ns $(system.pullRequest.sourceBranch) azds.io/parent-space=$(k8sNamespace)'
+              arguments: '--overwrite ns $(k8sNamespaceForPR) azds.io/parent-space=$(k8sNamespace)'
 
           - task: KubernetesManifest@0
             displayName: Create imagePullSecret
@@ -126,24 +130,18 @@ stages:
               dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
 
           - task: KubernetesManifest@0
-            displayName: bake
-            name: bake
-            inputs:
-              action: bake
-              helmChart: '$(System.ArtifactsDirectory)/charts'
-              releaseName: bikesharing
-              overrides: |
-                image.repository:$(containerRegistry)/$(imageRepository)
-                image.tag:$(tag)
-
-          - task: KubernetesManifest@0
             displayName: deploy
             name: deploy
             inputs:
               action: deploy
               namespace: $(k8sNamespaceforpr)
-              manifests: $(bake.manifestsBundle)
-              imagePullSecrets: $(imagePullSecret)
+              manifests: |
+                $(Pipeline.Workspace)/manifests/deployment.yml
+                $(Pipeline.Workspace)/manifests/service.yml
+              imagePullSecrets: |
+                $(imagePullSecret)
+              containers: |
+                $(containerRegistry)/$(imageRepository):$(tag)
           
           - task: AzureCLI@1
             displayName: 'List all review app URLs'
@@ -151,8 +149,8 @@ stages:
               azureSubscription: $(azureServiceConnection)
               scriptLocation: inlineScript
               inlineScript: |
-                az aks use-dev-spaces -n $(AZDSControllerName) -g $(AZDSControllerRG) -y -s $(k8sNamespace)/$(system.pullRequest.sourceBranch) --update
+                az aks use-dev-spaces -n $(AZDSControllerName) -g $(AZDSControllerRG) -y -s $(k8sNamespace)/$(k8sNamespaceForPR) --update
                 azds up -d
                 azds list-uris -o json 
                 azds list-uris -o json > $(AGENT.TEMPDIRECTORY)/azdsuri.txt
-{{ /if }}
+{{/if}}
