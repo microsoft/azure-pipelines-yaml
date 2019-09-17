@@ -29,12 +29,6 @@
             "name": "reviewApp",
             "type": "boolean",
             "displayName": "Enable review app for this pipeline"
-        },
-        {
-            "name": "azureServiceConnection",
-            "type": "endpoint:azureRm",
-            "required": "true",
-            "displayName": "Azure Connection"
         }
     ],
     "assets": [

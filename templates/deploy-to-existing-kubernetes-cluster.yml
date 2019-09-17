@@ -22,11 +22,7 @@ variables:
   vmImageName: 'ubuntu-latest'
   
   {{#if reviewApp}}
-  azureServiceConnection: '{{ azureServiceConnection.Id }}'
   k8sNamespaceForPR: '$(System.pullRequest.sourceBranch)'
-  k8sNamespace: '{{ k8sResource.Name }}'
-  AZDSControllerName: '' # Extract logic to be updated
-  AZDSControllerRG: '' # Extract logic to be updated
   {{/if}}
 
 stages:
@@ -108,33 +104,21 @@ stages:
             inputs:
               command: create
               arguments: 'ns $(k8sNamespaceForPR)'
-
-          - task: Kubernetes@1
-            displayName: 'Add devspace label'
-            inputs:
-              command: label
-              arguments: '--overwrite ns $(k8sNamespaceForPR) azds.io/space=true'
-
-          - task: Kubernetes@1
-            displayName: 'Setup root devspace to dev'
-            inputs:
-              command: label
-              arguments: '--overwrite ns $(k8sNamespaceForPR) azds.io/parent-space=$(k8sNamespace)'
+            continueOnError: true 
 
           - task: KubernetesManifest@0
             displayName: Create imagePullSecret
             inputs:
               action: createSecret
               secretName: $(imagePullSecret)
-              namespace: $(k8sNamespaceforpr)
+              namespace: $(k8sNamespaceForPR)
               dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
-
+          
           - task: KubernetesManifest@0
-            displayName: deploy
-            name: deploy
+            displayName: Deploy to Kubernetes cluster
             inputs:
               action: deploy
-              namespace: $(k8sNamespaceforpr)
+              namespace: $(k8sNamespaceForPR)
               manifests: |
                 $(Pipeline.Workspace)/manifests/deployment.yml
                 $(Pipeline.Workspace)/manifests/service.yml
@@ -142,15 +126,4 @@ stages:
                 $(imagePullSecret)
               containers: |
                 $(containerRegistry)/$(imageRepository):$(tag)
-          
-          - task: AzureCLI@1
-            displayName: 'List all review app URLs'
-            inputs:
-              azureSubscription: $(azureServiceConnection)
-              scriptLocation: inlineScript
-              inlineScript: |
-                az aks use-dev-spaces -n $(AZDSControllerName) -g $(AZDSControllerRG) -y -s $(k8sNamespace)/$(k8sNamespaceForPR) --update
-                azds up -d
-                azds list-uris -o json 
-                azds list-uris -o json > $(AGENT.TEMPDIRECTORY)/azdsuri.txt
 {{/if}}
