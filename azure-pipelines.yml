@@ -29,7 +29,7 @@ stages:
     - script: echo deploying to dev resource...
 
 - stage: Prod
-  dependsOn: dev
+  dependsOn: Dev
   jobs:
   - deployment: deploy_to_prod    
     pool:
