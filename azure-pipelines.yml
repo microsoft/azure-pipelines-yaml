@@ -6,7 +6,7 @@
 stages:
 - stage: Buld
   jobs:
-  - job: docker build
+  - job: docker_build
     pool:
       vmImage: 'Ubuntu 16.04'
     steps:    
@@ -15,13 +15,13 @@ stages:
 - stage: Dev
   dependsOn: Build
   jobs:
-  - job: Deploy to Review
+  - job: Deploy_to_Review
     condition: and(succeeded(), startswith(variables['Build.SourceBranch'], 'refs/pull/'))
     pool:
       vmImage: 'Ubuntu 16.04'
     steps: 
     - script: echo deploying to review resource...
-  - job: Deploy to Dev Resource
+  - job: Deploy_to_Dev_Resource
     condition: and(succeeded(), startswith(variables['Build.SourceBranch'], 'refs/heads/'))
     pool:
       vmImage: 'Ubuntu 16.04'
