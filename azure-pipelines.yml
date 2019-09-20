@@ -1,0 +1,30 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+stages:
+- stage: Buld
+  jobs:
+  - job: docker build
+    pool:
+      vmImage: 'Ubuntu 16.04'
+    steps:    
+    - script: echo build and push to docker!
+
+- stage: Dev
+  dependsOn: Build
+  jobs:
+  - job: Deploy to Review
+    condition: and(succeeded(), startswith(variables['Build.SourceBranch'], 'refs/pull/'))
+    pool:
+      vmImage: 'Ubuntu 16.04'
+    steps: 
+    - script: echo deploying to review resource...
+  - job: Deploy to Dev Resource
+    condition: and(succeeded(), startswith(variables['Build.SourceBranch'], 'refs/heads/'))
+    pool:
+      vmImage: 'Ubuntu 16.04'
+    steps: 
+    - script: echo deploying to dev resource...
+
