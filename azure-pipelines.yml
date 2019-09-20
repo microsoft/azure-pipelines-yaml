@@ -15,7 +15,7 @@ stages:
 - stage: Dev
   dependsOn: Build
   jobs:
-  - job: Deploy_to_Review
+  - job: Deploy_to_Review_Resource
     condition: and(succeeded(), startswith(variables['Build.SourceBranch'], 'refs/pull/'))
     pool:
       vmImage: 'Ubuntu 16.04'
