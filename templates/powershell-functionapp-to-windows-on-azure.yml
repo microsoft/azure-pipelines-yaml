@@ -1,7 +1,7 @@
-# Python Function App to Linux on Azure
-# Build a Python function app and deploy it to Azure as a Linux function app.
+# Powershell Function App to Linux on Azure
+# Build a Powershell function app and deploy it to Azure as a Windows function app.
 # Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/python
+# https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-powershell
 
 trigger:
 - master
