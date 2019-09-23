@@ -14,6 +14,9 @@ variables:
   # Web app name
   webAppName: '{{ webAppName }}'
 
+  # Environment name
+  environmentName: '{{ webAppName }}'
+  
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
 
@@ -49,7 +52,7 @@ stages:
   jobs:
   - deployment: DeployLinuxWebApp
     displayName: Deploy Linux Web App
-    environment: 'development'
+    environment: $(environmentName)
     pool: 
       vmImage: $(vmImageName)
     strategy:

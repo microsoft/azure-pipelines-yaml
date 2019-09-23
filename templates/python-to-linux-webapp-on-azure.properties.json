@@ -1,0 +1,26 @@
+{
+  "iconName": "python",
+  "parameters": [
+        {
+            "name": "azureServiceConnection",
+            "type": "endpoint:azureRm",
+            "required": "true"
+        },
+        {
+            "name": "webAppName",
+            "type": "dataSourcePicklist",
+            "required": "true",
+            "displayName": "Web App name"
+        }
+    ],
+    "dataSourceBindings": [
+        {
+            "dataSourceName": "AzureRMWebAppNamesByAppType",
+            "endpointParameterName": "azureServiceConnection",
+            "parameters": {
+                "WebAppKind": "webAppLinux"
+            },
+            "target": "webAppName"
+        }
+    ]
+}

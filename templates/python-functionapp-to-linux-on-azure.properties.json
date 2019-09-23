@@ -1,0 +1,27 @@
+{
+    "iconName": "functionapp",
+    "parameters": [
+        {
+            "name": "azureRmConnection",
+            "type": "endpoint:azureRm",
+            "required": "true",
+            "displayName": "Azure Connection"
+        },
+        {
+            "name": "functionAppName",
+            "type": "dataSourcePicklist",
+            "required": "true",
+            "displayName":"Function App name"
+        }
+    ],
+    "dataSourceBindings": [
+        {
+            "dataSourceName": "AzureFunctionAppNamesByAppType",
+            "endpointParameterName": "azureRmConnection",
+            "parameters": {
+                "WebAppKind": "functionAppLinux"
+            },
+            "target": "functionAppName"
+        }
+    ]
+}
