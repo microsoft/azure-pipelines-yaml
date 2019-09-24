@@ -1,4 +1,4 @@
-# Powershell Function App to Linux on Azure
+# Powershell Function App to Windows on Azure
 # Build a Powershell function app and deploy it to Azure as a Windows function app.
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-powershell
@@ -16,6 +16,9 @@ variables:
   # Agent VM image name
   vmImageName: 'vs2017-win2016'
 
+  # Working Directory
+  workingDirectory: '{{ workingDirectory }}'
+
 stages:
 - stage: Build
   displayName: Build stage
@@ -29,14 +32,14 @@ stages:
     steps:
     - powershell: |
         if (Test-Path "extensions.csproj") {
-            dotnet build extensions.csproj --output ./bin
+            dotnet build extensions.csproj --output ./$(workingDirectory)/bin
         }
       displayName: 'Build extensions'
 
     - task: ArchiveFiles@2
       displayName: 'Archive files'
       inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+        rootFolderOrFile: $(workingDirectory)
         includeRootFolder: false
         archiveType: zip
         archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
