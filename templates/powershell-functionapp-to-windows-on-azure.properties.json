@@ -15,9 +15,10 @@
         },
         {
           "name": "workingDirectory",
-          "type": "string",
+          "type": "pickList",
           "required": "false",
-          "defaultValue": "$(System.DefaultWorkingDirectory)"
+          "defaultValue": "$(System.DefaultWorkingDirectory)",
+          "displayName": "Working Directory"
         }
     ],
     "dataSourceBindings": [
