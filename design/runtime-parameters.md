@@ -1,9 +1,9 @@
-# Runtime parameters
+# Runtime and type-safe parameters
 
 We need a way to take run-time inputs, giving pipeline authors the right amount of control / expressivity.
 YAML pipelines already accept parameters when used as part of a template.
 Runtime parameters are a natural evolution of that syntax.
-Along the way, we can also augment the capabilities of template parameters in a natural way.
+Along the way, we will augment the capabilities of template parameters in a natural way.
 
 Scenarios:
 - Pipeline users can supply different values to tools and tasks at run time
