@@ -94,9 +94,14 @@ They're rendered like a plain `object` in the UI.
 
 | YAML string type | Notes |
 |------------------|-------|
-| `steps` | sequence of steps
-| `jobs` | sequence of jobs
-| `stages` | sequence of stages
+| `step` | a single step
+| `stepList` | sequence of steps
+| `job` | a single job
+| `jobList` | sequence of jobs
+| `deployment` | a single deployment job
+| `deploymentList` | sequence of deployment jobs
+| `stage` | a single stage
+| `stageList` | sequence of stages
 
 ## Full examples
 
