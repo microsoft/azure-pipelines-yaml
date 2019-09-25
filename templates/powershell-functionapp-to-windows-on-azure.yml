@@ -14,7 +14,7 @@ variables:
   functionAppName: '{{ functionAppName }}'
 
   # Agent VM image name
-  vmImageName: 'vs2017-win2016'
+  vmImageName: 'windows-2019'
 
   # Working Directory
   workingDirectory: '{{ workingDirectory }}'
