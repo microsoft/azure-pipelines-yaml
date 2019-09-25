@@ -228,7 +228,7 @@ _Note: this isn't about runtime and UI-specified parameters as such, but it's an
 
 parameters:
 - name: customerSteps
-  type: steps
+  type: stepList
 
 steps:
 - script: echo Pre-step injected on all jobs
