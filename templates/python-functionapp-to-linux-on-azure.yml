@@ -16,6 +16,9 @@ variables:
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
 
+  # Working Directory
+  workingDirectory: '{{ workingDirectory }}'
+
 stages:
 - stage: Build
   displayName: Build stage
@@ -28,9 +31,9 @@ stages:
 
     steps:
     - bash: |
-        if [ -f extensions.csproj ]
+        if [ -f $(workingDirectory)/extensions.csproj ]
         then
-            dotnet build extensions.csproj --runtime ubuntu.16.04-x64 --output ./bin
+            dotnet build $(workingDirectory)/extensions.csproj --runtime ubuntu.16.04-x64 --output ./bin
         fi
       displayName: 'Build extensions'
 
@@ -40,6 +43,7 @@ stages:
         versionSpec: 3.6 # Functions V2 supports Python 3.6 as of today
 
     - bash: |
+        cd $(workingDirectory)
         python -m venv worker_venv
         source worker_venv/bin/activate
         pip install -r requirements.txt
@@ -48,7 +52,7 @@ stages:
     - task: ArchiveFiles@2
       displayName: 'Archive files'
       inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+        rootFolderOrFile: '$(workingDirectory)'
         includeRootFolder: false
         archiveType: zip
         archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
