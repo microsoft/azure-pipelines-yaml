@@ -1,0 +1,34 @@
+{
+    "iconName": "functionapp",
+    "parameters": [
+        {
+            "name": "azureRmConnection",
+            "type": "endpoint:azureRm",
+            "required": "true",
+            "displayName": "Azure Connection"
+        },
+        {
+            "name": "functionAppName",
+            "type": "dataSourcePicklist",
+            "required": "true",
+            "displayName":"Function App name"
+        },
+        {
+          "name": "workingDirectory",
+          "type": "pickList",
+          "required": "false",
+          "defaultValue": "$(System.DefaultWorkingDirectory)",
+          "displayName": "Working Directory"
+        }
+    ],
+    "dataSourceBindings": [
+        {
+            "dataSourceName": "AzureFunctionAppNamesByAppType",
+            "endpointParameterName": "azureRmConnection",
+            "parameters": {
+                "WebAppKind": "functionApp"
+            },
+            "target": "functionAppName"
+        }
+    ]
+}
