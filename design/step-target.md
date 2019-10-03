@@ -1,8 +1,11 @@
 # Step Target
 
-Steps run either on the host that is running the agent.worker or if the step is part of a [Container Job](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/container-phases?view=azure-devops&tabs=yaml) it runs inside of the container specified on the job.  Steps are not able to target the host if running in a container job or other containers if using [services](./sidecar-containers.md).
+Today, steps run either on the agent host or, if the step is part of a [container job](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/container-phases?view=azure-devops&tabs=yaml), inside of the container specified on the job.
+All steps in a job run in one context; separate steps cannot target different contexts throughout the job.
+Additionally, steps cannot target [services containers](./sidecar-containers.md) at all.
 
-The goal of a step target is to give the pipeline author flexibility in where a given step in the job runs.  This not only proivdes additional flexibility for pipeline authors, it can also be used by template authors to drive certian security and compliance scenarios in their pipeline.
+The goal of a step target is to give the pipeline author flexibility in where a given step in the job runs.
+This provides additional flexibility for pipeline authors and template authors.
 
 ## Scenarios
 
