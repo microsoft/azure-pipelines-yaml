@@ -78,7 +78,7 @@ That's a future exercise for design and product to work on together.
 | `number` | may be restricted to `values:`, otherwise any number-like string is accepted
 | `boolean`
 | `object` | YAML serialization expected
-| `enum` | must be restricted to `values:` (like a selectbox)
+| `enum` | like a string, but must have a `values:` section and **must** come from there
 | `filePath`
 | `secureFile`
 | `pool`
@@ -281,7 +281,7 @@ The above example is equivalent to:
 ```yaml
 parameters:
 - name: 'image'     # scalar parameter
-  type: string
+  type: object      # it becomes an object, but that's cast to string later
   default: 'ubuntu-16.04'
 - name: 'preSteps'  # sequence parameter
   type: object
