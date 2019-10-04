@@ -9,23 +9,22 @@ This provides additional flexibility for pipeline authors and template authors.
 
 ## Scenarios
 
-1. I have a service defined on my job and I want to run a script that targets the container that service is running in.
-2. I have authored a template and I want all steps defined by the consumer of my template to run inside a container after I have run a step on the host to disable the network for that container in order to make sure their build does not pull down any extra dependencies.
+1. Some of my steps need to run on the host, while others need to run in a job container for isolation purposes.
+2. I need to run specific steps inside specific service containers for configuration purposes.
 
-## YAML Syntax
+## YAML syntax
 
 **Example:** a container job using [services](./sidecar-containers.md) with one step targeting a service container.
 
 In the example below we see a single job that defined two service containers as well as a job container.  
 
 * The first step in the job targets the `postgres` service container in order to run some sort of configuration script.  
-* The second step runs in the `python-builder` container that is specified as part of the `container:`property for the job.  
+* The second step runs in the `python-builder` container that is specified as part of the `container:` property for the job.  
 * The third step targets the host machine where the agent is running.
 
 ```yaml
 jobs:
 - job: MyJob
-  pool:
   container: 
     image: python:latest
     name: python-builder
@@ -46,18 +45,21 @@ jobs:
 
   steps:
   - script: ...
-  	displayName: Configure postrgres
-  	target: postgres
+    displayName: Configure postrgres
+    target: postgres  # targets a service container
   - script: ...
     displayName: Run tests
+    # no target, so targets the default (in this case, job container)
   - script: ...
-  	target: host # reserved name could also be agent
+    target: host  # targets the host - another reserved word like "self"
   
 ```
 
-**Example:** A template that runs steps from a consumer in a contianer with no network
+## A more complicated example
 
-This example is significantly more complex and shows us how we might use the step target feature along with the templates feature to create a secure and compliant pipeline by forcing all user defined steps to be run inside a container and not enabling them to target the host.  We also see removing the template author adding a step to all jobs that removes the job container network so the user steps are not able to download any additional dependencies that are not tracked in the source repo.
+In this example, we run some steps on the host and others in a container.
+The user's template is considered "untrusted" code, so all passed-in steps are rewritten to target the container.
+Also, we pre-configure the container so that it has no network access.
 
 * The `azure-pipelines.yml` pipeline file specifies one job that is derived from a job template.  Here we see the consumer of that template passing in an enture job definition including a contaienr and two steps.
 * The `jobs-template.yml` loops over all of the parameters in the template and all of the jobs and applies the `job-template.yml` to it.
@@ -134,10 +136,7 @@ jobs:
 
 
 
-## Notes
+## Future work
 
-Need to figure out the reserved target for the agent or host
-
-Need a standard set of pipeline variables that can be used to get the name of the job network and the job container 
-
-Service containers probably need to map the `workspace` in the same way the job container does
+- Need a standard way to get the name of the job network and the job container (probably pipeline variables)
+- Service containers need a way to map the `workspace` like the job container does
