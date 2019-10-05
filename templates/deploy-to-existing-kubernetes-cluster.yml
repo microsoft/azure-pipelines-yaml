@@ -14,7 +14,7 @@ variables:
   dockerRegistryServiceConnection: '{{ containerRegistryConnection.Id }}'
   imageRepository: '{{#toAlphaNumericString imageRepository 50}}{{/toAlphaNumericString}}'
   containerRegistry: '{{ containerRegistryConnection.Authorization.Parameters.loginServer }}'
-  dockerfilePath: '**/Dockerfile'
+  dockerfilePath: '{{ dockerfilePath }}'
   tag: '$(Build.BuildId)'
   imagePullSecret: '{{#toAlphaNumericString containerRegistryConnection.Name 50}}{{/toAlphaNumericString}}{{#shortGuid}}{{/shortGuid}}-auth'
 
