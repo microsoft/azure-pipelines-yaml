@@ -112,7 +112,7 @@ resources:
 
 steps:
 - checkout: self
-  root: module1
+  path: module1
 - checkout: code2
   path: module2
 - checkout: code3
