@@ -201,7 +201,6 @@ stages:
   jobs:
   - job: UnitTest
 
-# TODO: I don't think this syntax is quite right...
 ${{ if eq(parameters.runPerfTests, true) }}:
   - stage: PerfTest
     dependsOn: Build
