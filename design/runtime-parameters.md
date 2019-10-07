@@ -19,7 +19,7 @@ parameters:
 # this is a sequence, so the block may be repeated as many times as needed
 - name: string          # name of the parameter; required
   displayName: string   # UI string
-  type: enum            # data type; see below
+  type: # data type; see below
   default: any          # default value; if no default, then the parameter MUST be given by the user at runtime
   values: [ string ]    # allowed list of values (for some data types)
   secret: bool          # whether to treat this value as a secret; defaults to false
@@ -74,11 +74,10 @@ That's a future exercise for design and product to work on together.
 
 | Data type | Notes |
 |-----------|-------|
-| `string` | default data type if none is specified. if `values:` is specified, they become suggestions but **not** required (like a combobox)
+| `string` | default data type if none is specified
 | `number` | may be restricted to `values:`, otherwise any number-like string is accepted
 | `boolean`
 | `object` | YAML serialization expected
-| `enum` | like a string, but must have a `values:` section and **must** come from there
 | `filePath`
 | `secureFile`
 | `pool`
@@ -102,6 +101,19 @@ They're rendered like a plain `object` in the UI.
 | `deploymentList` | sequence of deployment jobs
 | `stage` | a single stage
 | `stageList` | sequence of stages
+
+## Other properties
+### `default`
+For top-level pipelines: if a default is given, then the UI prepopulates that value.
+For non-top-level pipelines: if the parameter value isn't specified, then default is used.
+
+### `values`
+If `values` is specified, then the user must choose from one of the provided values.
+No other values are accepted.
+
+### `secret`
+If true, the contents of this parameter are consider secrets.
+They're suppressed in output logs, for example.
 
 ## Full examples
 
@@ -131,7 +143,7 @@ steps:
 parameters:
 - name: configs
   type: string
-  default: x86,x64
+  default: 'x86,x64'
 
 jobs:
 - ${{ if contains(parameters.configs, 'x86') }}:
@@ -189,7 +201,6 @@ stages:
   jobs:
   - job: UnitTest
 
-# TODO: I don't think this syntax is quite right...
 ${{ if eq(parameters.runPerfTests, true) }}:
   - stage: PerfTest
     dependsOn: Build
@@ -332,8 +343,3 @@ parameters:
 | `radio` | number, boolean, enum | -
 
 For data types not listed in the above table, there is a "special" UI (such as a file picker, pool picker, etc.) that's automatically used.
-
-### New data type: `flags`
-
-A data type of `flags` would be like an `enum` but allow multiple specification.
-
