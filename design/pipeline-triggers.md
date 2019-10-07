@@ -204,7 +204,7 @@ resources:
 ```
 
 
-AML pipelines can be triggered when tags are added to a commit. This is valuable for teams whose workflows include tags. For instance, you can kick off a process when a commit is tagged as the "last known good".
+YAML pipelines can be triggered when tags are added to a commit. This is valuable for teams whose workflows include tags. For instance, you can kick off a process when a commit is tagged as the "last known good".
 You can specify which tags to include and exclude. 
 
 ```yaml
