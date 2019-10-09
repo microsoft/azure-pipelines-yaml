@@ -6,6 +6,7 @@ You lose access to things like our smart re-use of clones (when running on a pri
 Also, we tell you how to re-use the `System.AccessToken` for other Azure Repos, but that doesn't generalize to other source providers.
 
 This feature will add multi-repo checkout as a first-class citizen in YAML pipelines.
+(Note: we already allow [repository resources](https://docs.microsoft.com/azure/devops/pipelines/yaml-schema?tabs=schema#repository-resource), but they're used only for YAML templates today.)
 
 Goals:
 - Allow fetching multiple repositories, regardless of source host
@@ -71,7 +72,7 @@ However, in multi-checkout scenarios, this leads to unnecessary verbosity.
 First you have to mention the repository up top, give it a name, and then you check it out by name.
 To combat this, we'll add an inline repository syntax.
 Inline syntax will cover the `type`, `name`, and `ref` of a repository resource.
-(If other changes are needed - such as `path` or `endpoint` - users must fall back to explicit resource syntax.)
+(If other changes are needed - such as `endpoint` - users must fall back to explicit resource syntax.)
 
 ## Syntax examples
 
