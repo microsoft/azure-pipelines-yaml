@@ -74,6 +74,15 @@ To combat this, we'll add an inline repository syntax.
 Inline syntax will cover the `type`, `name`, and `ref` of a repository resource.
 (If other changes are needed - such as `endpoint` - users must fall back to explicit resource syntax.)
 
+## Supported repo types
+
+Supported repo types will match what YAML supports:
+- Azure Repos
+- GitHub
+- External Git (but not for the triggering repo)
+
+If and when other providers are supported for YAML, they will be supported by this feature as well.
+
 ## Syntax examples
 
 ### Basic syntax with inline resource
