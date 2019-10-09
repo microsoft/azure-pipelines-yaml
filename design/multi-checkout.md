@@ -67,6 +67,9 @@ Likewise, a customer could choose to checkout a non-`self` repo into the `s` dir
 
 #### System variables
 `Build.SourcesDirectory` points to the directory where the `self` repo was checked out whether in single- or multi-checkout mode.
+If `self` wasn't checked out, we'll still create an empty `s/` directory and set `Build.SourcesDirectory` to it.
+(This is for back-compat and matches what we do for `checkout: none` today.)
+
 `System.DefaultWorkingDirectory` points to the same place as `Pipeline.Workspace` in multi-checkout mode (which is different than single-checkout mode).
 We believe this preserves the intended semantics of these variables, keeping as many scripts and tasks working as possible.
 
