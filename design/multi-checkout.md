@@ -57,6 +57,14 @@ Git uses the last part of the path, minus any trailing slashes, spaces, and the 
 (We have YAML syntax for selecting a different path, and if the user specifies that, we'll use their name.)
 This changes the default directory for the `self` repo: it would be `$(Pipeline.Workspace)/s` if it were the only `checkout` step.
 
+The pipeline workspace directory has three well-known subdirectories:
+- `a/` for artifacts
+- `b/` for generated binaries
+- `testResults/` for test results files
+
+We'll recommend not to use these as checkout paths, but we won't attempt to block them.
+Likewise, a customer could choose to checkout a non-`self` repo into the `s` directory, and we won't block that.
+
 #### System variables
 `Build.SourcesDirectory` points to the directory where the `self` repo was checked out whether in single- or multi-checkout mode.
 `System.DefaultWorkingDirectory` points to the same place as `Pipeline.Workspace` in multi-checkout mode (which is different than single-checkout mode).
