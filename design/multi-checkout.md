@@ -47,6 +47,7 @@ The agent will look at the job message and discover all `checkout` steps.
 ### More than one checkout step
 0. If there are multiple checkout steps and one or more are `checkout: none`, this is an error.
 It's unclear what the user meant for us to do, so we fail with a clear message.
+0. If the user attempts to check out the same repository multiple times, that is also an error.
 0. Otherwise, we are in multi-checkout mode.
 
 ### Behavior changes in multi-checkout mode
