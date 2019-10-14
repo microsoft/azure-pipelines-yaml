@@ -1,5 +1,11 @@
 # Artifacts in Pipelines
 
+> This is a technical design document written for the intial implementaiton of artifacts in Azure Pipelines.
+>
+> For the current documentation go to [Azure Pipelines Artifacts docuemntation](https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/artifacts-overview?view=azure-devops)
+
+----
+
 Today, it can be challenging to use Artifacts in Pipelines, esp. when using packages from private feeds with `nuget.exe`, `dotnet`, `npm`, `mvn`, `gradle`, `pip`, `twine`, etc. Frequently, these challenges center around authentication between the client and the service, both on customers’ machines and when customers are using build services like Azure Pipelines. In Q1, we’re going to tackle the experience of using and authenticating to Artifacts from within Azure Pipelines.
 
 ## Principles
