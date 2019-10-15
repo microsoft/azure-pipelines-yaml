@@ -1,10 +1,10 @@
 # Azure Pipelines YAML
 
 YAML templates, samples, and community interaction for [Azure Pipelines](https://docs.microsoft.com/azure/devops/pipelines/).
-While this doesn't replace the docs, our fantastic [support team](https://azure.microsoft.com/support/devops/), or our [UserVoice]((https://developercommunity.visualstudio.com/spaces/21/index.html), feel free to file suggestions and issues here if they're related to YAML pipelines.
+While this doesn't replace the [docs](https://docs.microsoft.com/en-us/azure/devops/pipelines/?view=azure-devops), our fantastic [support team](https://azure.microsoft.com/support/devops/), or our [UserVoice](https://developercommunity.visualstudio.com/spaces/21/index.html), feel free to file suggestions and issues here if they're related to YAML pipelines.
 
 - [Templates](templates/)
-- [Design docs](design/)
+- [Design docs](design/README.md)
 - [Feedback](https://github.com/Microsoft/azure-pipelines-yaml/issues)
 
 ## Contributing
