@@ -58,26 +58,30 @@ If it's used again, it's OK to re-fetch the same data.
 ### Behavior changes in multi-checkout mode
 
 #### Checkout directory
-By default, all repositories will be checked out as if they've been `git clone`d into the `Pipeline.Workspace` directory.
+By default, all repositories will be checked out as if they've been `git clone`d into the `Build.SourcesDirectory` directory.
 Git uses the last part of the path, minus any trailing slashes, spaces, and the string `.git`.
 (We have YAML syntax for selecting a different path, and if the user specifies that, we'll use their name.)
-This changes the default directory for the `self` repo: it would be `$(Pipeline.Workspace)/s` if it were the only `checkout` step.
+This changes the default directory for the `self` repo: it would be `$(Pipeline.Workspace)/s` if it were the only `checkout` step, but now it will be `$(Pipeline.Workspace)/s/<reponame>`.
 
-The pipeline workspace directory has three well-known subdirectories:
+The pipeline workspace directory has four well-known subdirectories:
+- `s/` for sources
 - `a/` for artifacts
 - `b/` for generated binaries
 - `testResults/` for test results files
 
-We'll recommend not to use these as checkout paths, but we won't attempt to block them.
-Likewise, a customer could choose to checkout a non-`self` repo into the `s` directory, and we won't block that.
+We'll recommend not to use any of these as checkout paths, but we won't attempt to block them.
 
 #### System variables
-`Build.SourcesDirectory` points to the directory where the `self` repo was checked out whether in single- or multi-checkout mode.
-If `self` wasn't checked out, we'll still create an empty `s/` directory and set `Build.SourcesDirectory` to it.
-(This is for back-compat and matches what we do for `checkout: none` today.)
+No change to the contents of system variablies like `Build.SourcesDirectory` or `System.DefaultWorkingDirectory`.
+Those will remain `$(Pipeline.Workspace/s`.
 
-`System.DefaultWorkingDirectory` points to the same place as `Pipeline.Workspace` in multi-checkout mode (which is different than single-checkout mode).
-We believe this preserves the intended semantics of these variables, keeping as many scripts and tasks working as possible.
+**NOTE**: if one or more `checkout`s sets an explicit path outside of `$(Pipeline.Workspace)/s`, it's ambiguous where the "root of source" should be.
+Two decent heuristics occur to me:
+1. If at least one repo is in a subdirectory of `$(Pipeline.Workspace)/s`, use that as the value for both variables.
+2. Unconditionally set both variables to the same value as `Pipeline.Workspace`.
+
+Of the two, the first is less likely to break tasks.
+The second is easier to explain to pipeline authors.
 
 ## Resource specification
 
