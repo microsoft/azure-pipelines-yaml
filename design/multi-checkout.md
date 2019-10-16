@@ -1,6 +1,6 @@
 # Multi-checkout: checking out multiple repos
 
-Customers have often asked for the ability to check out multiple repositories.
+Customers have often asked for the ability to use multiple repositories.
 Today, we offer a weak workaround: a script step with the additional `git clone`.
 You lose access to things like our smart re-use of clones (when running on a private agent).
 Also, we tell you how to re-use the `System.AccessToken` for other Azure Repos, but that doesn't generalize to other source providers.
@@ -10,6 +10,7 @@ This feature will add multi-repo checkout as a first-class citizen in YAML pipel
 
 Goals:
 - Allow fetching multiple repositories, regardless of source host
+- Allow triggering pipelines from changes to any of the repositories
 - Provide useful/sane defaults for common scenarios, while allowing flexibility for customers with very specific requirements
 - Preserve back-compat with existing pipelines, tasks, ad-hoc scripts, and template inclusion for customers who don't opt into multi-checkout
 
@@ -89,7 +90,7 @@ However, in multi-checkout scenarios, this leads to unnecessary verbosity.
 First you have to mention the repository up top, give it a name, and then you check it out by name.
 To combat this, we'll add an inline repository syntax.
 Inline syntax will cover the `type`, `name`, and `ref` of a repository resource.
-(If other changes are needed - such as `endpoint` - users must fall back to explicit resource syntax.)
+(If other changes are needed - such as `endpoint` or `trigger` - users must fall back to explicit resource syntax.)
 
 ## Supported repo types
 
@@ -205,3 +206,25 @@ steps:
 - checkout: none
 - checkout: self  # error! `checkout: none` must be the only checkout step
 ```
+
+### Triggers example
+
+This one will trigger on the main repo with the YAML file as well as the `app` repo.
+
+```yaml
+trigger:
+- master
+
+resources:
+  repositories:
+  - repository: app
+    type: github
+    name: org1/repoA
+    ref: master
+    endpoint: 'GitHub endpoint'
+    trigger:
+    - master
+    - release/*
+```
+
+The default refs for `self` and `app` repos will be the latest commit from `master` in the respective repos. But, you can change that when you manually start a run. Similarly, if this pipeline is triggered by a change to `app` repo, then your checkout tasks will pull that change for the `app` repo and the latest from `master` for `self` repo.
