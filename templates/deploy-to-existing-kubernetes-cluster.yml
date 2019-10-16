@@ -94,17 +94,19 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
       
-    environment: '{{ k8sResource.EnvironmentReference.Name }}.{{ k8sResource.Name }}'
+    environment: '{{ k8sResource.EnvironmentReference.Name }}.$(k8sNamespaceForPR)'
     strategy:
       runOnce:
         deploy:
           steps:
+          - reviewApp: {{ k8sResource.Name }}
+
           - task: Kubernetes@1
-            displayName: 'Create namespace'
+            displayName: 'kubectl create namespace'
             inputs:
-              command: create
-              arguments: 'ns $(k8sNamespaceForPR)'
-            continueOnError: true 
+              command: apply
+              useConfigurationFile: true
+              inline: '{ "kind": "Namespace", "apiVersion": "v1", "metadata": { "name": "$(reviewAppResource)" }}'
 
           - task: KubernetesManifest@0
             displayName: Create imagePullSecret
