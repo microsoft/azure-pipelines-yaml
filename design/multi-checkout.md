@@ -76,12 +76,8 @@ No change to the contents of system variablies like `Build.SourcesDirectory` or 
 Those will remain `$(Pipeline.Workspace/s`.
 
 **NOTE**: if one or more `checkout`s sets an explicit path outside of `$(Pipeline.Workspace)/s`, it's ambiguous where the "root of source" should be.
-Two decent heuristics occur to me:
-1. If at least one repo is in a subdirectory of `$(Pipeline.Workspace)/s`, use that as the value for both variables.
-2. Unconditionally set both variables to the same value as `Pipeline.Workspace`.
-
-Of the two, the first is less likely to break tasks.
-The second is easier to explain to pipeline authors.
+Since we don't know the user's or the task's intent, we won't try to be clever and do something else.
+We'll document this behavior so that it's learnable.
 
 ## Resource specification
 
