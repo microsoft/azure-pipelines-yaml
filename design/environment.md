@@ -119,6 +119,32 @@ If you are targeting the resource by name and don't need to specify tags or reso
 environment: environmentName.resourceName
 ```
 
+## Environment and review app resources (proposed)
+Review app works by deploying every pull request from your Git repository to a dynamic environment resource. Reviewers can see how those changes look as well as work with other dependent services before they’re merged into the main branch and deployed to production.
+
+A new macro will be introduced which get expanded by pipeline to include steps which will 
+1. Create a clone of a resource (dynamically create a new resource based on an existing resource in an environment)
+2. Add the new resource to the environment 
+
+```yaml
+jobs:
+- deployment:
+  environment: 
+     name: smarthotel-dev      
+     resourceName: $(System.PullRequest.PullRequestId) 
+  pool:
+    name: 'ubuntu-latest'
+  strategy:                 
+    runOnce:            
+      pre-deploy: 
+        steps:       
+        - reviewApp: MasterNamespace 
+        # name of the resource in the environment which will be used as a base for creating the new resource for review app.
+        # When reviewApp macro is used, pipeline will expand the macro to include task which will create a clone of that resource and add it to the environment given as input
+        # For K8s the resource maps to a namespace and for App service it will map to a new slot
+        # The subsequent steps can be used to further configure the new resource and deploy changes
+```
+This will make it easy for customers to create and manage review app resources and benefit from all the tracebility and diagnosis capability of the environment feature.
 
 ## Future (discussion only)
 `canary`, `blue-green`, and `rolling` strategies to be supported by `deployment` job. 
