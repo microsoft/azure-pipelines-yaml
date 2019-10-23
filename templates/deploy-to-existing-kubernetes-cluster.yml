@@ -22,7 +22,7 @@ variables:
   vmImageName: 'ubuntu-latest'
   
   {{#if reviewApp}}
-  k8sNamespaceForPR: '$(System.pullRequest.sourceBranch)'
+  k8sNamespaceForPR: '$(system.pullRequest.sourceBranch)'
   {{/if}}
 
 stages:
@@ -50,11 +50,12 @@ stages:
 - stage: Deploy
   displayName: Deploy stage
   dependsOn: Build
-  {{#if reviewApp}}
-  condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')))
-  {{/if}}
+
   jobs:
   - deployment: Deploy
+    {{#if reviewApp}}
+    condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')))
+    {{/if}}
     displayName: Deploy
     pool:
       vmImage: $(vmImageName)
@@ -83,16 +84,11 @@ stages:
                 $(containerRegistry)/$(imageRepository):$(tag)
 
 {{#if reviewApp}}
-# Deploy all PR changes
-- stage: DeployPR
-  displayName: Deploy PR review app
-  dependsOn: Build
-  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/pull/'))
-  jobs:
-  - deployment: Deploy
-    displayName: Deploy job
+  - deployment: DeployPR
+    displayName: Deploy PR
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/pull/'))
     pool:
-      vmImage: 'ubuntu-latest'
+      vmImage: $(vmImageName)
       
     environment: '{{ k8sResource.EnvironmentReference.Name }}.$(k8sNamespaceForPR)'
     strategy:
@@ -141,6 +137,8 @@ stages:
               $service=$(echo '$(get.KubectlOutput)' |  Out-String | ConvertFrom-Json).items[0]
               $ip=$service.status.loadBalancer.ingress.ip
               $port=$service.spec.ports.port
-              echo "##vso[task.setvariable variable=GITHUB_COMMENT]Deployment to your review-app succeeded.<br><br>You can navigate to http://${ip}:${port} to test your changes"
+              $message="Deployment to your review-app succeeded."
+              if($ip) {$message="${message}<br><br>You can navigate to http://${ip}:${port} to test your changes"}
+              echo "##vso[task.setvariable variable=GITHUB_COMMENT]${message}"
 
 {{/if}}
