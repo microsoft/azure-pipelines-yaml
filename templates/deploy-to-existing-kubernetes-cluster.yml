@@ -51,7 +51,7 @@ stages:
   displayName: Deploy stage
   dependsOn: Build
   {{#if reviewApp}}
-  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/pull/'))
+  condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')))
   {{/if}}
   jobs:
   - deployment: Deploy
@@ -106,7 +106,7 @@ stages:
             inputs:
               command: apply
               useConfigurationFile: true
-              inline: '{ "kind": "Namespace", "apiVersion": "v1", "metadata": { "name": "$(reviewAppResource)" }}'
+              inline: '{ "kind": "Namespace", "apiVersion": "v1", "metadata": { "name": "$(k8sNamespaceForPR)" }}'
 
           - task: KubernetesManifest@0
             displayName: Create imagePullSecret
@@ -128,4 +128,19 @@ stages:
                 $(imagePullSecret)
               containers: |
                 $(containerRegistry)/$(imageRepository):$(tag)
+          
+          - task: Kubernetes@1
+            name: get
+            displayName: 'kubectl get services'
+            inputs:
+              command: get
+              namespace: $(k8sNamespaceForPR)
+              arguments: svc
+          
+          - powershell: |
+              $service=$(echo '$(get.KubectlOutput)' |  Out-String | ConvertFrom-Json).items[0]
+              $ip=$service.status.loadBalancer.ingress.ip
+              $port=$service.spec.ports.port
+              echo "##vso[task.setvariable variable=GITHUB_COMMENT]Deployment to your review-app succeeded.<br><br>You can navigate to http://${ip}:${port} to test your changes"
+
 {{/if}}
