@@ -10,6 +10,7 @@ This provides additional flexibility for pipeline authors and template authors.
 ## Scenarios
 
 1. Some of my steps need to run on the host, while others need to run in a job container for isolation purposes.
+(For more on isolation, see the [step target "safe mode"](step-target-safe-mode.md) spec.)
 2. I need to run specific steps inside specific service containers for configuration purposes.
 
 ## YAML syntax
