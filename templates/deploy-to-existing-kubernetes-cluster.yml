@@ -22,6 +22,7 @@ variables:
   vmImageName: 'ubuntu-latest'
   
   {{#if reviewApp}}
+  # For Review App, create a new namespace by using the PR details
   k8sNamespaceForPR: '$(system.pullRequest.sourceBranch)'
   {{/if}}
 
