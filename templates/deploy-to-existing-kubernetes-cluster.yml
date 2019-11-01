@@ -133,10 +133,11 @@ stages:
               command: get
               namespace: $(k8sNamespaceForPR)
               arguments: svc
+              outputFormat: jsonpath='http://{.items[0].status.loadBalancer.ingress[0].ip}:{.items[0].spec.ports[0].port}'
               
           # Getting the IP of the deployed service and writing it to a variable for posing comment
           - script: |
-              url=$(echo '$(get.KubectlOutput)' | python3 -c 'import json,sys;obj=json.load(sys.stdin); print("") if (not len(obj["items"]) > 0) else print(obj["items"][0]["status"]["loadBalancer"]["ingress"][0]["ip"]+":"+str(obj["items"][0]["spec"]["ports"][0]["port"]))' )
+              url="$(get.KubectlOutput)"
               message="Deployment to your Review App succeeded."
               if [ ! -z "$url" ] 
               then
