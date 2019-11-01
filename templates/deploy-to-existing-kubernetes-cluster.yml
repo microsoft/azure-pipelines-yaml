@@ -84,8 +84,8 @@ stages:
                 $(containerRegistry)/$(imageRepository):$(tag)
 
 {{#if reviewApp}}
-  - deployment: DeployPR
-    displayName: Deploy PR
+  - deployment: DeployPullRequest
+    displayName: Deploy Pull request
     condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/pull/'))
     pool:
       vmImage: $(vmImageName)
@@ -98,7 +98,7 @@ stages:
           - reviewApp: {{ k8sResource.Name }}
 
           - task: Kubernetes@1
-            displayName: 'kubectl create namespace'
+            displayName: 'Create a new namespace for the pull request'
             inputs:
               command: apply
               useConfigurationFile: true
@@ -113,7 +113,7 @@ stages:
               dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
           
           - task: KubernetesManifest@0
-            displayName: Deploy to Kubernetes cluster
+            displayName: Deploy to the new namespace in the Kubernetes cluster
             inputs:
               action: deploy
               namespace: $(k8sNamespaceForPR)
@@ -127,12 +127,13 @@ stages:
           
           - task: Kubernetes@1
             name: get
-            displayName: 'kubectl get services'
+            displayName: 'Get services in the new namespace'
             inputs:
               command: get
               namespace: $(k8sNamespaceForPR)
               arguments: svc
-          
+              
+          # Get the IP of the service deployed and write it to a variable
           - powershell: |
               $service=$(echo '$(get.KubectlOutput)' |  Out-String | ConvertFrom-Json).items[0]
               $ip=$service.status.loadBalancer.ingress.ip
