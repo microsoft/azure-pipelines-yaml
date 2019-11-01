@@ -28,7 +28,7 @@
         {
             "name": "reviewApp",
             "type": "boolean",
-            "displayName": "Enable Review App for this pipeline"
+            "displayName": "Enable Review App"
         }
     ],
     "assets": [
