@@ -140,7 +140,7 @@ stages:
           - script: |
               url="$(get.KubectlOutput)"
               message="Deployment to your Review App succeeded."
-              if [ ! -z "$url" -a "$url" -ne ":" ] 
+              if [ ! -z "$url" -a "$url" != ":" ] 
               then
                 message="${message}<br><br>You can navigate to http://$url to test your changes"
               fi
