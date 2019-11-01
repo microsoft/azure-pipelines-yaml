@@ -22,7 +22,7 @@ variables:
   vmImageName: 'ubuntu-latest'
   
   {{#if reviewApp}}
-  # For Review App, create a new namespace by using the PR details
+  # Name of the new namespace being created to deploy the PR changes.
   k8sNamespaceForPR: '$(system.pullRequest.sourceBranch)'
   {{/if}}
 
@@ -134,13 +134,13 @@ stages:
               namespace: $(k8sNamespaceForPR)
               arguments: svc
               
-          # Get the IP of the service deployed and write it to a variable
-          - powershell: |
-              $service=$(echo '$(get.KubectlOutput)' |  Out-String | ConvertFrom-Json).items[0]
-              $ip=$service.status.loadBalancer.ingress.ip
-              $port=$service.spec.ports.port
-              $message="Deployment to your review-app succeeded."
-              if($ip) {$message="${message}<br><br>You can navigate to http://${ip}:${port} to test your changes"}
-              echo "##vso[task.setvariable variable=GITHUB_COMMENT]${message}"
-
+          # Getting the IP of the deployed service and writing it to a variable for posing comment
+          - script: |
+              url=$(echo '$(get.KubectlOutput)' | python3 -c 'import json,sys;obj=json.load(sys.stdin); print("") if (not len(obj["items"]) > 0) else print(obj["items"][0]["status"]["loadBalancer"]["ingress"][0]["ip"]+":"+str(obj["items"][0]["spec"]["ports"][0]["port"]))' )
+              message="Deployment to your review-app succeeded."
+              if [ ! -z "$url" ] 
+              then
+                message="${message}<br><br>You can navigate to http://$url to test your changes"
+              fi
+              echo "##vso[task.setvariable variable=GITHUB_COMMENT]$message"
 {{/if}}
