@@ -28,7 +28,7 @@
         {
             "name": "reviewApp",
             "type": "boolean",
-            "displayName": "Enable review app for this pipeline"
+            "displayName": "Enable Review App flow for Pull Requests"
         }
     ],
     "assets": [
