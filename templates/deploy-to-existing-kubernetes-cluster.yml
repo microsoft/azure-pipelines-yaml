@@ -129,19 +129,20 @@ stages:
           - task: Kubernetes@1
             name: get
             displayName: 'Get services in the new namespace'
+            continueOnError: true
             inputs:
               command: get
               namespace: $(k8sNamespaceForPR)
               arguments: svc
-              outputFormat: jsonpath='http://{.items[0].status.loadBalancer.ingress[0].ip}:{.items[0].spec.ports[0].port}'
+              outputFormat: jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}:{.items[0].spec.ports[0].port}'
               
           # Getting the IP of the deployed service and writing it to a variable for posing comment
           - script: |
               url="$(get.KubectlOutput)"
               message="Deployment to your Review App succeeded."
-              if [ ! -z "$url" ] 
+              if [ ! -z "$url" -a "$url" -ne ":" ] 
               then
-                message="${message}<br><br>You can navigate to $url to test your changes"
+                message="${message}<br><br>You can navigate to http://$url to test your changes"
               fi
               echo "##vso[task.setvariable variable=GITHUB_COMMENT]$message"
 {{/if}}
