@@ -1,12 +1,12 @@
-# Step target command "safe mode"
+# Step target command "restricted mode"
 
 With the introduction of [step targets](step-target.md), the code running inside a given step can be mostly isolated from the agent host.
 Agent logging commands remain a vector for untrusted user code to make permanent changes to its environment.
 For instance, `task.setVariable` can alter system variables for the duration of the job.
 `artifact.upload` can exfiltrate bits off the machine or poison otherwise-trusted artifacts.
 
-This spec proposes an extension to step targets allowing them to be placed in "command safe mode".
-In command safe mode, only a small, approved subset of logging commands are processed.
+This spec proposes an extension to step targets allowing them to be placed in "command restricted mode".
+In command restricted mode, only a small, approved subset of logging commands are processed.
 These are necessary for communicating the status or outcome of a step.
 All other commands are excluded.
 
@@ -28,7 +28,7 @@ If it's a mapping, the following keys are supported:
 - script: ...
   target:
     container: string (container name or the word `host`)
-    commands: enum (one of "safe" or "any", with "any" the default)
+    commands: enum (one of "restricted" or "any", with "any" the default)
 ```
 
 ## Example
@@ -43,16 +43,16 @@ resources:
 - script: echo running this step in container
   target:
     container: somecontainer
-- script: echo running this step in container, in safe mode
+- script: echo running this step in container, in restricted mode
   target:
     container: somecontainer
-    commands: safe
+    commands: restricted
 ```
 
 ## Which commands are allowed?
 
 As of October 2019, the following commands exist.
-Commands allowed in safe mode are marked with ✅:
+Commands allowed in restricted mode are marked with ✅:
 
 | Area | Command | Allowed? | Notes
 |------|---------|----------|------
@@ -83,5 +83,5 @@ Commands allowed in safe mode are marked with ✅:
 | `results` |  `publish`
 
 Many of the "publish" commands are probably allowable, but they apply to the job rather than the particular step.
-Therefore, given the principles above, they're disallowed in safe mode.
+Therefore, given the principles above, they're disallowed in restricted mode.
 A follow-up script running outside of safe mode can do any sanitization required and then call the relevant command.
