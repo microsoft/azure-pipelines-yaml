@@ -1,0 +1,48 @@
+{
+    "iconName": "aks",
+    "parameters": [
+        {
+            "name": "k8sResource",
+            "type": "environmentResource:kubernetes",
+            "required": "true",
+            "displayName": "Kubernetes Resource"
+        },
+        {
+            "name": "containerRegistryConnection",
+            "type": "endpoint:containerRegistry",
+            "required": "true",
+            "displayName": "Container Registry"
+        },
+        {
+            "name": "imageRepository",
+            "type": "string",
+            "required": "true",
+            "displayName": "Image Name"
+        },
+        {
+            "name": "servicePort",
+            "type": "pickList",
+            "required": "true",
+            "displayName": "Service Port"
+        },
+        {
+            "name": "reviewApp",
+            "type": "boolean",
+            "displayName": "Enable Review App flow for Pull Requests"
+        },
+        {
+            "name": "azureServiceConnection",
+            "type": "endpoint:azureRm",
+            "required": "true",
+            "displayName": "Azure Connection"
+        }
+    ],
+    "assets": [
+        {
+            "type": "file",
+            "path": "k8s/devspaces-v0.0.1.tgz",
+            "destinationPath": "charts/devspaces-v0.0.1.tgz",
+            "description": "Helm Chart for devspaces deployment"
+        }
+    ]
+}
