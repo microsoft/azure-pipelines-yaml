@@ -26,11 +26,6 @@
             "displayName": "Service Port"
         },
         {
-            "name": "reviewApp",
-            "type": "boolean",
-            "displayName": "Enable Review App flow for Pull Requests"
-        },
-        {
             "name": "azureServiceConnection",
             "type": "endpoint:azureRm",
             "required": "true",

@@ -1,5 +1,5 @@
-# Deploy to Azure Kubernetes Service
-# Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
+# Deploy to Kubernetes - Review app with Azure DevSpaces
+# Build and push image to Azure Container Registry; Deploy to Azure Kuberentes Services and setup Review App with Azure DevSpaces
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
@@ -24,10 +24,8 @@ variables:
   # Azure Service connection
   azureConnection: '{{ azureServiceConnection.Id }}'
 
-  {{#if reviewApp}}
   # Name of the new namespace being created to deploy the PR changes.
   k8sNamespaceForPR: '$(system.pullRequest.sourceBranch)'
-  {{/if}}
 
 stages:
 - stage: Build
@@ -57,9 +55,7 @@ stages:
 
   jobs:
   - deployment: Deploy
-    {{#if reviewApp}}
     condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')))
-    {{/if}}
     displayName: Deploy
     pool:
       vmImage: $(vmImageName)
@@ -80,9 +76,9 @@ stages:
             inputs:
               scriptType: pscore
               scriptLocation: inlineScript
-              azureSubscription: RMDev
+              azureSubscription: $(azureConnection)
               inlineScript: |
-                $clusterId=""
+                $clusterId="{{ k8sConnection.Data.clusterId }}"
                 $resourceGroupName=$(cut -d '/' -f5 <<< "$clusterId")
                 $clusterName=$(cut -d '/' -f9 <<< "$clusterId")
                 az aks use-dev-spaces -n $clusterName -g $resourceGroupName -s {{ k8sResource.Name }} -y
@@ -112,7 +108,6 @@ stages:
               containers: |
                 $(containerRegistry)/$(imageRepository):$(tag)
 
-{{#if reviewApp}}
   - deployment: DeployPullRequest
     displayName: Deploy Pull request
     condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/pull/'))
@@ -146,9 +141,9 @@ stages:
             inputs:
               scriptType: pscore
               scriptLocation: inlineScript
-              azureSubscription: RMDev
+              azureSubscription: $(azureConnection)
               inlineScript: |
-                $clusterId=""
+                $clusterId="{{ k8sConnection.Data.clusterId }}"
                 $resourceGroupName=$(cut -d '/' -f5 <<< "$clusterId")
                 $clusterName=$(cut -d '/' -f9 <<< "$clusterId")
                 az aks use-dev-spaces -n $clusterName -g $resourceGroupName -s {{ k8sResource.Name }} -y
@@ -183,4 +178,3 @@ stages:
           - script: |
               message="Deployment to your Review App succeeded.<br><br>You can navigate to http://$(k8sNamespaceForPR).s.app.$(HostSuffix) to test your changes"
               echo "##vso[task.setvariable variable=GITHUB_COMMENT]$message"
-{{/if}}
