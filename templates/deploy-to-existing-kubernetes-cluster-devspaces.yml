@@ -132,7 +132,7 @@ stages:
             inputs:
               command: apply
               useConfigurationFile: true
-              inline: '{ "kind": "Namespace", "apiVersion": "v1", "metadata": { "name": "$(k8sNamespaceForPR)" }}'
+              inline: '{ "kind": "Namespace", "apiVersion": "v1", "metadata": { "name": "$(k8sNamespaceForPR)", "labels": { "azds.io/space": "true", "azds.io/parent-space": "{{ k8sResource.Name }}" }}}'
 
           - task: KubernetesManifest@0
             displayName: Create imagePullSecret
