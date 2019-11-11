@@ -178,7 +178,7 @@ jobs:
     name: musicCarnivalProdPool
   strategy:                 
     rolling:
-      max-parallel: 5
+      maxParallel: 5
       preDeploy:
         steps:
         - script: echo initialize, cleanup, install certs...
