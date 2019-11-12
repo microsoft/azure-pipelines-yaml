@@ -35,6 +35,11 @@
             "type": "endpoint:azureRm",
             "required": "true",
             "displayName": "Azure Connection"
+        },
+        {
+            "name": "description",
+            "type": "markdown",
+            "displayName": "Azure Dev Spaces provides a way to independently update portions of your microservices application and it complements Azure Pipeline Review App feature.. [Learn more](https://aka.ms/reviewappazds)"
         }
     ],
     "assets": [
