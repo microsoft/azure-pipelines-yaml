@@ -139,10 +139,10 @@ stages:
           # Getting the IP of the deployed service and writing it to a variable for posing comment
           - script: |
               url="$(get.KubectlOutput)"
-              message="Deployment to your Review App succeeded."
+              message="Your review app has been deployed"
               if [ ! -z "$url" -a "$url" != ":" ] 
               then
-                message="${message}<br><br>You can navigate to http://$url to test your changes"
+                message="${message} and is available at $url.<br><br>[Learn More](https://aka.ms/testwithreviewapps) about how to test and provide feedback for the app."
               fi
               echo "##vso[task.setvariable variable=GITHUB_COMMENT]$message"
 {{/if}}
