@@ -1,0 +1,187 @@
+# Deploy to Kubernetes - Review app with Azure DevSpaces
+# Build and push image to Azure Container Registry; Deploy to Azure Kuberentes Services and setup Review App with Azure DevSpaces
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- master
+
+resources:
+- repo: self
+
+variables:
+
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: '{{ containerRegistryConnection.Id }}'
+  imageRepository: '{{#toAlphaNumericString imageRepository 50}}{{/toAlphaNumericString}}'
+  containerRegistry: '{{ containerRegistryConnection.Authorization.Parameters.loginServer }}'
+  dockerfilePath: '**/Dockerfile'
+  tag: '$(Build.BuildId)'
+  imagePullSecret: '{{#toAlphaNumericString containerRegistryConnection.Name 50}}{{/toAlphaNumericString}}{{#shortGuid}}{{/shortGuid}}-auth'
+
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+  
+  # Azure Service connection
+  azureConnection: '{{ azureServiceConnection.Id }}'
+  
+  {{#if reviewApp}}
+  # Name of the new namespace being created to deploy the PR changes.
+  k8sNamespaceForPR: '$(system.pullRequest.sourceBranch)'
+  {{/if}}
+
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:  
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+          
+    - upload: charts
+      artifact: charts
+
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: Build
+
+  jobs:
+  - deployment: Deploy
+    {{#if reviewApp}}
+    condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')))
+    {{/if}}
+    displayName: Deploy
+    pool:
+      vmImage: $(vmImageName)
+    environment: '{{ k8sResource.EnvironmentReference.Name }}.{{ k8sResource.Name }}'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: KubernetesManifest@0
+            displayName: Create imagePullSecret
+            inputs:
+              action: createSecret
+              secretName: $(imagePullSecret)
+              dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+
+          - task: AzureCLI@2
+            displayName: get host suffix
+            inputs:
+              scriptType: pscore
+              scriptLocation: inlineScript
+              azureSubscription: $(azureConnection)
+              inlineScript: |
+                $clusterId="{{ k8sConnection.Data.clusterId }}"
+                $resourceGroupName=$(echo "$clusterId" | cut -d '/' -f5 )
+                $clusterName=$(echo "$clusterId" | cut -d '/' -f9 )
+
+                az aks use-dev-spaces -n $clusterName -g $resourceGroupName -s default -y
+                $hostSuffix=$(azds show-context -o json | ConvertFrom-Json).controller.hostSuffix
+                echo "##vso[task.setvariable variable=HostSuffix]$hostSuffix"
+
+          - task: KubernetesManifest@0
+            displayName: Bake manifests
+            name: bake
+            inputs:
+              action: bake
+              helmChart: $(Pipeline.Workspace)/charts/devspaces-v0.0.1.tgz
+              overrides: |
+                image.repository:$(containerRegistry)/$(imageRepository)
+                service.port:{{ servicePort }} 
+                ingress.enabled:true
+                ingress.hostname:app.$(HostSuffix)
+              
+          - task: KubernetesManifest@0
+            displayName: Deploy to Kubernetes cluster
+            inputs:
+              action: deploy
+              manifests: |
+                $(bake.manifestsBundle)
+              imagePullSecrets: |
+                $(imagePullSecret)
+              containers: |
+                $(containerRegistry)/$(imageRepository):$(tag)
+
+{{#if reviewApp}}
+  - deployment: DeployPullRequest
+    displayName: Deploy Pull request
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/pull/'))
+    pool:
+      vmImage: $(vmImageName)
+      
+    environment: '{{ k8sResource.EnvironmentReference.Name }}.$(k8sNamespaceForPR)'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - reviewApp: {{ k8sResource.Name }}
+
+          - task: Kubernetes@1
+            displayName: 'Create a new namespace for the pull request'
+            inputs:
+              command: apply
+              useConfigurationFile: true
+              inline: '{ "kind": "Namespace", "apiVersion": "v1", "metadata": { "name": "$(k8sNamespaceForPR)", "labels": { "azds.io/space": "true", "azds.io/parent-space": "{{ k8sResource.Name }}" }}}'
+
+          - task: KubernetesManifest@0
+            displayName: Create imagePullSecret
+            inputs:
+              action: createSecret
+              secretName: $(imagePullSecret)
+              namespace: $(k8sNamespaceForPR)
+              dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+          
+          - task: AzureCLI@2
+            displayName: get host suffix
+            inputs:
+              scriptType: pscore
+              scriptLocation: inlineScript
+              azureSubscription: $(azureConnection)
+              inlineScript: |
+                $clusterId="{{ k8sConnection.Data.clusterId }}"
+                $resourceGroupName=$(echo "$clusterId" | cut -d '/' -f5 )
+                $clusterName=$(echo "$clusterId" | cut -d '/' -f9 )
+                
+                az aks use-dev-spaces -n $clusterName -g $resourceGroupName -s default -y
+                $hostSuffix=$(azds show-context -o json | ConvertFrom-Json).controller.hostSuffix
+                echo "##vso[task.setvariable variable=HostSuffix]$hostSuffix"
+
+          - task: KubernetesManifest@0
+            displayName: Bake manifests
+            name: bake
+            inputs:
+              action: bake
+              helmChart: $(Pipeline.Workspace)/charts/devspaces-v0.0.1.tgz
+              overrides: |
+                image.repository:$(containerRegistry)/$(imageRepository)
+                service.port:{{ servicePort }} 
+                ingress.enabled:true
+                ingress.hostname:$(k8sNamespaceForPR).s.app.$(HostSuffix)
+                
+          - task: KubernetesManifest@0
+            displayName: Deploy to the new namespace in the Kubernetes cluster
+            inputs:
+              action: deploy
+              namespace: $(k8sNamespaceForPR)
+              manifests: |
+                $(bake.manifestsBundle)
+              imagePullSecrets: |
+                $(imagePullSecret)
+              containers: |
+                $(containerRegistry)/$(imageRepository):$(tag)
+
+          - script: |
+              message="Deployment to your Review App succeeded.<br><br>You can navigate to http://$(k8sNamespaceForPR).s.app.$(HostSuffix) to test your changes"
+              echo "##vso[task.setvariable variable=GITHUB_COMMENT]$message"
+{{/if}}
