@@ -69,6 +69,9 @@ integrations:
     branches: 
       include: [ string ] # optional; defaults to all branches.
       exclude: [ string ] # optional; 
+    tags:
+      include: [ string ] # optional; defaults to all tags.
+      exclude: [ string ] # optional;
   - pipeline: string #  identifier of the pipeline resource as defined in YAML resources section
     branches:
       include: [ string ]  # optional; defaults to all branches.
