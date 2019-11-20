@@ -147,7 +147,7 @@ steps:
   path: toolzdir
 ```
 
-Passing `path` parameter causes the repo to be checked out into artifacts folder ($(Pipeline.Workspace)/a/src, $(Pipeline.Workspace)/a/toolzdir). If `path` is not provided, then repository will be created in a source ($(Pipeline.Workspace)/s/) folder with the name of the repository.
+Passing `path` parameter causes the repo to be checked out into root folder ($(Pipeline.Workspace)/src, $(Pipeline.Workspace)/toolzdir). If `path` is not provided, then repository will be created in a source ($(Pipeline.Workspace)/s/) folder with the name of the repository.
 
 ```
 _w/
