@@ -22,14 +22,14 @@ It's important to close this gap as much as possible, without wrecking the abili
 Many of these problems can be fixed, or at least partially mitigated, by marking some variables as readonly.
 In fact, we document that this is the case for system-injected pipeline variables, but don't actually enforce it today.
 
-A readonly variable can be set once, then its contents cannot be changed by user code.
+A readonly variable can be set once, then its contents cannot be changed using `##vso[task.setVariable]`.
 Any attempt to do so generates a warning.
 (This is to help with troubleshooting, in case there are tasks/scripts relying on the older behavior.)
 The warning will be something like:
 > `VariableName` is read-only and can't be changed.
 
 Azure Pipelines itself can still change variables.
-For instance, if the build name is changed using the appropriate logging command, then `Build.BuilderNumber` may be changed to reflect that.
+For instance, if the build name is changed using the appropriate logging command, then `Build.BuildeNumber` may be changed to reflect that.
 
 All of the following should be readonly:
 - All system variables (whether from the server or agent)
