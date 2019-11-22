@@ -37,9 +37,6 @@ All of the following should be readonly:
 - Queue-time variables
 - Task- and script-created variables with a new setting, `isReadonly=true`
 
-Additionally, agents should no longer overwrite the following important environment variables, even if there's a pipeline variable with the corresponding name:
-- `TODO`
-
 ## Enforcement
 
 For variables marked readonly, the agent should refuse to update them.
