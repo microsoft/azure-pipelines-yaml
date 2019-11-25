@@ -64,6 +64,22 @@ steps:
 For variables marked readonly, the agent should refuse to update them.
 Additionally, if the server is asked to update these variables by the agent, it should also refuse.
 
+## Not covered
+
+This feature does not address the scenario where a pipeline variable overwrites an important shell environment variable (think `TEMP`/`TMP`, `PATH`, etc.).
+This feature only covers which pipeline variables are readonly.
+A sufficiently paranoid pipeline author could implement a pattern like the following:
+
+```yaml
+steps:
+- script: echo "##vso[task.setVariable variable=PATH;isReadonly=true]$PATH"
+  displayName: Preserve the initial value of PATH
+```
+
+Then all subsequent steps will get the frozen copy of `PATH`.
+
+A future feature may be needed to address not clobbering existing environment variables.
+
 ## Safe deployment
 
 There's not a lot of support or telemetry for detecting how widely our customers depend on current behavior.
