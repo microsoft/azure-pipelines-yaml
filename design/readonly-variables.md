@@ -29,13 +29,35 @@ The warning will be something like:
 > `VariableName` is read-only and can't be changed.
 
 Azure Pipelines itself can still change variables.
-For instance, if the build name is changed using the appropriate logging command, then `Build.BuildeNumber` may be changed to reflect that.
+For instance, if the build name is changed using the appropriate logging command, then `Build.BuildNumber` may be changed to reflect that.
 
 All of the following should be readonly:
 - All system variables (whether from the server or agent)
 - Output variables (those set using `isOutput=true`)
 - Queue-time variables
 - Task- and script-created variables with a new setting, `isReadonly=true`
+- YAML-described variables created with a new property, `readonly: true`
+
+## Example
+
+This example YAML shows all the kinds of readonly variables.
+
+```yaml
+variables:
+- name: first
+  value: one
+  readonly: true  # new syntax marking this variable readonly
+
+steps:
+- script: echo "##vso[task.setVariable variable=second;isReadonly=true]two"
+  displayName: Set a readonly variable from a script/task
+- script: echo "##vso[task.setVariable variable=third;isOutput=true]three"
+  displayName: Output variables are automatically readonly
+- script: echo Another readonly variable is $(Build.SourcesDirectory)
+  displayName: System variables are readonly
+# not pictured: queue-time variables that came from the server
+# are also readonly
+```
 
 ## Enforcement
 
