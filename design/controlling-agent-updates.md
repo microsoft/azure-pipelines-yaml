@@ -74,3 +74,12 @@ As above, we'd give a long bake time between releasing an LTS build and requirin
 This approach would require a lot more discipline and tracking around shipping the agent.
 We're not resourced for that level of planning, and the existing upgrade mechanism isn't really amenable to it anyhow.
 If we chose the "wouldn't auto-upgrade LTSB agents at all" path, we've complicated the solution we chose without materially improving the customer experience.
+
+### Agent-side config
+We considered making this an agent-side flag.
+The agent would report to the server that it's unwilling to accept update messages.
+
+This breaks the update button on the web UI.
+In fact, it totally blocks our ability to ever service those agents.
+While the truly paranoid like it that way (as evidenced by the lengths they go to in blocking updates), having this be server-controlled keeps more scenarios working as designed.
+(For instance, the on-prem feature allowing the AT to offer up a newer agent build.)
