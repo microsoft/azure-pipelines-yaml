@@ -8,7 +8,13 @@ For instance, tasks express a minimum agent version required.
 If a selected agent doesn't meet that requirement, the agent is first asked to update itself.
 Other ways an agent can be updated include using a feature which demands an evergreen agent (YAML pipelines, for instance) or clicking the "upgrade all agents" button in a pool.
 
-For some highly-regulated customers, this kind of evergreen infrastructure is at odds with their compliance needs.
+For some highly-regulated customers, this kind of evergreen infrastructure is at odds with their security/compliance needs.
+- For instance, Customer "K" runs the agent inside a highly change-controlled datacenter.
+Every alteration must be approved by a high-ranking official in their organization after manual source inspection.
+Today, they diff between the release tags of their current version and the version being installed, looking for potential security issues or malicious changes.
+- Customer "N" isn't as concerned about the security aspect but is in a regulated space.
+They must satisfy their auditors that they're aware of all changes taking place inside their datacenter.
+
 Such customers today are doing things like ACLing the agent's installation directory so it can't update itself or recompiling the agent without update support.
 This leaves us in a situation where no one is happy:
 we can't service the product correctly, and the customer has to maintain custom configuration / infrastructure to meet their compliance needs.
