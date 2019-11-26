@@ -23,7 +23,7 @@ we can't service the product correctly, and the customer has to maintain custom 
 
 _See below for other solutions considered._
 
-We will add a mode to the project-level pool which puts it into "no update" mode.
+We will add a mode to the organization-level pool which puts it into "no update" mode.
 In this mode, jobs will use the minimum agent version as a demand.
 If no agent can satisfy the demand, the job will fail instead of forcing an agent update.
 
@@ -32,7 +32,7 @@ It must also indicate that the customer opted into this behavior.
 This way, the customer can decide whether to update their agents or edit the pipeline to remove the offending feature.
 For example:
 > This pool doesn't allow agent updates.
-> An administrator can alter this setting on the project pool page.
+> An administrator can alter this setting on the organization pool page.
 > Task `MyTask` version 1.2.3 requires agent version 2.175.1, which could not be satisfied.
 
 Manual agent updates (i.e. clicking the button in the web) should still send update requests as normal.
