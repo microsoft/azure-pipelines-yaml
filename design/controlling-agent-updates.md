@@ -37,6 +37,10 @@ For example:
 
 Manual agent updates (i.e. clicking the button in the web) should still send update requests as normal.
 
+Additionally, the pool UI will be updated to show the agent's version.
+Any agents not fully up to date (as compared to the version on the AT) should be visually marked.
+(Not being 100% up to date isn't necessarily a problem, so it should info-level, not warning-level.)
+
 ## Potential problems & solutions
 
 **If a small number of agents have been updated, then all jobs will funnel to that agent instead of spreading out across the pool.**
