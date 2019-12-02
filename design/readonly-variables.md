@@ -88,9 +88,9 @@ Ideally this is a server-side feature flag, but if we need an agent-side setting
 
 Plan:
 - Sprint _X_: When the flag is on, warn in situations where a variable would be overwritten.
-Turning off the feature flag turns off this warning (to fix sitautions where a customer is overwhelmed with warnings).
+Turning off the feature flag turns off this warning (to fix situations where a customer is overwhelmed with warnings).
 - Sprint _X+1_: When the flag is on, variables cannot be overwritten.
-Turninfg off the flag turns off the behavior but does _not_ turn off the warning.
+Turning off the flag turns off the behavior but does _not_ turn off the warning.
 - Sprint _X+2_: Remove feature flag.
 
 ## On-prem considerations
