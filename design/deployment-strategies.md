@@ -149,7 +149,6 @@ jobs:
         steps:
         - script: echo deploy updates...
       routeTraffic:
-        delay: 60m 
         steps:
         - script: echo routing traffic...
       postRouteTaffic:
@@ -186,7 +185,6 @@ jobs:
         steps:                                     
         - script: echo deploy web app...      
       routeTraffic:
-        delay: 60m
         steps:
         - script: echo swap slots...   
       postRouteTaffic:
