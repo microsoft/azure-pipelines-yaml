@@ -6,7 +6,9 @@ Conceptually, it's no different from binaries on the app tier or JavaScript serv
 
 For instance, tasks express a minimum agent version required.
 If a selected agent doesn't meet that requirement, the agent is first asked to update itself.
-Other ways an agent can be updated include using a feature which demands an evergreen agent (YAML pipelines, for instance) or clicking the "upgrade all agents" button in a pool.
+Other ways an agent can be required to update include:
+- using a feature which requires an updated agent (YAML pipelines, for instance)
+- clicking the "upgrade all agents" button in a pool
 
 For some highly-regulated customers, this kind of evergreen infrastructure is at odds with their security/compliance needs.
 - For instance, Customer "K" runs the agent inside a highly change-controlled datacenter.
