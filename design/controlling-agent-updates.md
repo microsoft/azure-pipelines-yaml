@@ -1,8 +1,8 @@
 # Controlling agent updates
 
-The agent is considered an extension of the service.
+The agent is essentially an extension of the service.
 As such, we have an auto-update mechanism to ensure that new features can rely on the agent support they require.
-Conceptually, it's no different from binaries on the app tier or JavaScript served to the web frontend.
+At a very high level, it's no different from binaries on the app tier or JavaScript served to the web frontend.
 
 For instance, tasks express a minimum agent version required.
 If a selected agent doesn't meet that requirement, the agent is first asked to update itself.
@@ -10,12 +10,17 @@ Other ways an agent can be required to update include:
 - using a feature which requires an updated agent (YAML pipelines, for instance)
 - clicking the "upgrade all agents" button in a pool
 
+Of course, there _are_ differences:
+for one thing, deployed agents isn't under our control.
+Practically, this hasn't mattered to Azure DevOps as a service provider, since a customer can "only hurt themselves" if they do something wrong or malicious with their agents.
+
 For some highly-regulated customers, this kind of evergreen infrastructure is at odds with their security/compliance needs.
 - For instance, Customer "K" runs the agent inside a highly change-controlled datacenter.
 Every alteration must be approved by a high-ranking official in their organization after manual source inspection.
 Today, they diff between the release tags of their current version and the version being installed, looking for potential security issues or malicious changes.
-- Customer "N" isn't as concerned about the security aspect but is in a regulated space.
+- Customer "N" is concerned about the security aspect due to being in a regulated space.
 They must satisfy their auditors that they're aware of all changes taking place inside their datacenter.
+Their auditors, in turn, are concerned that a malicious insider could alter the pipelines infrastructure in a malicious way (i.e. run a job on the agent that alters the agent or its host).
 
 Such customers today are doing things like ACLing the agent's installation directory so it can't update itself or recompiling the agent without update support.
 We either knock agents offline (the agent says it'll take the upgrade, then never comes back because it can't complete) or builds start queueing up (the agent says it'll take the update, but when it comes back, it's still running the old version).
