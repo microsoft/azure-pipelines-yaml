@@ -18,6 +18,7 @@ Today, they diff between the release tags of their current version and the versi
 They must satisfy their auditors that they're aware of all changes taking place inside their datacenter.
 
 Such customers today are doing things like ACLing the agent's installation directory so it can't update itself or recompiling the agent without update support.
+We either knock agents offline (the agent says it'll take the upgrade, then never comes back because it can't complete) or builds start queueing up (the agent says it'll take the update, but when it comes back, it's still running the old version).
 This leaves us in a situation where no one is happy:
 we can't service the product correctly, and the customer has to maintain custom configuration / infrastructure to meet their compliance needs.
 
@@ -26,16 +27,22 @@ we can't service the product correctly, and the customer has to maintain custom 
 _See below for other solutions considered._
 
 We will add a mode to the organization-level pool which puts it into "no update" mode.
-In this mode, jobs will use the minimum agent version as a demand.
+In this mode, Azure Pipelines will inject the minimum agent version as a normal demand.
+(Today, it's like a demand, but if no agent with the right version can be found, the job will get assigned to an outdated agent and that agent asked to update.)
 If no agent can satisfy the demand, the job will fail instead of forcing an agent update.
 
 The error message must clearly indicate what feature or task demanded agent update.
-It must also indicate that the customer opted into this behavior.
+It must also indicate that the customer's org opted into this behavior.
 This way, the customer can decide whether to update their agents or edit the pipeline to remove the offending feature.
 For example:
 > This pool doesn't allow agent updates.
+> Task `MyTask` version 1.2.3 requires agent version 2.175.1, and no agents with that version are registered.
 > An administrator can alter this setting on the organization pool page.
-> Task `MyTask` version 1.2.3 requires agent version 2.175.1, which could not be satisfied.
+
+The administrator who set this policy can optionally include a reason, which we'll include in the error string.
+> This pool doesn't allow agent updates.
+> Task `MyTask` version 1.2.3 requires agent version 2.175.1, and no agents with that version are registered.
+> (customer's words, limited to 400 characters)
 
 Manual agent updates (i.e. clicking the button in the web) should still send update requests as normal.
 
@@ -43,9 +50,13 @@ Additionally, the pool UI will be updated to show the agent's version.
 Any agents not fully up to date (as compared to the version on the AT) should be visually marked.
 (Not being 100% up to date isn't necessarily a problem, so it should info-level, not warning-level.)
 
+Another minor point: we'll stop auto-sliding YAML builds every sprint.
+Instead, when we ship a feature that requires a new agent version, that feature will have to request the newer version.
+
 ## Potential problems & solutions
 
 **If a small number of agents have been updated, then all jobs will funnel to that agent instead of spreading out across the pool.**
+This can happen if an admin manually updates a few agents or clicks the single-agent "upgrade" button in the web.
 This behavior must be well-documented, both in user-facing material and in troubleshooting guides for the team.
 We will inevitably see instances where this setting is on and causing a pool of agents to sit idle while a single agent in the pool is backed up.
 
