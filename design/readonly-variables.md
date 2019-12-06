@@ -32,7 +32,7 @@ Azure Pipelines itself can still change variables.
 For instance, if the build name is changed using the appropriate logging command, then `Build.BuildNumber` may be changed to reflect that.
 
 All of the following should be readonly:
-- All system variables (whether from the server or agent)
+- All system variables (whether from the server or agent) - this includes `System.`, `Agent.`, `Build.`, and so on
 - Output variables (those set using `isOutput=true`)
 - Queue-time variables
 - Task- and script-created variables with a new setting, `isReadonly=true`
