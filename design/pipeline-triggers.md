@@ -456,6 +456,8 @@ resources:
 ```
 In this case the pipeline will be triggered when a book is published to the BookStore and if the payload contains the book tile as 'TrainYourPets'. And the a variable $(Resources.WebHooks.MyWebHook.price), gives price of the book and is made available to the jobs.
 
+Note: Incase you are using Quotes ('', "") in JSON path, you need to escape them. 
+
 ## Schedule triggers
 This is out of scope for this iteration.
 
