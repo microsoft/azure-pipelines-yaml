@@ -5,8 +5,8 @@ Triggers are events on which you can start your pipeline run automatically. You 
 
 At high level there are 3 different types of pipeline triggers.
 1. Resource triggers
-2. Schedule triggers
-3. Webhook triggers
+2. Webhook triggers
+3. Schedule triggers
 
 ## Resource triggers
 You can enable triggers on the resources defined in your pipeline. Resources can be of types pipelines, repositories, containers and packages.
@@ -408,6 +408,57 @@ For example, lets say there is an Azure pipeline 'SmartHotel.CI' from 'SmartHote
 
 For example, lets say there is a 'HelmRepo' added as a `repository` resource to the current pipeline 'SmartHotel.CD' which runs on 'SmartHotelsRepo'. Lets say a new commit goes into the 'releases/M145' branch of 'HelmRepo'. Now, a new pipeline run gets triggered for 'SmartHotel.CD' by picking the YAML from default branch (say master) set on the pipeline.
 
+## Webhook triggers
+Webhook based triggers allow users to subscribe to external events and enable pipeline triggers as part of their pipeline yaml definition. 
+
+Webhooks are simple HTTP callback requests and you can define a webhook event based on any http event and define the target to receive the event using the payload url. You can define your webhook based on a repo commit, pr comment, registry update or simple http post request. 
+
+Webhook triggers are slightly different from other resource based triggers. There is no downloadable artifact component or version associated for each event or there is no traceability. However, webhook events contain JSON payload data that can be used for basic analysis of the event.
+
+With webhook triggers feature, we are providing a way to subscribe to such events(webhooks) and enable pipeline triggers and cosume the payload data.
+
+#### Scenarios
+- I would like to configure my pipeline to trigger based on an external event.
+- I would like to apply some additional filters on the payload I get from external event and trigger my pipeline.
+-	As part of the triggered pipeline, I would like to consume the JSON payload available as part of the event in my jobs.
+
+#### Proposal
+We will introduce a new service connection type called `Incoming Webhook`. Following are steps to create an `Incoming Webhook` service connection.
+1. Go to the external service, create the webhook and give a name.
+2. Provide a secret for the webhook (We recommend using the secret every time you use webhooks).
+3. Provide your ADO url as the payload url for the webhook.
+4. Now go to ADO service connections page and create an `Incoming Webhook` service connection. 
+5. Provide the name of the webhook created in the external service.
+6. Provide the secret used. (The secret will be used to validate the checksum and avoid DOS attacks.)
+
+Once the service connection is created, you can use it to subscribe to the webhook event in your YAML pipeline. 
+As part of the pipeline, you can choose to further the filter the JSON payload you get as part of the webhook and define conditions on the JSON path to trigger your pipeline. If you would like to consume the payload data as part of your jobs, you can define a variable and assign the JSON path. We extract the value for the JSON path provided and assign the value to the variable defined and make it available in the jobs.
+
+#### Schema
+```yaml
+resources:       
+  webhooks:
+  - webhook: string # identifier for the webhook
+    connection: string # incoming webhook service connection 
+    filters:  # JSON paths to filter the payload and define the target value.
+    variables: # Define the variable and assign the JSON path so that the payload data can be passed to the jobs.
+```
+This is a generic webhook trigger where user has to take care of manually creating the webhook in the external service and subscribe to it in ADO. `webhoooks` is an extensible category. Anyone can build a custom extension what automatically configures triggers and define it as a new type in `webhooks`.
+
+#### Example
+```yaml
+resources:       
+  webhooks:
+  - webhook: MyWebHook
+    connection: BookStoreIncomingWebHook
+    filters:  
+      "$.store.book[0].title": "TrainYourPets"
+    variables:
+      price: "$.store.book[0].Price"
+```
+In this case the pipeline will be triggered when a book is published to the BookStore and if the payload contains the book tile as 'TrainYourPets'. And the a variable $(Resources.WebHooks.MyWebHook.price), gives price of the book and is made available to the jobs.
+
+Note: Incase you are using Quotes ('', "") in JSON path, you need to escape them. 
 
 ## Schedule triggers
 This is out of scope for this iteration.

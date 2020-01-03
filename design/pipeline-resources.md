@@ -115,8 +115,7 @@ resources:
 ```
 
 ### `downloadBuild` for builds
-
-All artifacts from the defined `build` resources are automatically downloaded and made available at the beginning of each of the 'deployment' job. However, you can override this behavior using `downloadBuild` macro. For regular 'job', artifacts are not automatically downloaded. You need to use `downloadBuild` explicitly wherever needed.
+You can use `downloadBuild` task to download the artifacts available as part of the `build` resource.
 
 ### Schema
 
@@ -129,7 +128,6 @@ All artifacts from the defined `build` resources are automatically downloaded an
 
 The inputs for `downloadBuild` macro is fixed for all the build resources. The automatic artifact download and overriding behavior of `downloadBuild` is same as the `download` macro used for [pipeline artifacts](https://github.com/Microsoft/azure-pipelines-yaml/blob/master/design/pipeline-artifacts.md#downloading-artifacts-download).
 
-In a job, once you use `downloadBuild`, build artifacts are no longer downloaded automatically. You get the full control and you have to explicitly use `downloadBuild` for each build resource you wish to download artifacts from. However, this does not have any effect on the other resource categories like `pipelines`, `repositories` and `packages`.
 
 ### Examples
 You can customize the download behavior for each deployment or job.
@@ -281,6 +279,54 @@ ACR container resource enables you to use Azure service principal (ARM service c
 ACR container resource provides you with rich [triggers](https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/pipeline-triggers.md#containers) experience with support for location based triggers and better traceability. 
 
 Once you define a container as resource, container image metadata is passed to the pipeline in the form of variables. Information like image, registry and connection details are made accessible across all the jobs so that your kubernetes deploy tasks can extract the image pull secrets and pass it to the cluster.
+
+## Resources: `packages`
+
+If you need to consume a package from your package repository as part of your deployment you can define a `package` resource. It can be any package type like Nuget, NPM, Python or Gradle. And you can consume the package from any package repository like GitHub packages, Nuget org or NPMJS etc.
+
+### Schema
+```yaml
+resources:        # types: pipelines | builds | repositories | containers | packages
+  packages:
+  - package: string   # identifier for the package resource
+    type: string   # the type of your package like Nuget, NPM etc.
+    connection: string   # service connection for your package repo.
+    package: string   # package definition
+    version: string   # optional; the version of the package to download, defaults to latest published vession.
+    tag: string   # optional; branch to pick the artifact; defaults to master branch
+```
+The inputs for the `package` resource can change based on the `type` of the package (i.e. Nuget, NPM etc.). The publisher of each package type defines the inputs for the resource. 
+
+### Examples
+
+```yaml
+resources:
+  packages:
+  - package: MyPackage
+    type: Nuget
+    connection: MyConnection # Here we support Nuget service connection and GitHub service connection 
+    package: types/zookeper   # name of the package; For github packages it is repo/package
+```
+
+### `getPackage` for packages
+
+All the package types defined in `package` resources can be downloaded as part of your pipeline jobs using the macro `getPackages`. Package resources are not automatically downloaded. You need to explicitly define this task in your job/deploy-job to download the package.
+
+### Schema
+```yaml
+- getPackage: string # identifier for the package resource from which to download the package
+  path: string # relative path from $(PIPELINE.WORKSPACE) to download the package
+```
+
+### Examples
+```yaml
+- job: deploy_windows_x86_agent
+  steps:
+  - getPackage: MyPackage   # package resource identifier.
+```
+
+packages from the `package` resource are downloaded to `$(PIPELINE.WORKSPACE)/<resource-identifier>/` folder. 
+We provide full artifact traceability i.e which package is downloaded from which resource for every job in a pipeline.
 
 # Triggers
 Refer to the [spec](https://github.com/Microsoft/azure-pipelines-yaml/blob/master/design/pipeline-triggers.md) for resource level triggers.
