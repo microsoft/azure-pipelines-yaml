@@ -428,7 +428,7 @@ We will introduce a new service connection type called `Incoming Webhook`. Follo
 2. Provide a secret for the webhook (We recommend using the secret every time you use webhooks).
 3. Provide your ADO url as the payload url for the webhook.
 4. Now go to ADO service connections page and create an `Incoming Webhook` service connection. 
-5. Provide the same of the webhook created in the external service.
+5. Provide the name of the webhook created in the external service.
 6. Provide the secret used. (The secret will be used to validate the checksum and avoid DOS attacks.)
 
 Once the service connection is created, you can use it to subscribe to the webhook event in your YAML pipeline. 
@@ -443,6 +443,8 @@ resources:
     filters:  # JSON paths to filter the payload and define the target value.
     variables: # Define the variable and assign the JSON path so that the payload data can be passed to the jobs.
 ```
+This is a generic webhook trigger where user has to take care of manually creating the webhook in the external service and subscribe to it in ADO. `webhoooks` is an extensible category. Anyone can build a custom extension what automatically configures triggers and define it as a new type in `webhooks`.
+
 #### Example
 ```yaml
 resources:       
