@@ -26,7 +26,7 @@ variables:
   
   {{#if reviewApp}}
   # Name of the new namespace being created to deploy the PR changes.
-  k8sNamespaceForPR: '$(system.pullRequest.sourceBranch)'
+  k8sNamespaceForPR: '{{ k8sResource.Name }}-$(System.PullRequest.PullRequestId)'
   {{/if}}
 
 stages:
