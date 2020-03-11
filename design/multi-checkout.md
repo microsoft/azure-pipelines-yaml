@@ -73,7 +73,7 @@ We'll recommend not to use any of these as checkout paths, but we won't attempt 
 
 #### System variables
 No change to the contents of system variablies like `Build.SourcesDirectory` or `System.DefaultWorkingDirectory`.
-Those will remain `$(Pipeline.Workspace/s`.
+Those will remain `$(Pipeline.Workspace)/s`.
 
 **NOTE**: if one or more `checkout`s sets an explicit path outside of `$(Pipeline.Workspace)/s`, it's ambiguous where the "root of source" should be.
 Since we don't know the user's or the task's intent, we won't try to be clever and do something else.
