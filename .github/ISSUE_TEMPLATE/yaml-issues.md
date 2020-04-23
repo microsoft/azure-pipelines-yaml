@@ -1,0 +1,10 @@
+---
+name: YAML issues
+about: Help route things to places
+title: ''
+labels: ''
+assignees: ''
+
+---
+
+This repo is for working in the open on Azure Pipelines YAML features. It's not a great place to make [new feature requests](https://developercommunity.visualstudio.com/spaces/21/index.html), [report problems](https://developercommunity.visualstudio.com/spaces/21/index.html), or [get support](https://azure.microsoft.com/en-us/support/devops/). Issues you open here may sit unreviewed for a very long time.
