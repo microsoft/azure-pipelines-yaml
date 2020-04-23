@@ -1,6 +1,6 @@
 ---
 name: Talk about YAML
-about: ''
+about: 'We can talk about YAML here. We cannot take problem reports or support requests.'
 title: ''
 labels: ''
 assignees: ''
