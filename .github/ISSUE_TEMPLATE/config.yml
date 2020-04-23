@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Developer Community
+    url: https://developercommunity.visualstudio.com/spaces/21/index.html
+    about: Feature ideas and problem reports go here.
+  - name: Azure DevOps Support
+    url: https://azure.microsoft.com/support/devops/
+    about: Get product support here.
