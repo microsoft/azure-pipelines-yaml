@@ -1,6 +1,6 @@
 ---
-name: YAML issues
-about: Help route things to places
+name: Talk about YAML
+about: ''
 title: ''
 labels: ''
 assignees: ''
