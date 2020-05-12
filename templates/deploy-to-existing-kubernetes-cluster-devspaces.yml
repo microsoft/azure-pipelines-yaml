@@ -26,7 +26,7 @@ variables:
   
   {{#if reviewApp}}
   # Name of the new namespace being created to deploy the PR changes.
-  k8sNamespaceForPR: '$(system.pullRequest.sourceBranch)'
+  k8sNamespaceForPR: 'review-app-$(System.PullRequest.PullRequestId)'
   {{/if}}
 
 stages:
@@ -82,9 +82,8 @@ stages:
               scriptLocation: inlineScript
               azureSubscription: $(azureConnection)
               inlineScript: |
-                $clusterId="{{ k8sConnection.Data.clusterId }}"
-                $resourceGroupName=$(echo "$clusterId" | cut -d '/' -f5 )
-                $clusterName=$(echo "$clusterId" | cut -d '/' -f9 )
+                $resourceGroupName="{{ #extractResource k8sConnection.Data.clusterId resourcegroups }}"
+                $clusterName="{{ #extractResource k8sConnection.Data.clusterId managedClusters }}"
 
                 az aks use-dev-spaces -n $clusterName -g $resourceGroupName -s default -y
                 $hostSuffix=$(azds show-context -o json | ConvertFrom-Json).controller.hostSuffix
@@ -95,12 +94,13 @@ stages:
             name: bake
             inputs:
               action: bake
-              helmChart: $(Pipeline.Workspace)/charts/devspaces-v0.0.1.tgz
+              helmChart: $(Pipeline.Workspace)/charts/devspaces-0.1.0.tgz
               overrides: |
                 image.repository:$(containerRegistry)/$(imageRepository)
                 service.port:{{ servicePort }} 
                 ingress.enabled:true
-                ingress.hostname:app.$(HostSuffix)
+                ingress.hosts[0].name:app.$(HostSuffix)
+                ingress.hosts[0].paths[0]:/
               
           - task: KubernetesManifest@0
             displayName: Deploy to Kubernetes cluster
@@ -149,9 +149,8 @@ stages:
               scriptLocation: inlineScript
               azureSubscription: $(azureConnection)
               inlineScript: |
-                $clusterId="{{ k8sConnection.Data.clusterId }}"
-                $resourceGroupName=$(echo "$clusterId" | cut -d '/' -f5 )
-                $clusterName=$(echo "$clusterId" | cut -d '/' -f9 )
+                $resourceGroupName="{{ #extractResource k8sConnection.Data.clusterId resourcegroups }}"
+                $clusterName="{{ #extractResource k8sConnection.Data.clusterId managedClusters }}"
                 
                 az aks use-dev-spaces -n $clusterName -g $resourceGroupName -s default -y
                 $hostSuffix=$(azds show-context -o json | ConvertFrom-Json).controller.hostSuffix
@@ -162,12 +161,13 @@ stages:
             name: bake
             inputs:
               action: bake
-              helmChart: $(Pipeline.Workspace)/charts/devspaces-v0.0.1.tgz
+              helmChart: $(Pipeline.Workspace)/charts/devspaces-0.1.0.tgz
               overrides: |
                 image.repository:$(containerRegistry)/$(imageRepository)
                 service.port:{{ servicePort }} 
                 ingress.enabled:true
-                ingress.hostname:$(k8sNamespaceForPR).s.app.$(HostSuffix)
+                ingress.hosts[0].host:$(k8sNamespaceForPR).s.app.$(HostSuffix)
+                ingress.hosts[0].paths[0]:/
                 
           - task: KubernetesManifest@0
             displayName: Deploy to the new namespace in the Kubernetes cluster
