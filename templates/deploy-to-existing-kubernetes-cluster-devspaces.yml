@@ -167,7 +167,7 @@ stages:
                 service.port:{{ servicePort }} 
                 ingress.enabled:true
                 ingress.hosts[0].host:$(k8sNamespaceForPR).s.app.$(HostSuffix)
-                ingress.hosts[0].path[0]:/
+                ingress.hosts[0].paths[0]:/
                 
           - task: KubernetesManifest@0
             displayName: Deploy to the new namespace in the Kubernetes cluster
