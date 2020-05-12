@@ -45,8 +45,8 @@
     "assets": [
         {
             "type": "file",
-            "path": "k8s/devspaces-v0.0.1.tgz",
-            "destinationPath": "charts/devspaces-v0.0.1.tgz",
+            "path": "k8s/devspaces-0.1.0.tgz",
+            "destinationPath": "charts/devspaces-0.1.0.tgz",
             "description": "Helm Chart for devspaces deployment"
         }
     ]
