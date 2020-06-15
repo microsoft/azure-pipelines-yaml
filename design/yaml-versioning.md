@@ -1,5 +1,8 @@
 # YAML Versioning
 
+**STATUS**: Cut, we will not be proceeding with YAMLv2.
+Merging this PR for historical interest.
+
 So far, our YAML schema has been "append-only".
 We're careful not to make breaking changes when we add new concepts.
 Also, we still accept older syntax even when we replace it with new, "better" syntax.
