@@ -1,5 +1,8 @@
 # Pipeline variables
 
+**STATUS**: This feature is cut.
+Merging the PR for historical interest only.
+
 To bring Build and Release into one "unified pipelines" model, we need to evolve the variables we expose.
 The Build.\* and Release.\* variables no longer make sense.
 We also have a unique opportunity to clean up other aspects of the variables we expose.
