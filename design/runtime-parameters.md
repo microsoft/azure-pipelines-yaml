@@ -1,5 +1,8 @@
 # Runtime and type-safe parameters
 
+**Status**: implemented, with some changes from the below information.
+See [the official documentation](https://docs.microsoft.com/azure/devops/pipelines/process/runtime-parameters) for latest information.
+
 We need a way to take run-time inputs, giving pipeline authors the right amount of control / expressivity.
 YAML pipelines already accept parameters when used as part of a template.
 Runtime parameters are a natural evolution of that syntax.
