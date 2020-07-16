@@ -39,7 +39,7 @@ stages:
       displayName: 'Use Python $(pythonVersion)'
     
     - script: |
-        python -m venv antenv
+        python -m venv --copies antenv
         source antenv/bin/activate
         python -m pip install --upgrade pip
         pip install setup
@@ -85,3 +85,4 @@ stages:
               azureSubscription: $(azureServiceConnectionId)
               appName: $(webAppName)
               package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
+              appSettings: '-WEBSITE_RUN_FROM_PACKAGE 1'
