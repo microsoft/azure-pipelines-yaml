@@ -36,7 +36,7 @@ stages:
       displayName: 'Install Node.js'
 
     - script: |
-        npm install
+        npm install --no-bin-links
         npm run build --if-present
         npm run test --if-present
       displayName: 'npm install, build and test'
@@ -76,3 +76,4 @@ stages:
               runtimeStack: 'NODE|10.10'
               package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
               startUpCommand: 'npm run start'
+              AppSettings: '-WEBSITE_RUN_FROM_PACKAGE 1'
