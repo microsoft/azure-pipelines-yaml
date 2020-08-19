@@ -145,7 +145,7 @@ resources:
         include: [ string ]  # branches to consider the trigger events, optional; Defaults to all branches.
         exclude: [ string ]  # branches to discard the trigger events, optional; Defaults to none.  
       paths:
-        include: [ string ]  # file paths to consider the trigger events, optional; Defaults to all branches.
+        include: [ string ]  # file paths to consider the trigger events, optional; Defaults to all paths.
         exclude: [ string ]  # file paths to discard the trigger events, optional; Defaults to none.  
       tags: # filter on the events when tags are added to the commit
         include: [string] # tags on commits to consider the trigger events, optional. 
@@ -224,7 +224,7 @@ resources:
 
 
 #### PR triggers
-Whenever a PR is raised on the repository, you can choose to trigger your pipeline using PR triggers. PR triggers are not enabled by defaut. You can enable PR triggers on the repository by defining `pr` trigger on the `repository` resource.
+Whenever a PR is raised on the repository, you can choose to trigger your pipeline using PR triggers. PR triggers are not enabled by default. You can enable PR triggers on the repository by defining `pr` trigger on the `repository` resource.
 
 
 #### Scenarios
@@ -306,7 +306,7 @@ resources:
 Whenever a new image got published to the container registry, your pipeline run will be triggered automatically. See [container resource](pipeline-resources.md#resources-containers) for more details.
 
 
-#### Scenarios	
+#### Scenarios
 - I would like to trigger my pipeline whenever a new version of my application image got published so that I can deploy the image as part of my pipeline.
 - I would like to trigger my pipeline whenever a new image got published to ‘East-US’ location (ACR specific filter).
 
