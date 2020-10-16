@@ -184,7 +184,7 @@ If present, it's a newline-separated list of minimatch patterns for what files t
   continueOnError: boolean # 'true' if future steps should run even if this step fails; default to 'false'
   enabled: true # whether or not to run this ste; defaults to 'true'
   timeoutInMinutes: number
-  env: { string: string } # list of environment varibles to add
+  env: { string: string } # list of environment variables to add
 ```
 
 One instance of `- download` has to translate into exactly one underlying task, which may require changes to how the Download Artifacts task operates.
