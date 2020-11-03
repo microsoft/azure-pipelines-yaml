@@ -3,7 +3,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
-- master
+- main
 
 resources:
 - repo: self
@@ -62,7 +62,7 @@ jobs:
       location: '$(Azure.Location)'
       templateLocation: 'URL of the file'
       addSpnToEnvironment: true
-      csmFileLink: 'https://raw.githubusercontent.com/Microsoft/azure-pipelines-yaml/master/templates/resources/arm/aks.json'
+      csmFileLink: 'https://raw.githubusercontent.com/Microsoft/azure-pipelines-yaml/main/templates/resources/arm/aks.json'
       overrideParameters: '-registryName "$(ACR.Name)" -registryLocation "$(Azure.Location)" -servicePrincipalId $servicePrincipalId -servicePrincipalKey $servicePrincipalKey -clusterName "$(AKS.ClusterName)" -clusterLocation "$(Azure.Location)"'
 
 - job: BuildImage

@@ -3,7 +3,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
-- master
+- main
 
 resources:
 - repo: self
@@ -61,7 +61,7 @@ jobs:
       resourceGroupName: '$(Azure.ResourceGroupName)'
       location: '$(Azure.Location)'
       templateLocation: 'URL of the file'
-      csmFileLink: 'https://raw.githubusercontent.com/Microsoft/azure-pipelines-yaml/master/templates/resources/arm/functionapp.json'
+      csmFileLink: 'https://raw.githubusercontent.com/Microsoft/azure-pipelines-yaml/main/templates/resources/arm/functionapp.json'
       overrideParameters: '-registryName "$(ACR.Name)" -registryLocation "$(Azure.Location)" -functionAppName "$(FunctionApp.Name)" -hostingPlanName "$(ServicePlan.Name)" -storageAccountName "$(StorageAccount.Name)"'
 
 - job: BuildImage

@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/go
 
 trigger:
-- master
+- main
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -31,7 +31,7 @@ steps:
     go version
     go get -v -t -d ./...
     if [ -f Gopkg.toml ]; then
-        curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+        curl https://raw.githubusercontent.com/golang/dep/main/install.sh | sh
         dep ensure
     fi
     go build -v .
