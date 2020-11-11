@@ -52,7 +52,7 @@ resources:
   pipelines:
   - pipeline: SmartHotel
     source: SmartHotel-CI # name of the pipeline source definition
-```A
+```
 
 In case you need to consume a Pipeline from other project, then you need to include the project name while providing source name.
 
