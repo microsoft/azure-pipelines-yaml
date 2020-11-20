@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
 
 trigger:
-- '{{ defaultBranch }}'
+- main
 
 pool:
   vmImage: 'windows-latest'
