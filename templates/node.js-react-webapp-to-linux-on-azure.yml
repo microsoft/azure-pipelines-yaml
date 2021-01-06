@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
-- main
+- {{ defaultBranch }}
 
 variables:
 
@@ -13,7 +13,7 @@ variables:
 
   # Web app name
   webAppName: '{{ webAppName }}'
-  
+
   # Environment name
   environmentName: '{{ webAppName }}'
 
@@ -23,7 +23,7 @@ variables:
 stages:
 - stage: Build
   displayName: Build stage
-  jobs:  
+  jobs:
   - job: Build
     displayName: Build
     pool:
@@ -50,12 +50,12 @@ stages:
   - deployment: Deploy
     displayName: Deploy
     environment: $(environmentName)
-    pool: 
+    pool:
       vmImage: $(vmImageName)
     strategy:
       runOnce:
         deploy:
-          steps:            
+          steps:
           - task: AzureRmWebAppDeployment@4
             displayName: 'Azure App Service Deploy: {{ webAppName }}'
             inputs:

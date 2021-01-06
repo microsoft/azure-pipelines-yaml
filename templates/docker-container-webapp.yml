@@ -3,14 +3,14 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
-- main
+- {{ defaultBranch }}
 
 resources:
 - repo: self
 
 variables:
   # ========================================================================
-  #                          Mandatory variables 
+  #                          Mandatory variables
   # ========================================================================
 
  # Update Azure.ResourceGroupName value with Azure resource group name.
@@ -24,17 +24,17 @@ variables:
 
   # Update ACR.Name value with ACR name. Please note ACR names should be all lower-case and alphanumeric only.
   ACR.Name: '{{#toAlphaNumericString repositoryName 46}}{{/toAlphaNumericString}}{{#shortGuid}}{{/shortGuid}}'
-  
+
   # Update Web.Name value with a name that identifies your new Web app. Valid characters are a-z, 0-9, and -.
   WebApp.Name: '{{#toAlphaNumericString repositoryName 46}}{{/toAlphaNumericString}}{{#shortGuid}}{{/shortGuid}}'
-  
+
   # Update ServicePlan.Name value with a name of the app service plan.
   ServicePlan.Name: '{{#toAlphaNumericString repositoryName 45}}{{/toAlphaNumericString}}-plan'
 
   # ========================================================================
-  #                           Optional variables 
+  #                           Optional variables
   # ========================================================================
-  
+
   ACR.ImageName: '$(ACR.Name):$(Build.BuildId)'
   ACR.FullName: '$(ACR.Name).azurecr.io'
   Azure.CreateResources: 'true' # Update Azure.CreateResources to false if you have already created resources like resource group and azure container registry.

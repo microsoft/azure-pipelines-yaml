@@ -3,7 +3,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
-- main
+- {{ defaultBranch }}
 
 resources:
 - repo: self
@@ -20,10 +20,10 @@ variables:
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
-  
+
   # Azure Service connection
   azureConnection: '{{ azureServiceConnection.Id }}'
-  
+
   {{#if reviewApp}}
   # Name of the new namespace being created to deploy the PR changes.
   k8sNamespaceForPR: 'review-app-$(System.PullRequest.PullRequestId)'
@@ -32,7 +32,7 @@ variables:
 stages:
 - stage: Build
   displayName: Build stage
-  jobs:  
+  jobs:
   - job: Build
     displayName: Build
     pool:
@@ -47,7 +47,7 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
-          
+
     - upload: charts
       artifact: charts
 
@@ -97,11 +97,11 @@ stages:
               helmChart: $(Pipeline.Workspace)/charts/devspaces-0.1.0.tgz
               overrides: |
                 image.repository:$(containerRegistry)/$(imageRepository)
-                service.port:{{ servicePort }} 
+                service.port:{{ servicePort }}
                 ingress.enabled:true
                 ingress.hosts[0].name:app.$(HostSuffix)
                 ingress.hosts[0].paths[0]:/
-              
+
           - task: KubernetesManifest@0
             displayName: Deploy to Kubernetes cluster
             inputs:
@@ -119,7 +119,7 @@ stages:
     condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/pull/'))
     pool:
       vmImage: $(vmImageName)
-      
+
     environment: '{{ k8sResource.EnvironmentReference.Name }}.$(k8sNamespaceForPR)'
     strategy:
       runOnce:
@@ -141,7 +141,7 @@ stages:
               secretName: $(imagePullSecret)
               namespace: $(k8sNamespaceForPR)
               dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
-          
+
           - task: AzureCLI@2
             displayName: get host suffix
             inputs:
@@ -151,7 +151,7 @@ stages:
               inlineScript: |
                 $resourceGroupName="{{ #extractResource k8sConnection.Data.clusterId resourcegroups }}"
                 $clusterName="{{ #extractResource k8sConnection.Data.clusterId managedClusters }}"
-                
+
                 az aks use-dev-spaces -n $clusterName -g $resourceGroupName -s default -y
                 $hostSuffix=$(azds show-context -o json | ConvertFrom-Json).controller.hostSuffix
                 echo "##vso[task.setvariable variable=HostSuffix]$hostSuffix"
@@ -164,11 +164,11 @@ stages:
               helmChart: $(Pipeline.Workspace)/charts/devspaces-0.1.0.tgz
               overrides: |
                 image.repository:$(containerRegistry)/$(imageRepository)
-                service.port:{{ servicePort }} 
+                service.port:{{ servicePort }}
                 ingress.enabled:true
                 ingress.hosts[0].host:$(k8sNamespaceForPR).s.app.$(HostSuffix)
                 ingress.hosts[0].paths[0]:/
-                
+
           - task: KubernetesManifest@0
             displayName: Deploy to the new namespace in the Kubernetes cluster
             inputs:
