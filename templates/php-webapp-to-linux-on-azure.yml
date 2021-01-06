@@ -4,12 +4,12 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/php
 
 trigger:
-- main
+- {{ defaultBranch }}
 
 variables:
   # Azure Resource Manager connection created during pipeline creation
   azureSubscription: '{{ azureRmServiceConnection.Id }}'
-  
+
   # Web app name
   webAppName: '{{ webAppName }}'
 
@@ -41,7 +41,7 @@ stages:
         php -version
       workingDirectory: $(rootFolder)
       displayName: 'Use PHP version $(phpVersion)'
-    
+
     - script: composer install --no-interaction --prefer-dist
       workingDirectory: $(rootFolder)
       displayName: 'Composer install'
@@ -54,7 +54,7 @@ stages:
         archiveType: zip
         archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
         replaceExistingArchive: true
-    
+
     - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
       displayName: 'Upload package'
       artifact: drop

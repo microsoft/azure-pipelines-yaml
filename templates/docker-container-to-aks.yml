@@ -3,14 +3,14 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
-- main
+- {{ defaultBranch }}
 
 resources:
 - repo: self
 
 variables:
   # ========================================================================
-  #                          Mandatory variables 
+  #                          Mandatory variables
   # ========================================================================
 
   # Update Azure.ResourceGroupName value with Azure resource group name.
@@ -32,7 +32,7 @@ variables:
   Container.Port: 5000
 
   # ========================================================================
-  #                           Optional variables 
+  #                           Optional variables
   # ========================================================================
 
   ACR.RepositoryName: '$(ACR.Name)'
@@ -108,7 +108,7 @@ jobs:
       fi
     displayName: 'Check kubernetes deployment yaml exists'
 
-  - bash: |  
+  - bash: |
        echo "apiVersion : apps/v1beta1
        kind: Deployment
        metadata:

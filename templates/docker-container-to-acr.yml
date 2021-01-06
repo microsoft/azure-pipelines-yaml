@@ -3,14 +3,14 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
-- main
+- {{ defaultBranch }}
 
 resources:
 - repo: self
 
 variables:
   # ========================================================================
-  #                          Mandatory variables 
+  #                          Mandatory variables
   # ========================================================================
 
  # Update Azure.ResourceGroupName value with Azure resource group name.
@@ -26,7 +26,7 @@ variables:
   ACR.Name: '{{#toAlphaNumericString repositoryName 46}}{{/toAlphaNumericString}}{{#shortGuid}}{{/shortGuid}}'
 
   # ========================================================================
-  #                           Optional variables 
+  #                           Optional variables
   # ========================================================================
 
   ACR.ImageName: '$(ACR.Name):$(Build.BuildId)'
