@@ -4,7 +4,7 @@
 # https://aka.ms/yaml
 
 trigger:
-- {{ defaultBranch }}
+- {{ branch }}
 
 pool:
   vmImage: 'windows-latest'
