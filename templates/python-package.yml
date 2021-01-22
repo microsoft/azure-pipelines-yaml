@@ -7,7 +7,7 @@ trigger:
 - {{ branch }}
 
 pool:
-  vmImage: 'ubuntu-latest'
+  {{ pool }}
 strategy:
   matrix:
     Python27:

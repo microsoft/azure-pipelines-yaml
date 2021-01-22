@@ -7,7 +7,7 @@ trigger:
 - {{ branch }}
 
 pool:
-  vmImage: 'ubuntu-latest'
+  {{ pool }}
 
 steps:
 - task: NodeTool@0
