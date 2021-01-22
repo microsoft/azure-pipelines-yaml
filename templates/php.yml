@@ -7,7 +7,7 @@ trigger:
 - {{ branch }}
 
 pool:
-  vmImage: 'ubuntu-latest'
+  {{ pool }}
 
 variables:
   phpVersion: 7.2
