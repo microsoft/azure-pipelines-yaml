@@ -11,7 +11,7 @@ Other ways an agent can be required to update include:
 - clicking the "upgrade all agents" button in a pool
 
 Of course, there _are_ differences:
-for one thing, deployed agents isn't under our control.
+for one thing, deployed agents aren't under our control.
 Practically, this hasn't mattered to Azure DevOps as a service provider, since a customer can "only hurt themselves" if they do something wrong or malicious with their agents.
 
 For some highly-regulated customers, this kind of evergreen infrastructure is at odds with their security/compliance needs.
