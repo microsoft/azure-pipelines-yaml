@@ -1,6 +1,6 @@
 # Artifacts in Pipelines
 
-> This is a technical design document written for the intial implementaiton of artifacts in Azure Pipelines.
+> This is a technical design document written for the initial implementation of artifacts in Azure Pipelines.
 >
 > For the current documentation go to [Azure Pipelines Artifacts documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/artifacts-overview?view=azure-devops)
 
