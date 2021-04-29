@@ -92,7 +92,7 @@ stages:
     parameters: 
     - template: group-data.yaml
   - template: another-groups-template.yaml
-    paameters: 
+    parameters: 
     - template: group-data.yaml
     .
     .
