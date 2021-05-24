@@ -37,95 +37,8 @@ Following are descriptions of the lifecycle events where you can run a hook duri
 
 Using the lifecycle hooks, we can achieve complex deployment events such as - 
 
-- Blue Green
 - Canary
 - Rolling
-
-**Blue-Green**: Reduce deployment downtime by having identical standby environment. 
-At any time one of them, let's say `blue` for the example, is live. As you prepare a new release of your software,
-you do your final stage of testing in the green environment. Once the software is working in the green environment, 
-you switch the traffic so that all incoming requests go to the green environment - the blue one is now idle.
-
-Consider the following Azure Pipelines pipeline defined in YAML
-
-```yaml
-jobs:
-- deployment:
-  environment: musicCarnivalProd
-  pool:
-    name: musicCarnivalProdPool
-  strategy:                   
-    blueGreen:    
-      preDeploy:
-        steps:
-        - script: echo initialize, cleanup, install certs...
-      deploy:              
-        steps:                                   
-        - script: echo deploy app updates... 
-      routeTraffic:
-        delay: 60m
-        steps:
-        - script: echo route traffic...   
-      postRouteTaffic:
-        pool: server       # lifecycle job pool type
-        steps:          
-        - script: echo monitor app health        
-      on:
-        failure:
-          steps:
-          - script: echo rollback, cleanup..     
-        success:
-          steps:
-          - script: echo checks passed...
-```
-
-For example, deploy a web app using blue-green strategy.
-
-```yaml
-jobs:
-- deployment:
-  environment: musicCarnivalProd.musicCarnivalWeb
-  pool:
-    name: musicCarnivalProdPool
-  strategy:                   
-    blueGreen:    
-      deploy:              
-        steps:                                   
-        - task: AzureWebApp@1
-          inputs:
-            appName: 'musicCarnivalWeb'
-            package: '$(System.DefaultWorkingDirectory)/**/*.zip' 
-            slotName: $(environment.staging)                        # deploy to green
-      routeTraffic:
-        delay: 60m
-        steps:
-        - task: AzureAppServiceManage@0
-          inputs:
-            Action: 'Swap Slots'                                    # swap green with blue
-            WebAppName: 'musicCarnivalWeb'
-            sourceSlot: $(environment.staging)
-            destinationSlot: $(environment.prod)
-      postRouteTaffic:
-        pool: server
-        steps:          
-        - script: echo monitor app health        
-      on:
-        failure:
-          steps:
-          - task: AzureAppServiceManage@0
-            inputs:
-              Action: 'Swap Slots'
-              WebAppName: 'musicCarnivalWeb'
-              sourceSlot: $(environment.prod)
-              destinationSlot: $(environment.staging)    
-        success:
-          steps:
-          - script: echo checks passed...
-```
-
-The example task usage above uses the explicit references to **staging** and **prod** slots from an environment variable. Typically built-in tasks such as AppService publishes the target type i.e, **Prod** or **staging** in other words **blue** or **green** information as a metadata on the resource in the environment context. With this, the target type whether blue or green information is persisted, updated and/or retrieved from the enviroment context and the workflow doesn't have to be edited for deployment. We also want to provide simplified commands/APIs to persist/update the slot information applied to the example above.  
-
-This example, can be scaled for any resource for example, **VMs** or **VMSS** or **K8S**. 
 
 **Canary**: reduce the risk by slowly rolling out the change to a small subset of users. 
 As you gain more confidence in the new version, you can start releasing it to more servers in your infrastructure
@@ -201,7 +114,7 @@ jobs:
 ```
 
 #### Variables
-During execution, the jobs would have access to pre-defined system variables. For example, $(strategy), $(environment.staging) or $(green), $(environment.prod) or $(blue), $(action), $(increments) etc. 
+During execution, the jobs would have access to pre-defined system variables. For example, $(strategy), $(environment.staging), $(environment.prod), $(action), $(increments) etc. 
 
 ### Virtual Machine deployment (for discussion)
 

@@ -29,8 +29,6 @@ jobs:
         displayName: string # friendly name to display in the UI
         steps: [ script | bash | pwsh | powershell | checkout | task | templateReference ]
 ```
-> Note: At the moment we offer only the *runOnce* strategy, which executes the steps once sequentially. Additional strategies like blue-green, canary and rolling are on our roadmap.
-
 
 Following properties are on hold
 ```yaml
