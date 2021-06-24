@@ -52,7 +52,7 @@ resources:
   pipelines:
   - pipeline: SmartHotel
     source: SmartHotel-CI # name of the pipeline source definition
-```A
+```
 
 In case you need to consume a Pipeline from other project, then you need to include the project name while providing source name.
 
@@ -181,7 +181,7 @@ resources:
 
 ### `checkout` your repository
 
-Repos from the `repository` resources defined are automatically synced and made available for all the jobs in the pipeline. However, in any of the jobs, you can choose to override and sync only specific repository using `checkout` shortcut. 
+Repos from the `repository` resources defined are automatically synced and made available for all the jobs in the pipeline, except deployment jobs. However, in any of the jobs, you can choose to override and sync only specific repository using `checkout` shortcut. 
 
 Repos from `repository` resource and `self` repo are not automatically synced in 'deployment' jobs. If you required repo to be fetched in the deployment job, you need to explicitly `checkout`.
 
