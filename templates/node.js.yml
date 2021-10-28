@@ -12,10 +12,31 @@ pool:
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: '10.x'
+    versionSpec: '15.x'
   displayName: 'Install Node.js'
 
-- script: |
-    npm install
-    npm run build
-  displayName: 'npm install and build'
+- task: Npm@1
+  inputs:
+    command: custom
+    customCommand: "ci"
+  displayName: "Install Dependencies"
+
+- task: Npm@1
+  inputs:
+    command: "custom"
+    customCommand: "run build"
+  displayName: "Run build"
+
+- task: Npm@1
+  inputs:
+    command: custom
+    customCommand: "run lint"
+  displayName: "Run lint"
+
+# Publish the npm package to an internal Azure Artifacts Feed with the format of the publishFeed being Project Name/Name of Feed
+- task: Npm@1
+  inputs:
+    command: publish
+    publishRegistry: useFeed
+    publishFeed: testProject/FeedName
+  displayName: "Publish package to Artifacts"
