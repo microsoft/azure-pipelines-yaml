@@ -33,6 +33,31 @@ steps:
     customCommand: "run lint"
   displayName: "Run lint"
 
+#This custom npm command can be added to the project's package.json and the unit test report can be generated with the nyc package. 
+
+#For example, in the package.json the following command can be added: "test:report": "nyc -r cobertura -r html npm run test -- --reporter mocha-junit-reporter --reporter-options mochaFile=./.tests/results.xml"
+
+- task: Npm@1
+  inputs:
+    command: custom
+    customCommand: "run test:report"
+  displayName: "Generate unit test report"
+
+- task: PublishTestResults@2
+  condition: succeededOrFailed()
+  inputs:
+    testRunner: JUnit
+    testResultsFiles: "**/.tests/results.xml"
+    testRunTitle: "Mocha Unit Tests"
+  displayName: "Run and publish unit test results"
+
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: cobertura
+    summaryFileLocation: .tests/coverage/cobertura-coverage.xml
+    reportDirectory: .tests/coverage
+  displayName: "Publish code coverage"
+
 # Publish the npm package to an internal Azure Artifacts Feed with the format of the publishFeed being Project Name/Name of Feed
 - task: Npm@1
   inputs:
