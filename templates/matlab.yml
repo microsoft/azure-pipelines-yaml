@@ -1,0 +1,32 @@
+# MATLAB
+# Run MATLAB and Simulink as part of your build pipeline.
+# Add steps that install MATLAB, generate and publish artifacts, deploy, and more:
+# https://marketplace.visualstudio.com/items?itemName=MathWorks.matlab-azure-devops-extension
+
+trigger:
+- {{ branch }}
+
+pool:
+  {{ pool }}
+
+steps:
+# Uncomment this task to install MATLAB on a Microsoft-hosted agent.
+# - task: InstallMATLAB@0
+#   inputs:
+#     release: latest
+
+# Uncomment this task to run a MATLAB script, function, or statement.
+# - task: RunMATLABCommand@0
+#   inputs:
+#     command: myscript
+
+# Run your tests and generate a test artifact.
+- task: RunMATLABTests@0
+  inputs:
+    testResultsJUnit: test-results/results.xml
+
+# Publish the JUnit test results report.
+- task: PublishTestResults@2
+  condition: succeededOrFailed()
+  inputs:
+    testResultsFiles: test-results/results.xml
