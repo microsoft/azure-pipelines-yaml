@@ -61,7 +61,7 @@ resources:
 steps:
 - run: dotnet
   env:
-    DOTNET_TELEMETRY_OPT_OUT: true  # add an environment variable
+    DOTNET_CLI_TELEMETRY_OPTOUT: true  # add an environment variable
   cmd: build  # override the default CMD/ENTRYPOINT in the container
 - run: yarn
   workspace: /my/custom/workspace # override the default workspace mapping
@@ -73,7 +73,7 @@ If your container image is from DockerHub, you can skip the forward-declaration 
 ```yaml
 - run: microsoft/dotnet:latest
   env:
-    DOTNET_TELEMETRY_OPT_OUT: true  # add an environment variable
+    DOTNET_CLI_TELEMETRY_OPTOUT: true  # add an environment variable
 - run: facebook/yarn:latest
 ```
 
