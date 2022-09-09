@@ -64,7 +64,7 @@ jobs:
       routeTraffic:
         steps:
         - script: echo routing traffic...
-      postRouteTaffic:
+      postRouteTraffic:
         pool: server
         steps:          
         - script: echo monitor application health...  
@@ -100,7 +100,7 @@ jobs:
       routeTraffic:
         steps:
         - script: echo swap slots...   
-      postRouteTaffic:
+      postRouteTraffic:
         pool: server
         steps:          
         - task: appInsightsAlerts .   
