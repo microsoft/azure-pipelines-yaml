@@ -67,6 +67,12 @@ stages:
         deploy:
 
           steps:
+          #The addition of a download task may be required for use of the published artifact created in the Build stage.
+          #- task: DownloadBuildArtifacts@0
+          #  displayName: 'Download Build Artifacts'
+          #  inputs:
+          #    artifactName: drop
+          #    downloadPath: '$(Build.ArtifactStagingDirectory)'
           - task: AzureFunctionApp@1
             displayName: 'Azure functions app deploy'
             inputs:
