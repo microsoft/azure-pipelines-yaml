@@ -1,7 +1,7 @@
 # Control the checkout location of code
 
 Customers often wish to control the location of checked-out code.
-While we're still designing and working on [multiple checkout](multicheckout.md), we can make progress on controlling the checkout of `self`.
+While we're still designing and working on [multiple checkout](multi-checkout.md), we can make progress on controlling the checkout of `self`.
 
 Scenarios:
 - Previous versions of Go were quite particular about directory structure.
