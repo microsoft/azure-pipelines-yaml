@@ -415,7 +415,7 @@ Webhooks are simple HTTP callback requests and you can define a webhook event ba
 
 Webhook triggers are slightly different from other resource based triggers. There is no downloadable artifact component or version associated for each event or there is no traceability. However, webhook events contain JSON payload data that can be used for basic analysis of the event.
 
-With webhook triggers feature, we are providing a way to subscribe to such events(webhooks) and enable pipeline triggers and cosume the payload data.
+With webhook triggers feature, we are providing a way to subscribe to such events(webhooks) and enable pipeline triggers and consume the payload data.
 
 #### Scenarios
 - I would like to configure my pipeline to trigger based on an external event.
