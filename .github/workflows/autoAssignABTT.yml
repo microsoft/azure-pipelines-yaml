@@ -3,7 +3,7 @@ name: Auto Assign ABTT to Project Board
 on:
   issues:
     types:
-      - opened
+      - closed
 
 jobs:
   assign_one_project:
