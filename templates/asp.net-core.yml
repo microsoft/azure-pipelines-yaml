@@ -11,7 +11,37 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
+  projectsToBuild: '**/*.csproj'
+  projectsToTest: '**/*Tests/*.csproj'
 
 steps:
-- script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
+- task: DotNetCoreCLI@2
+  displayName: Restore
+  inputs:
+    command: restore
+    projects: '$(projectsToBuild)'
+
+- task: DotNetCoreCLI@2
+  displayName: Build
+  inputs:
+    projects: '$(projectsToBuild)'
+    arguments: '--configuration $(buildConfiguration) --no-restore'
+    
+- task: DotNetCoreCLI@2
+  displayName: Test
+  inputs:
+    command: test
+    projects: '$(projectsToTest)'
+    arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: publish
+    arguments: '--configuration $(buildConfiguration) --no-build --no-restore --output $(Build.ArtifactStagingDirectory)'
+    publishWebProjects: True
+    zipAfterPublish: True
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
