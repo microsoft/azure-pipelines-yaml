@@ -1,2 +1,13 @@
 # Global rule:
 * @microsoft/akvelon-build-task-team    @microsoft/azure-pipelines-platform
+
+# Specific rules for different directories or file types
+design/ @microsoft/design-team
+*.md @microsoft/documentation-team
+
+# Fallback owners for specific directories or file types
+templates/ @microsoft/templates-team
+
+# Grouped similar rules together using wildcard patterns
+*.yml @microsoft/yml-team
+*.json @microsoft/json-team
